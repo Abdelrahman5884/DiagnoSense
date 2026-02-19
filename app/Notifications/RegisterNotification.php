@@ -4,6 +4,7 @@ namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Messages\VonageMessage;
 use Illuminate\Notifications\Notification;
 
 class RegisterNotification extends Notification
@@ -25,8 +26,14 @@ class RegisterNotification extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        $channels = [];
+        if ($notifiable->email) $channels[] = 'mail';
+        if ($notifiable->phone) $channels[] = 'vonage';
+
+        return $channels;
     }
+
+
 
     /**
      * Get the mail representation of the notification.
@@ -38,6 +45,12 @@ class RegisterNotification extends Notification
             ->greeting('Hello '.$notifiable->name.' 💙')
             ->line('Welcome to DiagnoSense. We are excited to have you on board.')
             ->line('Thank you for joining us!');
+    }
+
+    public function toVonage($notifiable)
+    {
+        return (new VonageMessage())
+            ->content("Welcome to DiagnoSense 💙. Hello {$notifiable->name}, We are excited to have you on board.");
     }
 
     /**
