@@ -35,7 +35,7 @@ class RegistrationRequest extends FormRequest
             ],
 
             'email' => [
-                'required',
+                'required_without:phone',
                 'string',
                 'email',
                 'max:255',
@@ -50,6 +50,15 @@ class RegistrationRequest extends FormRequest
                 'min:8',
                 'confirmed',
             ],
+            'phone' => [
+                'required_without:email',
+                'string',
+                'min:10',
+                'max:15',
+                Rule::unique('users')->where(function ($query) use ($type) {
+                    return $query->where('type', $type);
+                }),
+            ]
         ];
     }
 
@@ -60,6 +69,10 @@ class RegistrationRequest extends FormRequest
             'email.required' => 'Email is required.',
             'email.email' => 'Email must be a valid email address.',
             'email.unique' => 'Email is already in use.',
+            'phone.required' => 'Phone number is required.',
+            'phone.unique' => 'Phone number is already in use.',
+            'phone.min' => 'Phone number must be at least 10 digits.',
+            'phone.max' => 'Phone number must not exceed 15 digits.',
             'password.required' => 'Password is required.',
             'password.min' => 'Password must be at least 8 characters.',
             'password.confirmed' => 'Password confirmation does not match.',

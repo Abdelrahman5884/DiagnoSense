@@ -21,6 +21,8 @@ class RegisterController extends Controller
             $user->patient()->create();
         } elseif ($type === 'doctor') {
             $user->doctor()->create();
+            $user->is_active = true;
+            $user->save();
         }
         $token = $user->createToken('register-token')->plainTextToken;
 
@@ -28,7 +30,8 @@ class RegisterController extends Controller
             'user' => [
                 'id' => $user->id,
                 'name' => $user->name,
-                'email' => $user->email,
+                'email' => $user->email ?? null,
+                'phone' => $user->phone ?? null,
                 'updated_at' => $user->updated_at->format('Y-m-d h:i:s'),
                 'created_at' => $user->created_at->format('Y-m-d h:i:s'),
             ],
