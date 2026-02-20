@@ -98,6 +98,9 @@
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-google-callback">
                                 <a href="#endpoints-GETapi-google-callback">GET api/google/callback</a>
                             </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-POSTapi-patients">
+                                <a href="#endpoints-POSTapi-patients">POST api/patients</a>
+                            </li>
                                                                         </ul>
                             </ul>
             </div>
@@ -109,7 +112,7 @@
     </ul>
 
     <ul class="toc-footer" id="last-updated">
-        <li>Last updated: November 16, 2025</li>
+        <li>Last updated: February 20, 2026</li>
     </ul>
 </div>
 
@@ -151,7 +154,8 @@ You can switch the language used with the tabs at the top right (or from the nav
     --data "{
     \"name\": \"vmqeopfuudtdsufvyvddq\",
     \"email\": \"kunde.eloisa@example.com\",
-    \"password\": \"4[*UyPJ\\\"}6\"
+    \"password\": \"4[*UyPJ\\\"}6\",
+    \"phone\": \"hdtqtqxbajwbp\"
 }"
 </code></pre></div>
 
@@ -169,7 +173,8 @@ const headers = {
 let body = {
     "name": "vmqeopfuudtdsufvyvddq",
     "email": "kunde.eloisa@example.com",
-    "password": "4[*UyPJ\"}6"
+    "password": "4[*UyPJ\"}6",
+    "phone": "hdtqtqxbajwbp"
 };
 
 fetch(url, {
@@ -282,14 +287,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>email</code></b>&nbsp;&nbsp;
 <small>string</small>&nbsp;
- &nbsp;
+<i>optional</i> &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
                               name="email"                data-endpoint="POSTapi-register--type-"
                value="kunde.eloisa@example.com"
                data-component="body">
     <br>
-<p>Must be a valid email address. Must not be greater than 255 characters. Example: <code>kunde.eloisa@example.com</code></p>
+<p>This field is required when <code>phone</code> is not present. Must be a valid email address. Must not be greater than 255 characters. Example: <code>kunde.eloisa@example.com</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>password</code></b>&nbsp;&nbsp;
@@ -302,6 +307,18 @@ You can check the Dev Tools console for debugging information.</code></pre>
                data-component="body">
     <br>
 <p>Must be at least 8 characters. Example: <code>4[*UyPJ"}6</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>phone</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="phone"                data-endpoint="POSTapi-register--type-"
+               value="hdtqtqxbajwbp"
+               data-component="body">
+    <br>
+<p>This field is required when <code>email</code> is not present. Must be at least 10 characters. Must not be greater than 15 characters. Example: <code>hdtqtqxbajwbp</code></p>
         </div>
         </form>
 
@@ -322,7 +339,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"email\": \"qkunze@example.com\",
+    \"identity\": \"consequatur\",
     \"password\": \"O[2UZ5ij-e\\/dl4m{o,\"
 }"
 </code></pre></div>
@@ -339,7 +356,7 @@ const headers = {
 };
 
 let body = {
-    "email": "qkunze@example.com",
+    "identity": "consequatur",
     "password": "O[2UZ5ij-e\/dl4m{o,"
 };
 
@@ -439,16 +456,16 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                             <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
         <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>email</code></b>&nbsp;&nbsp;
+            <b style="line-height: 2;"><code>identity</code></b>&nbsp;&nbsp;
 <small>string</small>&nbsp;
  &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="email"                data-endpoint="POSTapi-login--type-"
-               value="qkunze@example.com"
+                              name="identity"                data-endpoint="POSTapi-login--type-"
+               value="consequatur"
                data-component="body">
     <br>
-<p>Must be a valid email address. Example: <code>qkunze@example.com</code></p>
+<p>Example: <code>consequatur</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>password</code></b>&nbsp;&nbsp;
@@ -481,7 +498,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"email\": \"qkunze@example.com\"
+    \"identity\": \"consequatur\"
 }"
 </code></pre></div>
 
@@ -497,7 +514,7 @@ const headers = {
 };
 
 let body = {
-    "email": "qkunze@example.com"
+    "identity": "consequatur"
 };
 
 fetch(url, {
@@ -596,16 +613,16 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                             <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
         <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>email</code></b>&nbsp;&nbsp;
+            <b style="line-height: 2;"><code>identity</code></b>&nbsp;&nbsp;
 <small>string</small>&nbsp;
  &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="email"                data-endpoint="POSTapi-forget-password--type-"
-               value="qkunze@example.com"
+                              name="identity"                data-endpoint="POSTapi-forget-password--type-"
+               value="consequatur"
                data-component="body">
     <br>
-<p>Must be a valid email address. The <code>email</code> of an existing record in the users table. Example: <code>qkunze@example.com</code></p>
+<p>Example: <code>consequatur</code></p>
         </div>
         </form>
 
@@ -626,9 +643,9 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"email\": \"qkunze@example.com\",
-    \"otp\": \"opfuu\",
-    \"password\": \"e\\/dl4m{o\"
+    \"identity\": \"consequatur\",
+    \"otp\": \"mqeop\",
+    \"password\": \"ij-e\\/dl4m\"
 }"
 </code></pre></div>
 
@@ -644,9 +661,9 @@ const headers = {
 };
 
 let body = {
-    "email": "qkunze@example.com",
-    "otp": "opfuu",
-    "password": "e\/dl4m{o"
+    "identity": "consequatur",
+    "otp": "mqeop",
+    "password": "ij-e\/dl4m"
 };
 
 fetch(url, {
@@ -745,16 +762,16 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                             <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
         <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>email</code></b>&nbsp;&nbsp;
+            <b style="line-height: 2;"><code>identity</code></b>&nbsp;&nbsp;
 <small>string</small>&nbsp;
  &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="email"                data-endpoint="POSTapi-reset-password--type-"
-               value="qkunze@example.com"
+                              name="identity"                data-endpoint="POSTapi-reset-password--type-"
+               value="consequatur"
                data-component="body">
     <br>
-<p>Must be a valid email address. The <code>email</code> of an existing record in the users table. Example: <code>qkunze@example.com</code></p>
+<p>Example: <code>consequatur</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>otp</code></b>&nbsp;&nbsp;
@@ -763,10 +780,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="otp"                data-endpoint="POSTapi-reset-password--type-"
-               value="opfuu"
+               value="mqeop"
                data-component="body">
     <br>
-<p>Must not be greater than 6 characters. Example: <code>opfuu</code></p>
+<p>Must not be greater than 6 characters. Example: <code>mqeop</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>password</code></b>&nbsp;&nbsp;
@@ -775,10 +792,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="password"                data-endpoint="POSTapi-reset-password--type-"
-               value="e/dl4m{o"
+               value="ij-e/dl4m"
                data-component="body">
     <br>
-<p>Must be at least 8 characters. Example: <code>e/dl4m{o</code></p>
+<p>Must be at least 8 characters. Example: <code>ij-e/dl4m</code></p>
         </div>
         </form>
 
@@ -922,8 +939,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"email\": \"qkunze@example.com\",
-    \"otp\": \"opfuu\"
+    \"identity\": \"consequatur\",
+    \"otp\": \"mqeop\"
 }"
 </code></pre></div>
 
@@ -939,8 +956,8 @@ const headers = {
 };
 
 let body = {
-    "email": "qkunze@example.com",
-    "otp": "opfuu"
+    "identity": "consequatur",
+    "otp": "mqeop"
 };
 
 fetch(url, {
@@ -1039,16 +1056,16 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                             <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
         <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>email</code></b>&nbsp;&nbsp;
+            <b style="line-height: 2;"><code>identity</code></b>&nbsp;&nbsp;
 <small>string</small>&nbsp;
  &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="email"                data-endpoint="POSTapi-verify-email--type-"
-               value="qkunze@example.com"
+                              name="identity"                data-endpoint="POSTapi-verify-email--type-"
+               value="consequatur"
                data-component="body">
     <br>
-<p>Must be a valid email address. The <code>email</code> of an existing record in the users table. Example: <code>qkunze@example.com</code></p>
+<p>Example: <code>consequatur</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>otp</code></b>&nbsp;&nbsp;
@@ -1057,10 +1074,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="otp"                data-endpoint="POSTapi-verify-email--type-"
-               value="opfuu"
+               value="mqeop"
                data-component="body">
     <br>
-<p>Must not be greater than 6 characters. Example: <code>opfuu</code></p>
+<p>Must not be greater than 6 characters. Example: <code>mqeop</code></p>
         </div>
         </form>
 
@@ -1455,6 +1472,374 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <p>Example: <code>application/json</code></p>
             </div>
                         </form>
+
+                    <h2 id="endpoints-POSTapi-patients">POST api/patients</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-POSTapi-patients">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request POST \
+    "http://localhost:8000/api/patients" \
+    --header "Content-Type: multipart/form-data" \
+    --header "Accept: application/json" \
+    --form "name=vmqeopfuudtdsufvyvddq"\
+    --form "email=kunde.eloisa@example.com"\
+    --form "phone=hfqcoynlazghd"\
+    --form "age=17"\
+    --form "gender=male"\
+    --form "national_id=mqeopfuudtdsu"\
+    --form "is_smoker="\
+    --form "previous_surgeries="\
+    --form "chronic_diseases[]=consequatur"\
+    --form "previous_surgeries_name=consequatur"\
+    --form "medications=consequatur"\
+    --form "allergies=consequatur"\
+    --form "family_history=consequatur"\
+    --form "lab[]=@C:\Users\Solo\AppData\Local\Temp\php6715.tmp" \
+    --form "radiology[]=@C:\Users\Solo\AppData\Local\Temp\php6726.tmp" \
+    --form "medical_history[]=@C:\Users\Solo\AppData\Local\Temp\php6727.tmp" </code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost:8000/api/patients"
+);
+
+const headers = {
+    "Content-Type": "multipart/form-data",
+    "Accept": "application/json",
+};
+
+const body = new FormData();
+body.append('name', 'vmqeopfuudtdsufvyvddq');
+body.append('email', 'kunde.eloisa@example.com');
+body.append('phone', 'hfqcoynlazghd');
+body.append('age', '17');
+body.append('gender', 'male');
+body.append('national_id', 'mqeopfuudtdsu');
+body.append('is_smoker', '');
+body.append('previous_surgeries', '');
+body.append('chronic_diseases[]', 'consequatur');
+body.append('previous_surgeries_name', 'consequatur');
+body.append('medications', 'consequatur');
+body.append('allergies', 'consequatur');
+body.append('family_history', 'consequatur');
+body.append('lab[]', document.querySelector('input[name="lab[]"]').files[0]);
+body.append('radiology[]', document.querySelector('input[name="radiology[]"]').files[0]);
+body.append('medical_history[]', document.querySelector('input[name="medical_history[]"]').files[0]);
+
+fetch(url, {
+    method: "POST",
+    headers,
+    body,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-POSTapi-patients">
+</span>
+<span id="execution-results-POSTapi-patients" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-POSTapi-patients"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-POSTapi-patients"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-POSTapi-patients" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-POSTapi-patients">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-POSTapi-patients" data-method="POST"
+      data-path="api/patients"
+      data-authed="0"
+      data-hasfiles="1"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('POSTapi-patients', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-POSTapi-patients"
+                    onclick="tryItOut('POSTapi-patients');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-POSTapi-patients"
+                    onclick="cancelTryOut('POSTapi-patients');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-POSTapi-patients"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-black">POST</small>
+            <b><code>api/patients</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="POSTapi-patients"
+               value="multipart/form-data"
+               data-component="header">
+    <br>
+<p>Example: <code>multipart/form-data</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="POSTapi-patients"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>name</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="name"                data-endpoint="POSTapi-patients"
+               value="vmqeopfuudtdsufvyvddq"
+               data-component="body">
+    <br>
+<p>Must not be greater than 255 characters. Example: <code>vmqeopfuudtdsufvyvddq</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>email</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="email"                data-endpoint="POSTapi-patients"
+               value="kunde.eloisa@example.com"
+               data-component="body">
+    <br>
+<p>This field is required when <code>phone</code> is not present. Must be a valid email address. Must not be greater than 255 characters. Example: <code>kunde.eloisa@example.com</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>phone</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="phone"                data-endpoint="POSTapi-patients"
+               value="hfqcoynlazghd"
+               data-component="body">
+    <br>
+<p>This field is required when <code>email</code> is not present. Must be at least 10 characters. Must not be greater than 15 characters. Example: <code>hfqcoynlazghd</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>age</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="age"                data-endpoint="POSTapi-patients"
+               value="17"
+               data-component="body">
+    <br>
+<p>Example: <code>17</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>gender</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="gender"                data-endpoint="POSTapi-patients"
+               value="male"
+               data-component="body">
+    <br>
+<p>Example: <code>male</code></p>
+Must be one of:
+<ul style="list-style-type: square;"><li><code>male</code></li> <li><code>female</code></li></ul>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>national_id</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="national_id"                data-endpoint="POSTapi-patients"
+               value="mqeopfuudtdsu"
+               data-component="body">
+    <br>
+<p>Must not be greater than 15 characters. Example: <code>mqeopfuudtdsu</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>is_smoker</code></b>&nbsp;&nbsp;
+<small>boolean</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <label data-endpoint="POSTapi-patients" style="display: none">
+            <input type="radio" name="is_smoker"
+                   value="true"
+                   data-endpoint="POSTapi-patients"
+                   data-component="body"             >
+            <code>true</code>
+        </label>
+        <label data-endpoint="POSTapi-patients" style="display: none">
+            <input type="radio" name="is_smoker"
+                   value="false"
+                   data-endpoint="POSTapi-patients"
+                   data-component="body"             >
+            <code>false</code>
+        </label>
+    <br>
+<p>Example: <code>false</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>previous_surgeries</code></b>&nbsp;&nbsp;
+<small>boolean</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <label data-endpoint="POSTapi-patients" style="display: none">
+            <input type="radio" name="previous_surgeries"
+                   value="true"
+                   data-endpoint="POSTapi-patients"
+                   data-component="body"             >
+            <code>true</code>
+        </label>
+        <label data-endpoint="POSTapi-patients" style="display: none">
+            <input type="radio" name="previous_surgeries"
+                   value="false"
+                   data-endpoint="POSTapi-patients"
+                   data-component="body"             >
+            <code>false</code>
+        </label>
+    <br>
+<p>Example: <code>false</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>chronic_diseases</code></b>&nbsp;&nbsp;
+<small>string[]</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="chronic_diseases[0]"                data-endpoint="POSTapi-patients"
+               data-component="body">
+        <input type="text" style="display: none"
+               name="chronic_diseases[1]"                data-endpoint="POSTapi-patients"
+               data-component="body">
+    <br>
+
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>previous_surgeries_name</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="previous_surgeries_name"                data-endpoint="POSTapi-patients"
+               value="consequatur"
+               data-component="body">
+    <br>
+<p>Example: <code>consequatur</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>medications</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="medications"                data-endpoint="POSTapi-patients"
+               value="consequatur"
+               data-component="body">
+    <br>
+<p>Example: <code>consequatur</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>allergies</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="allergies"                data-endpoint="POSTapi-patients"
+               value="consequatur"
+               data-component="body">
+    <br>
+<p>Example: <code>consequatur</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>family_history</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="family_history"                data-endpoint="POSTapi-patients"
+               value="consequatur"
+               data-component="body">
+    <br>
+<p>Example: <code>consequatur</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>lab</code></b>&nbsp;&nbsp;
+<small>file[]</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="file" style="display: none"
+                              name="lab[0]"                data-endpoint="POSTapi-patients"
+               data-component="body">
+        <input type="file" style="display: none"
+               name="lab[1]"                data-endpoint="POSTapi-patients"
+               data-component="body">
+    <br>
+<p>Must be a file. Must not be greater than 10240 kilobytes.</p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>radiology</code></b>&nbsp;&nbsp;
+<small>file[]</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="file" style="display: none"
+                              name="radiology[0]"                data-endpoint="POSTapi-patients"
+               data-component="body">
+        <input type="file" style="display: none"
+               name="radiology[1]"                data-endpoint="POSTapi-patients"
+               data-component="body">
+    <br>
+<p>Must be a file. Must not be greater than 10240 kilobytes.</p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>medical_history</code></b>&nbsp;&nbsp;
+<small>file[]</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="file" style="display: none"
+                              name="medical_history[0]"                data-endpoint="POSTapi-patients"
+               data-component="body">
+        <input type="file" style="display: none"
+               name="medical_history[1]"                data-endpoint="POSTapi-patients"
+               data-component="body">
+    <br>
+<p>Must be a file. Must not be greater than 10240 kilobytes.</p>
+        </div>
+        </form>
 
             
 

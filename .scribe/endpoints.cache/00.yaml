@@ -52,8 +52,8 @@ endpoints:
       email:
         custom: []
         name: email
-        description: 'Must be a valid email address. Must not be greater than 255 characters.'
-        required: true
+        description: 'This field is required when <code>phone</code> is not present. Must be a valid email address. Must not be greater than 255 characters.'
+        required: false
         example: kunde.eloisa@example.com
         type: string
         enumValues: []
@@ -71,10 +71,22 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         deprecated: false
+      phone:
+        custom: []
+        name: phone
+        description: 'This field is required when <code>email</code> is not present. Must be at least 10 characters. Must not be greater than 15 characters.'
+        required: false
+        example: hdtqtqxbajwbp
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
     cleanBodyParameters:
       name: vmqeopfuudtdsufvyvddq
       email: kunde.eloisa@example.com
       password: '4[*UyPJ"}6'
+      phone: hdtqtqxbajwbp
     fileParameters: []
     responses: []
     responseFields: []
@@ -117,12 +129,12 @@ endpoints:
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
-      email:
+      identity:
         custom: []
-        name: email
-        description: 'Must be a valid email address.'
+        name: identity
+        description: ''
         required: true
-        example: qkunze@example.com
+        example: consequatur
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -140,7 +152,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanBodyParameters:
-      email: qkunze@example.com
+      identity: consequatur
       password: 'O[2UZ5ij-e/dl4m{o,'
     fileParameters: []
     responses: []
@@ -184,19 +196,19 @@ endpoints:
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
-      email:
+      identity:
         custom: []
-        name: email
-        description: 'Must be a valid email address. The <code>email</code> of an existing record in the users table.'
+        name: identity
+        description: ''
         required: true
-        example: qkunze@example.com
+        example: consequatur
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanBodyParameters:
-      email: qkunze@example.com
+      identity: consequatur
     fileParameters: []
     responses: []
     responseFields: []
@@ -239,12 +251,12 @@ endpoints:
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
-      email:
+      identity:
         custom: []
-        name: email
-        description: 'Must be a valid email address. The <code>email</code> of an existing record in the users table.'
+        name: identity
+        description: ''
         required: true
-        example: qkunze@example.com
+        example: consequatur
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -255,7 +267,7 @@ endpoints:
         name: otp
         description: 'Must not be greater than 6 characters.'
         required: true
-        example: opfuu
+        example: mqeop
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -266,16 +278,16 @@ endpoints:
         name: password
         description: 'Must be at least 8 characters.'
         required: true
-        example: 'e/dl4m{o'
+        example: ij-e/dl4m
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanBodyParameters:
-      email: qkunze@example.com
-      otp: opfuu
-      password: 'e/dl4m{o'
+      identity: consequatur
+      otp: mqeop
+      password: ij-e/dl4m
     fileParameters: []
     responses: []
     responseFields: []
@@ -361,12 +373,12 @@ endpoints:
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
-      email:
+      identity:
         custom: []
-        name: email
-        description: 'Must be a valid email address. The <code>email</code> of an existing record in the users table.'
+        name: identity
+        description: ''
         required: true
-        example: qkunze@example.com
+        example: consequatur
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -377,15 +389,15 @@ endpoints:
         name: otp
         description: 'Must not be greater than 6 characters.'
         required: true
-        example: opfuu
+        example: mqeop
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanBodyParameters:
-      email: qkunze@example.com
-      otp: opfuu
+      identity: consequatur
+      otp: mqeop
     fileParameters: []
     responses: []
     responseFields: []
@@ -523,6 +535,239 @@ endpoints:
           content-type: application/json
           access-control-allow-origin: '*'
         description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/patients
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: multipart/form-data
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        custom: []
+        name: name
+        description: 'Must not be greater than 255 characters.'
+        required: true
+        example: vmqeopfuudtdsufvyvddq
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      email:
+        custom: []
+        name: email
+        description: 'This field is required when <code>phone</code> is not present. Must be a valid email address. Must not be greater than 255 characters.'
+        required: false
+        example: kunde.eloisa@example.com
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      phone:
+        custom: []
+        name: phone
+        description: 'This field is required when <code>email</code> is not present. Must be at least 10 characters. Must not be greater than 15 characters.'
+        required: false
+        example: hfqcoynlazghd
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      age:
+        custom: []
+        name: age
+        description: ''
+        required: false
+        example: 17
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      gender:
+        custom: []
+        name: gender
+        description: ''
+        required: false
+        example: male
+        type: string
+        enumValues:
+          - male
+          - female
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      national_id:
+        custom: []
+        name: national_id
+        description: 'Must not be greater than 15 characters.'
+        required: false
+        example: mqeopfuudtdsu
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      is_smoker:
+        custom: []
+        name: is_smoker
+        description: ''
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      previous_surgeries:
+        custom: []
+        name: previous_surgeries
+        description: ''
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      chronic_diseases:
+        custom: []
+        name: chronic_diseases
+        description: ''
+        required: false
+        example:
+          - consequatur
+        type: 'string[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      previous_surgeries_name:
+        custom: []
+        name: previous_surgeries_name
+        description: ''
+        required: false
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      medications:
+        custom: []
+        name: medications
+        description: ''
+        required: false
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      allergies:
+        custom: []
+        name: allergies
+        description: ''
+        required: false
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      family_history:
+        custom: []
+        name: family_history
+        description: ''
+        required: false
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      lab:
+        custom: []
+        name: lab
+        description: 'Must be a file. Must not be greater than 10240 kilobytes.'
+        required: false
+        example:
+          - null
+        type: 'file[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      radiology:
+        custom: []
+        name: radiology
+        description: 'Must be a file. Must not be greater than 10240 kilobytes.'
+        required: false
+        example:
+          - null
+        type: 'file[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      medical_history:
+        custom: []
+        name: medical_history
+        description: 'Must be a file. Must not be greater than 10240 kilobytes.'
+        required: false
+        example:
+          - null
+        type: 'file[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      name: vmqeopfuudtdsufvyvddq
+      email: kunde.eloisa@example.com
+      phone: hfqcoynlazghd
+      age: 17
+      gender: male
+      national_id: mqeopfuudtdsu
+      is_smoker: false
+      previous_surgeries: false
+      chronic_diseases:
+        - consequatur
+      previous_surgeries_name: consequatur
+      medications: consequatur
+      allergies: consequatur
+      family_history: consequatur
+    fileParameters:
+      lab:
+        - null
+      radiology:
+        - null
+      medical_history:
+        - null
+    responses: []
     responseFields: []
     auth: []
     controller: null
