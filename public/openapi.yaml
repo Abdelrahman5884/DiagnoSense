@@ -399,12 +399,12 @@ paths:
                 is_smoker:
                   type: boolean
                   description: ''
-                  example: true
+                  example: false
                   nullable: true
                 previous_surgeries:
                   type: boolean
                   description: ''
-                  example: false
+                  example: true
                   nullable: true
                 chronic_diseases:
                   type: array
@@ -454,3 +454,34 @@ paths:
               required:
                 - name
       security: []
+  '/api/patients/{patientId}/key-info':
+    get:
+      summary: ''
+      operationId: getApiPatientsPatientIdKeyInfo
+      description: ''
+      parameters: []
+      responses:
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthenticated.
+                properties:
+                  message:
+                    type: string
+                    example: Unauthenticated.
+      tags:
+        - Endpoints
+      security: []
+    parameters:
+      -
+        in: path
+        name: patientId
+        description: ''
+        example: consequatur
+        required: true
+        schema:
+          type: string
