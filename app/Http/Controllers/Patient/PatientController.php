@@ -114,7 +114,10 @@ class PatientController extends Controller
         if(!$analysis){
             return ApiResponse::error('No AI analysis found for this patient.', null, 404);
         }
-        if($analysis->status != 'completed'){
+        if($analysis->status == 'failed'){
+            return ApiResponse::error('AI analysis failed.', null, 400);
+        }
+        if($analysis->status == 'processing'){
             return ApiResponse::error('AI analysis is not completed yet.', null, 400);
         }
         return ApiResponse::success('AI analysis retrieved successfully.', 
