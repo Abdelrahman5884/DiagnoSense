@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Patient;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePatientRequest;
+use App\Http\Resources\PatientListResource;
 use App\Http\Responses\ApiResponse;
 use App\Jobs\ProcessAi;
 use App\Models\AiAnalysisResult;
@@ -17,6 +18,12 @@ use Illuminate\Support\Str;
 
 class PatientController extends Controller
 {
+    public function index(){
+        $patients = Patient::with(['user','aiAnalysisResults' => function($query){
+            $query->latest()->first();
+        }])->paginate(9);
+        return PatientListResource::collection($patients);
+    }
     public function store(StorePatientRequest $request)
     {
         DB::beginTransaction();
