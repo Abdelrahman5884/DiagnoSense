@@ -101,6 +101,9 @@
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-google-callback">
                                 <a href="#endpoints-GETapi-google-callback">GET api/google/callback</a>
                             </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-patients">
+                                <a href="#endpoints-GETapi-patients">GET api/patients</a>
+                            </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-POSTapi-patients">
                                 <a href="#endpoints-POSTapi-patients">POST api/patients</a>
                             </li>
@@ -118,7 +121,7 @@
     </ul>
 
     <ul class="toc-footer" id="last-updated">
-        <li>Last updated: February 23, 2026</li>
+        <li>Last updated: February 24, 2026</li>
     </ul>
 </div>
 
@@ -1624,6 +1627,132 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                         </form>
 
+                    <h2 id="endpoints-GETapi-patients">GET api/patients</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-GETapi-patients">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost:8000/api/patients" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost:8000/api/patients"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-patients">
+            <blockquote>
+            <p>Example response (401):</p>
+        </blockquote>
+                <details class="annotation">
+            <summary style="cursor: pointer;">
+                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+            </summary>
+            <pre><code class="language-http">cache-control: no-cache, private
+content-type: application/json
+access-control-allow-origin: *
+ </code></pre></details>         <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;Unauthenticated.&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-patients" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-patients"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-patients"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-patients" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-patients">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-patients" data-method="GET"
+      data-path="api/patients"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-patients', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-patients"
+                    onclick="tryItOut('GETapi-patients');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-patients"
+                    onclick="cancelTryOut('GETapi-patients');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-patients"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/patients</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-patients"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-patients"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        </form>
+
                     <h2 id="endpoints-POSTapi-patients">POST api/patients</h2>
 
 <p>
@@ -1653,9 +1782,9 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --form "medications=consequatur"\
     --form "allergies=consequatur"\
     --form "family_history=consequatur"\
-    --form "lab[]=@C:\Users\Solo\AppData\Local\Temp\phpEBD9.tmp" \
-    --form "radiology[]=@C:\Users\Solo\AppData\Local\Temp\phpEBE9.tmp" \
-    --form "medical_history[]=@C:\Users\Solo\AppData\Local\Temp\phpEBEA.tmp" </code></pre></div>
+    --form "lab[]=@C:\Users\Solo\AppData\Local\Temp\phpF482.tmp" \
+    --form "radiology[]=@C:\Users\Solo\AppData\Local\Temp\phpF493.tmp" \
+    --form "medical_history[]=@C:\Users\Solo\AppData\Local\Temp\phpF494.tmp" </code></pre></div>
 
 
 <div class="javascript-example">
