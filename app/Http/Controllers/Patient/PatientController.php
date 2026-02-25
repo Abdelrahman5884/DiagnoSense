@@ -158,7 +158,7 @@ class PatientController extends Controller
 
     public function statusByType(string $type)
     {
-        $allowedTypes = ['critical', 'stable', 'new updates', 'discharged'];
+        $allowedTypes = ['critical', 'stable', 'under review'];
 
         if (! in_array($type, $allowedTypes)) {
             return ApiResponse::error('Invalid filter type', [], 400);
