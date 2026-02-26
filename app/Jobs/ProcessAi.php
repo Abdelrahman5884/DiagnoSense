@@ -82,6 +82,18 @@ class ProcessAi implements ShouldQueue
                     'status' => 'completed',
                 ]);
 
+                foreach (['high_priority_alerts', 'medium_priority_alerts', 'low_priority_alerts'] as $type) {
+                    $alerts = $data['key_information'][$type] ?? [];
+                    foreach ($alerts as $item) {
+                        $analysisRecord->keyPoints()->create([
+                            'priority' => str_replace('_priority_alerts', '', $type),
+                            'title'    => $item['title'],
+                            'insight'  => $item['insight'],
+                            'evidence' => $item['evidence'],
+                        ]);
+                    }
+                }
+
             } else {
                 $analysisRecord->update([
                     'response' => ['error' => 'AI analysis failed', 'details' => $response->body()],

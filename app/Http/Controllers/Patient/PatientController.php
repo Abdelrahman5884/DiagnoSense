@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Patient;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePatientRequest;
 use App\Http\Requests\UpdatePatientStatusRequest;
+use App\Http\Resources\KeyPointResource;
 use App\Http\Resources\PatientListResource;
 use App\Http\Responses\ApiResponse;
 use App\Jobs\ProcessAi;
 use App\Models\AiAnalysisResult;
+use App\Models\KeyPoint;
 use App\Models\MedicalHistory;
 use App\Models\Patient;
 use App\Models\Report;
@@ -123,21 +125,20 @@ class PatientController extends Controller
         if (! $patient) {
             return ApiResponse::error('Patient not found', null, 404);
         }
-        $analysis = $patient->aiAnalysisResults()->latest()->first();
-        if (! $analysis) {
-            return ApiResponse::error('No AI analysis found for this patient.', null, 404);
-        }
-        if ($analysis->status == 'failed') {
-            return ApiResponse::error('AI analysis failed.', null, 400);
-        }
-        if ($analysis->status == 'processing') {
-            return ApiResponse::error('AI analysis is not completed yet.', null, 400);
-        }
+        $keyPoints = KeyPoint::whereHas('aiAnalysisResult', function($query) use ($patientId) {
+                $query->where('patient_id', $patientId)
+                ->where('status', 'completed');})
+                ->orderBy('created_at', 'desc')
+                ->get();
 
-        return ApiResponse::success('AI analysis retrieved successfully.',
-            $analysis->response,
-            200
-        );
+        if ($keyPoints->isEmpty()) {
+            return ApiResponse::error('No Key Points found for this patient.', null, 404);
+        }
+        return ApiResponse::success('Key Points retrieved successfully.', [
+            'high' => KeyPointResource::collection($keyPoints->where('priority', 'high')),
+            'medium' => KeyPointResource::collection($keyPoints->where('priority', 'medium')),
+            'low' => KeyPointResource::collection($keyPoints->where('priority', 'low')),
+        ], 200);
     }
 
     public function updateStatus(UpdatePatientStatusRequest $request, $patient)
