@@ -60,6 +60,7 @@ class PatientController extends Controller
                 'medications' => $request->medications ?? null,
                 'allergies' => $request->allergies ?? null,
                 'family_history' => $request->family_history ?? null,
+                'current_complaint' => $request->current_complaint ?? null,
             ]);
 
             $reportsTypes = ['lab', 'radiology', 'medical_history'];

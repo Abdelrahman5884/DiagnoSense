@@ -51,6 +51,7 @@ class StorePatientRequest extends FormRequest
             'radiology.*' => ['file', 'mimes:pdf', 'max:10240'],
             'medical_history' => ['required_without_all:lab,radiology', 'array'],
             'medical_history.*' => ['file', 'mimes:pdf', 'max:10240'],
+            'current_complaint' => ['nullable', 'string'],
         ];
     }
 

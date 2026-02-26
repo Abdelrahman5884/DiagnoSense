@@ -60,6 +60,7 @@ class ProcessAi implements ShouldQueue
                     'medications' => $this->jobData['history']['medications'] ?? '',
                     'allergies' => $this->jobData['history']['allergies'] ?? '',
                     'family_history' => $this->jobData['history']['family_history'] ?? '',
+                    'current_complaint' => $this->jobData['history']['current_complaint'] ?? '',
                 ],
                 'decision_support' => false,
             ];

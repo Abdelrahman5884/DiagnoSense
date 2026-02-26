@@ -15,6 +15,7 @@ class MedicalHistory extends Model
         'allergies',
         'family_history',
         'previous_surgeries_name',
+        'current_complaint',
     ];
 
     protected $casts = [
