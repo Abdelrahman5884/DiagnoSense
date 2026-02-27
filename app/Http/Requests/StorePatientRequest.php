@@ -41,7 +41,7 @@ class StorePatientRequest extends FormRequest
             'previous_surgeries' => ['nullable', 'boolean'],
             'chronic_diseases' => ['nullable', 'array'],
             'chronic_diseases.*' => ['string'],
-            'previous_surgeries_name' => ['required_if:previous_surgeries,true', 'string'],
+            'previous_surgeries_name' => ['required_if:previous_surgeries,true','prohibited_if:previous_surgeries,false', 'string'],
             'medications' => ['nullable', 'string'],
             'allergies' => ['nullable', 'string'],
             'family_history' => ['nullable', 'string'],
@@ -64,6 +64,8 @@ class StorePatientRequest extends FormRequest
             'lab.required_without_all' => 'Please upload at least one lab test result or radiology report or medical history report.',
             'radiology.required_without_all' => 'Please upload at least one lab test result or radiology report or medical history report.',
             'medical_history.required_without_all' => 'Please upload at least one lab test result or radiology report or medical history report.',
+            'previous_surgeries_name.required_if' => 'Please provide the names of previous surgeries.',
+            'previous_surgeries_name.prohibited_if' => 'Previous surgeries name should not be provided.',
         ];
     }
 }
