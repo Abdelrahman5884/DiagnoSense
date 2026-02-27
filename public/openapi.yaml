@@ -632,3 +632,22 @@ paths:
       tags:
         - Endpoints
       security: []
+  '/api/key-points/{keyPointId}':
+    delete:
+      summary: ''
+      operationId: deleteApiKeyPointsKeyPointId
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      security: []
+    parameters:
+      -
+        in: path
+        name: keyPointId
+        description: ''
+        example: consequatur
+        required: true
+        schema:
+          type: string

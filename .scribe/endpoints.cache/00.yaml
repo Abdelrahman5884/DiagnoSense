@@ -707,7 +707,7 @@ endpoints:
         name: gender
         description: ''
         required: false
-        example: male
+        example: female
         type: string
         enumValues:
           - male
@@ -742,7 +742,7 @@ endpoints:
         name: previous_surgeries
         description: ''
         required: false
-        example: false
+        example: true
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -856,10 +856,10 @@ endpoints:
       email: kunde.eloisa@example.com
       phone: hfqcoynlazghd
       age: 17
-      gender: male
+      gender: female
       national_id: mqeopfuudtdsu
       is_smoker: false
-      previous_surgeries: false
+      previous_surgeries: true
       chronic_diseases:
         - consequatur
       previous_surgeries_name: consequatur
@@ -1129,6 +1129,49 @@ endpoints:
           content-type: application/json
           access-control-allow-origin: '*'
         description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'api/key-points/{keyPointId}'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      keyPointId:
+        custom: []
+        name: keyPointId
+        description: ''
+        required: true
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      keyPointId: consequatur
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses: []
     responseFields: []
     auth: []
     controller: null

@@ -122,6 +122,9 @@
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-search">
                                 <a href="#endpoints-GETapi-search">Handle the incoming request.</a>
                             </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-DELETEapi-key-points--keyPointId-">
+                                <a href="#endpoints-DELETEapi-key-points--keyPointId-">DELETE api/key-points/{keyPointId}</a>
+                            </li>
                                                                         </ul>
                             </ul>
             </div>
@@ -133,7 +136,7 @@
     </ul>
 
     <ul class="toc-footer" id="last-updated">
-        <li>Last updated: February 27, 2026</li>
+        <li>Last updated: February 28, 2026</li>
     </ul>
 </div>
 
@@ -1785,19 +1788,19 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --form "email=kunde.eloisa@example.com"\
     --form "phone=hfqcoynlazghd"\
     --form "age=17"\
-    --form "gender=male"\
+    --form "gender=female"\
     --form "national_id=mqeopfuudtdsu"\
     --form "is_smoker="\
-    --form "previous_surgeries="\
+    --form "previous_surgeries=1"\
     --form "chronic_diseases[]=consequatur"\
     --form "previous_surgeries_name=consequatur"\
     --form "medications=consequatur"\
     --form "allergies=consequatur"\
     --form "family_history=consequatur"\
     --form "current_complaint=consequatur"\
-    --form "lab[]=@C:\Users\Solo\AppData\Local\Temp\phpBAE3.tmp" \
-    --form "radiology[]=@C:\Users\Solo\AppData\Local\Temp\phpBAF4.tmp" \
-    --form "medical_history[]=@C:\Users\Solo\AppData\Local\Temp\phpBAF5.tmp" </code></pre></div>
+    --form "lab[]=@C:\Users\Solo\AppData\Local\Temp\php491F.tmp" \
+    --form "radiology[]=@C:\Users\Solo\AppData\Local\Temp\php4930.tmp" \
+    --form "medical_history[]=@C:\Users\Solo\AppData\Local\Temp\php4931.tmp" </code></pre></div>
 
 
 <div class="javascript-example">
@@ -1815,10 +1818,10 @@ body.append('name', 'vmqeopfuudtdsufvyvddq');
 body.append('email', 'kunde.eloisa@example.com');
 body.append('phone', 'hfqcoynlazghd');
 body.append('age', '17');
-body.append('gender', 'male');
+body.append('gender', 'female');
 body.append('national_id', 'mqeopfuudtdsu');
 body.append('is_smoker', '');
-body.append('previous_surgeries', '');
+body.append('previous_surgeries', '1');
 body.append('chronic_diseases[]', 'consequatur');
 body.append('previous_surgeries_name', 'consequatur');
 body.append('medications', 'consequatur');
@@ -1966,10 +1969,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="gender"                data-endpoint="POSTapi-patients"
-               value="male"
+               value="female"
                data-component="body">
     <br>
-<p>Example: <code>male</code></p>
+<p>Example: <code>female</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>male</code></li> <li><code>female</code></li></ul>
         </div>
@@ -2027,7 +2030,7 @@ Must be one of:
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>false</code></p>
+<p>Example: <code>true</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>chronic_diseases</code></b>&nbsp;&nbsp;
@@ -2836,6 +2839,129 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <p>Example: <code>application/json</code></p>
             </div>
                         </form>
+
+                    <h2 id="endpoints-DELETEapi-key-points--keyPointId-">DELETE api/key-points/{keyPointId}</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-DELETEapi-key-points--keyPointId-">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request DELETE \
+    "http://localhost:8000/api/key-points/consequatur" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost:8000/api/key-points/consequatur"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "DELETE",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-DELETEapi-key-points--keyPointId-">
+</span>
+<span id="execution-results-DELETEapi-key-points--keyPointId-" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-DELETEapi-key-points--keyPointId-"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-DELETEapi-key-points--keyPointId-"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-DELETEapi-key-points--keyPointId-" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-DELETEapi-key-points--keyPointId-">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-DELETEapi-key-points--keyPointId-" data-method="DELETE"
+      data-path="api/key-points/{keyPointId}"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('DELETEapi-key-points--keyPointId-', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-DELETEapi-key-points--keyPointId-"
+                    onclick="tryItOut('DELETEapi-key-points--keyPointId-');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-DELETEapi-key-points--keyPointId-"
+                    onclick="cancelTryOut('DELETEapi-key-points--keyPointId-');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-DELETEapi-key-points--keyPointId-"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-red">DELETE</small>
+            <b><code>api/key-points/{keyPointId}</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="DELETEapi-key-points--keyPointId-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="DELETEapi-key-points--keyPointId-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>keyPointId</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="keyPointId"                data-endpoint="DELETEapi-key-points--keyPointId-"
+               value="consequatur"
+               data-component="url">
+    <br>
+<p>Example: <code>consequatur</code></p>
+            </div>
+                    </form>
 
             
 
