@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\SocialAuthController;
+use App\Http\Controllers\KeyPointController;
 use App\Http\Controllers\Patient\PatientController;
 use App\Http\Controllers\SearchController;
 use Illuminate\Support\Facades\Route;
@@ -40,4 +41,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/patients/{patient}/status', [PatientController::class, 'updateStatus']);
     Route::get('/patients/status/{type}', [PatientController::class, 'statusByType']);
     Route::get('/search', SearchController::class);
+    Route::delete('/key-points/{keyPointId}', [KeyPointController::class, 'destroy']);
 });
