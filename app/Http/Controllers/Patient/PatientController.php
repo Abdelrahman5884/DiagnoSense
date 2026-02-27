@@ -7,6 +7,7 @@ use App\Http\Requests\StorePatientRequest;
 use App\Http\Requests\UpdatePatientStatusRequest;
 use App\Http\Resources\KeyPointResource;
 use App\Http\Resources\PatientListResource;
+use App\Http\Resources\PatientOverviewResource;
 use App\Http\Responses\ApiResponse;
 use App\Jobs\ProcessAi;
 use App\Models\AiAnalysisResult;
@@ -171,5 +172,20 @@ class PatientController extends Controller
             ->paginate(9);
 
         return PatientListResource::collection($patients);
+    }
+
+    public function overview(Request $request, $patientId){
+        $doctor = $request->user()->doctor;
+        $patient = $doctor->patients()->with([
+                    'user',
+                    'medicalHistory',
+                    'latestAiAnalysisResult',
+                ])->find($patientId);
+        if (! $patient) {
+            return ApiResponse::error('Unauthorized or patient not found in your list', null, 403);
+        }
+        return ApiResponse::success('Patient retrieved successfully.', [
+            new PatientOverviewResource($patient),
+        ], 200);
     }
 }
