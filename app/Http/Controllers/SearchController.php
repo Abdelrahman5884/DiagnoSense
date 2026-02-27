@@ -14,8 +14,12 @@ class SearchController extends Controller
      */
     public function __invoke(Request $request)
     {
+        $name = $request->get('name');
         $doctorId = auth()->user()->doctor->id;
-        $patients = User::search($request->get('search'))
+        if (empty($name)) {
+            return ApiResponse::error(message: 'The name parameter is required for searching', errors: null, statusCode: 400);
+        }
+        $patients = User::search($name)
             ->query(function ($query) use ($doctorId) {
                 $query->select('users.id', 'users.name')
                     ->join('patients', 'patients.user_id', '=', 'users.id')

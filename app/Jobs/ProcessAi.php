@@ -88,8 +88,8 @@ class ProcessAi implements ShouldQueue
                     foreach ($alerts as $item) {
                         $analysisRecord->keyPoints()->create([
                             'priority' => str_replace('_priority_alerts', '', $type),
-                            'title'    => $item['title'],
-                            'insight'  => $item['insight'],
+                            'title' => $item['title'],
+                            'insight' => $item['insight'],
                             'evidence' => $item['evidence'],
                         ]);
                     }
