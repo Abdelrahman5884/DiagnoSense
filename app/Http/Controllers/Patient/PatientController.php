@@ -158,7 +158,7 @@ class PatientController extends Controller
         );
     }
 
-    public function statusByType(string $type)
+    public function statusByType(Request $request ,string $type)
     {
         $allowedTypes = ['critical', 'stable', 'under review'];
 
@@ -166,9 +166,12 @@ class PatientController extends Controller
             return ApiResponse::error('Invalid filter type', [], 400);
         }
 
-        $patients = Patient::with(['user', 'latestAiAnalysisResult'])
-            ->where('status', $type)
-            ->paginate(12);
+        $doctor = $request->user()->doctor;
+
+        $patients = $doctor->patients()
+        ->with(['user', 'latestAiAnalysisResult'])
+        ->where('status', $type)
+        ->paginate(12);
 
         return PatientListResource::collection($patients);
     }
