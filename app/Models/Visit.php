@@ -14,7 +14,7 @@ class Visit extends Model
     ];
 
     protected $casts = [
-        'appointment_date' => 'datetime',
+        'next_visit_date' => 'datetime',
     ];
 
     public function doctor()

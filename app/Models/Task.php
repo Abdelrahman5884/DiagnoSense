@@ -9,6 +9,8 @@ class Task extends Model
     protected $fillable = [
         'title',
         'description',
+        'notes',
+        'visit_id',
         'patient_id',
         'doctor_id',
     ];
