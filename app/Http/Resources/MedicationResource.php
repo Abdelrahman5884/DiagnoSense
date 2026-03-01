@@ -17,9 +17,12 @@ class MedicationResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'duration' => $this->duration ?? '',
-            'next_visit' => $this->next_visit->format('Y-m-d'),
-            'created_at' => $this->created_at->format('Y-m-d'),
+            'dosage' => $this->dosage,
+            'frequency' => $this->frequency,
+            'duration' => $this->duration ?? null,
+            'action' => $this->action,
+            'visit' => new NextVisitResource($this->whenLoaded('visit')),
+            'create_at' => $this->created_at->format('Y-m-d'),
             'updated_at' => $this->updated_at->format('Y-m-d'),
         ];
     }
