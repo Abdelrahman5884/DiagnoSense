@@ -35,7 +35,7 @@ class SearchController extends Controller
             $ids = User::search($search)->keys();
             $query->whereIn('users.id', $ids);
         }
-        $patients = $query->paginate(9);
+        $patients = $query->paginate(12);
 
         if ($patients->count() > 0) {
             return SearchResource::collection($patients);
