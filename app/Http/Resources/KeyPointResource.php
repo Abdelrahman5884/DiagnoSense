@@ -17,9 +17,10 @@ class KeyPointResource extends JsonResource
         return [
             'id' => $this->id,
             'priority' => $this->priority,
-            'title' => $this->title,
+            'title' => $this->whenNotNull($this->title),
             'insight' => $this->insight,
-            'evidence' => $this->evidence,
+            'evidence' => $this->whenNotNull($this->evidence),
+            'is_manual' => $this->is_manual ? 'Doctor Note' : 'AI Generated',
             'date' => $this->created_at->format('M d, Y'),
         ];
     }

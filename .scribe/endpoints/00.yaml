@@ -705,7 +705,7 @@ endpoints:
         name: gender
         description: ''
         required: false
-        example: male
+        example: female
         type: string
         enumValues:
           - male
@@ -729,7 +729,7 @@ endpoints:
         name: is_smoker
         description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -761,13 +761,13 @@ endpoints:
       previous_surgeries_name:
         custom: []
         name: previous_surgeries_name
-        description: ''
+        description: 'This field is required when <code>previous_surgeries</code> is <code>true</code>.'
         required: false
         example: consequatur
         type: string
         enumValues: []
         exampleWasSpecified: false
-        nullable: true
+        nullable: false
         deprecated: false
       medications:
         custom: []
@@ -854,9 +854,9 @@ endpoints:
       email: kunde.eloisa@example.com
       phone: hfqcoynlazghd
       age: 17
-      gender: male
+      gender: female
       national_id: mqeopfuudtdsu
-      is_smoker: true
+      is_smoker: false
       previous_surgeries: false
       chronic_diseases:
         - consequatur
@@ -1022,7 +1022,7 @@ endpoints:
         name: status
         description: ''
         required: true
-        example: 'under review'
+        example: critical
         type: string
         enumValues:
           - critical
@@ -1032,7 +1032,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanBodyParameters:
-      status: 'under review'
+      status: critical
     fileParameters: []
     responses: []
     responseFields: []
@@ -1223,6 +1223,76 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       insight: consequatur
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'api/patients/{patientId}/key-info'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      patientId:
+        custom: []
+        name: patientId
+        description: ''
+        required: true
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      patientId: consequatur
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      insight:
+        custom: []
+        name: insight
+        description: ''
+        required: true
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      priority:
+        custom: []
+        name: priority
+        description: ''
+        required: true
+        example: high
+        type: string
+        enumValues:
+          - high
+          - medium
+          - low
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      insight: consequatur
+      priority: high
     fileParameters: []
     responses: []
     responseFields: []

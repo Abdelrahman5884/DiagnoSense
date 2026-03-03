@@ -13,7 +13,7 @@ tags:
 paths:
   '/api/register/{type}':
     post:
-      summary: ''
+      summary: 'Register'
       operationId: postApiRegisterType
       description: ''
       parameters: []
@@ -62,7 +62,7 @@ paths:
           type: string
   '/api/login/{type}':
     post:
-      summary: ''
+      summary: 'Login'
       operationId: postApiLoginType
       description: ''
       parameters: []
@@ -101,7 +101,7 @@ paths:
           type: string
   '/api/forget-password/{type}':
     post:
-      summary: ''
+      summary: 'Forget Password'
       operationId: postApiForgetPasswordType
       description: ''
       parameters: []
@@ -134,7 +134,7 @@ paths:
           type: string
   '/api/verify-otp/{type}':
     post:
-      summary: ''
+      summary: 'Verify OTP'
       operationId: postApiVerifyOtpType
       description: ''
       parameters: []
@@ -173,7 +173,7 @@ paths:
           type: string
   '/api/reset-password/{type}':
     post:
-      summary: ''
+      summary: 'Reset Password'
       operationId: postApiResetPasswordType
       description: ''
       parameters: []
@@ -212,7 +212,7 @@ paths:
           type: string
   '/api/logout/{type}':
     post:
-      summary: ''
+      summary: 'Logout'
       operationId: postApiLogoutType
       description: ''
       parameters: []
@@ -231,7 +231,7 @@ paths:
           type: string
   '/api/verify-email/{type}':
     post:
-      summary: ''
+      summary: 'Verify Email'
       operationId: postApiVerifyEmailType
       description: ''
       parameters: []
@@ -270,7 +270,7 @@ paths:
           type: string
   '/api/resend-otp/{type}':
     get:
-      summary: ''
+      summary: 'Resend OTP'
       operationId: getApiResendOtpType
       description: ''
       parameters: []
@@ -305,7 +305,7 @@ paths:
           type: string
   /api/google/redirect:
     get:
-      summary: ''
+      summary: 'Login with Google'
       operationId: getApiGoogleRedirect
       description: ''
       parameters: []
@@ -325,31 +325,9 @@ paths:
       tags:
         - Endpoints
       security: []
-  /api/google/callback:
-    get:
-      summary: ''
-      operationId: getApiGoogleCallback
-      description: ''
-      parameters: []
-      responses:
-        500:
-          description: ''
-          content:
-            application/json:
-              schema:
-                type: object
-                example:
-                  message: 'Server Error'
-                properties:
-                  message:
-                    type: string
-                    example: 'Server Error'
-      tags:
-        - Endpoints
-      security: []
   /api/patients:
     get:
-      summary: ''
+      summary: 'Get List of Patients'
       operationId: getApiPatients
       description: ''
       parameters: []
@@ -370,7 +348,7 @@ paths:
         - Endpoints
       security: []
     post:
-      summary: ''
+      summary: 'Upload Patient Data'
       operationId: postApiPatients
       description: ''
       parameters: []
@@ -407,7 +385,7 @@ paths:
                 gender:
                   type: string
                   description: ''
-                  example: male
+                  example: female
                   nullable: true
                   enum:
                     - male
@@ -436,9 +414,9 @@ paths:
                     type: string
                 previous_surgeries_name:
                   type: string
-                  description: ''
+                  description: 'This field is required when <code>previous_surgeries</code> is <code>true</code>.'
                   example: consequatur
-                  nullable: true
+                  nullable: false
                 medications:
                   type: string
                   description: ''
@@ -482,7 +460,7 @@ paths:
       security: []
   '/api/patients/{patientId}/key-info':
     get:
-      summary: ''
+      summary: 'Get Patient Key Info'
       operationId: getApiPatientsPatientIdKeyInfo
       description: ''
       parameters: []
@@ -502,6 +480,39 @@ paths:
       tags:
         - Endpoints
       security: []
+    post:
+      summary: 'Add New Note'
+      operationId: postApiPatientsPatientIdKeyInfo
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                insight:
+                  type: string
+                  description: ''
+                  example: consequatur
+                  nullable: false
+                priority:
+                  type: string
+                  description: ''
+                  example: high
+                  nullable: false
+                  enum:
+                    - high
+                    - medium
+                    - low
+              required:
+                - insight
+                - priority
+      security: []
     parameters:
       -
         in: path
@@ -513,7 +524,7 @@ paths:
           type: string
   '/api/patients/{patientId}/overview':
     get:
-      summary: ''
+      summary: 'Get Patient Overview'
       operationId: getApiPatientsPatientIdOverview
       description: ''
       parameters: []
@@ -544,7 +555,7 @@ paths:
           type: string
   '/api/patients/{patient}/status':
     patch:
-      summary: ''
+      summary: 'Update Patient Status'
       operationId: patchApiPatientsPatientStatus
       description: ''
       parameters: []
@@ -581,7 +592,7 @@ paths:
           type: string
   '/api/patients/status/{type}':
     get:
-      summary: ''
+      summary: 'Filter Patients by status'
       operationId: getApiPatientsStatusType
       description: ''
       parameters: []
@@ -610,9 +621,9 @@ paths:
         required: true
         schema:
           type: string
-  "/api/search":
+  '/api/search':
     get:
-      summary: ''
+      summary: 'Search in list of Patients'
       operationId: handleTheIncomingRequest
       description: ''
       parameters: []
@@ -634,7 +645,7 @@ paths:
       security: []
   '/api/key-points/{keyPointId}':
     delete:
-      summary: ''
+      summary: 'Delete Key Point'
       operationId: deleteApiKeyPointsKeyPointId
       description: ''
       parameters: []
@@ -643,7 +654,7 @@ paths:
         - Endpoints
       security: []
     patch:
-      summary: ''
+      summary: 'Edit Key Point'
       operationId: patchApiKeyPointsKeyPointId
       description: ''
       parameters: []

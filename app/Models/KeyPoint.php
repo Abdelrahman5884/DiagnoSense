@@ -13,6 +13,7 @@ class KeyPoint extends Model
         'priority',
         'title',
         'insight',
+        'is_manual',
         'evidence',
     ];
 

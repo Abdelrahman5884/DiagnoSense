@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\DestroyKeyPointRequest;
+use App\Http\Requests\StoreManualNoteRequest;
 use App\Http\Requests\UpdateKeyPointRequest;
+use App\Http\Resources\KeyPointResource;
 use App\Http\Responses\ApiResponse;
+use App\Models\AiAnalysisResult;
 use App\Models\KeyPoint;
 
 class KeyPointController extends Controller
@@ -21,5 +24,21 @@ class KeyPointController extends Controller
             'insight' => $validated['insight'],
         ]);
         return ApiResponse::success('Key point updated successfully', ['id' => $keyPoint->id , 'insight' => $keyPoint->insight], 200);
+    }
+    public function store(StoreManualNoteRequest $request, $patientId){
+        $validated = $request->validated();
+        $latestAnalysis = AiAnalysisResult::where('patient_id', $patientId)
+        ->where('status', 'completed')
+        ->latest()
+        ->first();
+        if (!$latestAnalysis) {
+            return ApiResponse::error('Cannot add note: No completed Profile found for this patient.', null, 422);
+        }
+        $keyPoint = $latestAnalysis->keyPoints()->create([
+            'insight' => $validated['insight'],
+            'priority' => $validated['priority'],
+            'is_manual' => true,
+        ]);
+        return ApiResponse::success('Doctor Manual key point added successfully', new KeyPointResource($keyPoint), 201);
     }
 }
