@@ -9,6 +9,7 @@ use App\Http\Resources\DecisionSupportResource;
 use App\Http\Resources\KeyPointResource;
 use App\Http\Resources\PatientListResource;
 use App\Http\Resources\PatientOverviewResource;
+use App\Http\Resources\ActivityLogResource;
 use App\Http\Responses\ApiResponse;
 use App\Jobs\ProcessAi;
 use App\Models\AiAnalysisResult;
@@ -17,6 +18,7 @@ use App\Models\MedicalHistory;
 use App\Models\Patient;
 use App\Models\Report;
 use App\Models\User;
+use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -24,6 +26,7 @@ use Illuminate\Support\Str;
 
 class PatientController extends Controller
 {
+
     public function index(Request $request)
     {
         $doctor = $request->user()->doctor;
@@ -201,6 +204,28 @@ class PatientController extends Controller
         ], 200);
     }
 
+
+    public function activityHistory(Request $request,$patientId)
+    {
+        $doctor = $request->user()->doctor;
+       $patient = $doctor->patients()->find($patientId);
+
+        if (!$patient) {
+            return ApiResponse::error(
+              'You are not allowed to view this patient activities',null,403);
+    }
+
+        $logs = ActivityLog::where('model_type', 'Patient')
+           ->where('model_id', $patientId)
+           ->with('doctor.user')
+           ->orderByDesc('created_at')
+           ->get();
+   
+        return ApiResponse::success(
+           'Activity history retrieved successfully',
+           ActivityLogResource::collection($logs),
+           200
+    );
     public function getDecisionSupport($patientId){
         $patient = auth()->user()->doctor->patients()->findorfail($patientId);
         $latestAnalysis = $patient->aiAnalysisResults()

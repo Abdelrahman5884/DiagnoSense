@@ -46,6 +46,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/patients/status/{type}', [PatientController::class, 'statusByType']);
     Route::get('/search', SearchController::class);
     Route::delete('/key-points/{keyPointId}', [KeyPointController::class, 'destroy']);
+    Route::get('/patients/{patient}/activities', [PatientController::class, 'activityHistory']);
     Route::patch('/key-points/{keyPointId}', [KeyPointController::class, 'update']);
     Route::post('/patients/{patientId}/key-info', [KeyPointController::class, 'store']);
     Route::get('/patients/{patientId}/decision-support', [PatientController::class, 'getDecisionSupport']);

@@ -3,9 +3,10 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
+use App\Traits\LogsActivity;
 class Patient extends Model
 {
+    use LogsActivity;
     protected $fillable = [
         'id',
         'user_id',
@@ -59,5 +60,9 @@ class Patient extends Model
     public function latestAiAnalysisResult()
     {
         return $this->hasOne(AiAnalysisResult::class)->latest();
+    }
+    public function activities()
+    {
+        return $this->morphMany(ActivityLog::class, 'model');
     }
 }
