@@ -44,4 +44,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/key-points/{keyPointId}', [KeyPointController::class, 'destroy']);
     Route::patch('/key-points/{keyPointId}', [KeyPointController::class, 'update']);
     Route::post('/patients/{patientId}/key-info', [KeyPointController::class, 'store']);
+    Route::get('/patients/{patientId}/decision-support', [PatientController::class, 'getDecisionSupport']);
 });

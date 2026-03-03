@@ -29,6 +29,7 @@ class PatientOverviewResource extends JsonResource
             "allergies" => $history?->allergies ?? 'N/A',
             "medications" => $history?->medications ?? 'N/A',
             "familyHistory" => $history?->family_history ?? 'N/A',
+            "status" => $this->status,
         ];
     }
 }
