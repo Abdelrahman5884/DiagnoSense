@@ -28,19 +28,15 @@ trait LogsActivity
 
         if ($this instanceof \App\Models\Patient) {
             $patientId = $this->id;
-        }
-
-        elseif (array_key_exists('patient_id', $this->getAttributes())) {
-              $patientId = $this->getAttribute('patient_id');
-        }
-
-        elseif (method_exists($this, 'aiAnalysisResult')) {
-               $analysis = $this->aiAnalysisResult()->first();
+        } elseif (array_key_exists('patient_id', $this->getAttributes())) {
+            $patientId = $this->getAttribute('patient_id');
+        } elseif (method_exists($this, 'aiAnalysisResult')) {
+            $analysis = $this->aiAnalysisResult()->first();
 
             if ($analysis && isset($analysis->patient_id)) {
                 $patientId = $analysis->patient_id;
             }
-       }
+        }
 
         $changes = [];
         $original = [];
@@ -81,7 +77,7 @@ trait LogsActivity
         $doctorName = request()->user()?->doctor?->user?->name ?? 'System';
         $modelName = class_basename($this);
 
-        $displayName = match(true) {
+        $displayName = match (true) {
             $this instanceof \App\Models\Patient => $this->user?->name,
 
             $this instanceof \App\Models\KeyPoint => "Key Point: '{$this->insight}'",
@@ -105,7 +101,7 @@ trait LogsActivity
                 $messages[] = "{$field} changed from '{$values['old']}' to '{$values['new']}'";
             }
 
-            return "Dr. {$doctorName} updated {$displayName}: " . implode(', ', $messages);
+            return "Dr. {$doctorName} updated {$displayName}: ".implode(', ', $messages);
         }
 
         return "{$modelName} {$event}";

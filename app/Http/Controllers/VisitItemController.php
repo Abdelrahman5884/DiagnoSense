@@ -6,10 +6,33 @@ use App\Http\Requests\StoreVisitItemRequest;
 use App\Http\Resources\MedicationResource;
 use App\Http\Resources\TaskResource;
 use App\Http\Responses\ApiResponse;
+use App\Models\Patient;
+use App\Models\Task;
 use App\Models\Visit;
 
 class VisitItemController extends Controller
 {
+    public function index($patient)
+    {
+        $patient = Patient::query()->findOrFail($patient);
+        $currentDoctor = auth()->user()->doctor;
+        if (! $currentDoctor->patients->contains($patient->id)) {
+            return ApiResponse::error('Unauthorized', null, 403);
+        }
+        $tasks = $patient->tasks()->with('visit')->get();
+        $medications = $patient->medications()->with('visit')->get();
+        $data = [
+            'tasks' => TaskResource::collection($tasks),
+            'medications' => MedicationResource::collection($medications),
+        ];
+
+        return ApiResponse::success(
+            message: 'Visit items retrieved successfully',
+            data: $data,
+            statusCode: 200
+        );
+    }
+
     public function store(StoreVisitItemRequest $request, $visit)
     {
         $visit = Visit::query()->findOrFail($visit);
@@ -51,6 +74,38 @@ class VisitItemController extends Controller
         return ApiResponse::success(
             message: ucfirst($request->type).' created successfully',
             data: $item,
+            statusCode: 200
+        );
+    }
+
+    public function destroyMedication($patient, $medication)
+    {
+        $patient = Patient::query()->findOrFail($patient);
+        $medication = $patient->medications()->findOrFail($medication);
+        if (! $patient->medications->contains($medication->id)) {
+            return ApiResponse::error('Unauthorized', null, 403);
+        }
+        $medication->delete();
+
+        return ApiResponse::success(
+            message: 'Medication deleted successfully',
+            data: null,
+            statusCode: 200
+        );
+    }
+
+    public function destroyTask($patient, $task)
+    {
+        $patient = Patient::query()->findOrFail($patient);
+        $task = Task::query()->findOrFail($task);
+        if (! $patient->tasks->contains($task->id)) {
+            return ApiResponse::error('Unauthorized', null, 403);
+        }
+        $task->delete();
+
+        return ApiResponse::success(
+            message: 'Task deleted successfully',
+            data: null,
             statusCode: 200
         );
     }

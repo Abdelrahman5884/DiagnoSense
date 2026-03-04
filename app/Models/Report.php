@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use App\Traits\LogsActivity;
+use Illuminate\Database\Eloquent\Model;
 
 class Report extends Model
 {
     use LogsActivity;
+
     protected $fillable = [
         'patient_id',
         'type',

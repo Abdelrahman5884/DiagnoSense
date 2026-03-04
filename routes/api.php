@@ -41,6 +41,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/patients/{patientId}/key-info', [PatientController::class, 'getKeyInfo']);
     Route::post('/visits', [VisitController::class, 'store']);
     Route::post('/visits/{visit}/items', [VisitItemController::class, 'store']);
+    Route::get('/patients/{patient}/items', [VisitItemController::class, 'index']);
+    Route::delete('/patients/{patient}/medications/{medication}', [VisitItemController::class, 'destroyMedication']);
+    Route::delete('/patients/{patient}/tasks/{task}', [VisitItemController::class, 'destroyTask']);
     Route::get('/patients/{patientId}/overview', [PatientController::class, 'overview']);
     Route::patch('/patients/{patient}/status', [PatientController::class, 'updateStatus']);
     Route::get('/patients/status/{type}', [PatientController::class, 'statusByType']);

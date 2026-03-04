@@ -2,14 +2,15 @@
 
 namespace App\Models;
 
+use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Traits\LogsActivity;
 
 class KeyPoint extends Model
 {
-    use SoftDeletes;
     use LogsActivity;
+    use SoftDeletes;
+
     protected $fillable = [
         'ai_analysis_result_id',
         'priority',
@@ -27,5 +28,4 @@ class KeyPoint extends Model
     {
         return $this->belongsTo(AiAnalysisResult::class);
     }
-
 }

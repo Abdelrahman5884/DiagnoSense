@@ -20,6 +20,7 @@ class TaskResource extends JsonResource
             'description' => $this->description ?? null,
             'notes' => $this->notes ?? null,
             'action' => $this->action,
+            'Due_date' => $this->visit->next_visit_date->format('F j'),
             'visit' => new NextVisitResource($this->whenLoaded('visit')),
             'created_at' => $this->created_at->format('Y-m-d'),
             'updated_at' => $this->updated_at->format('Y-m-d'),
