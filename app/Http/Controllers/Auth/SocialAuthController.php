@@ -37,15 +37,16 @@ class SocialAuthController extends Controller
         $token = $user->createToken('auth_token')->plainTextToken;
         UserRegistered::dispatch($user);
 
-        return ApiResponse::success('User successfully logged in.', [
-            'user' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'created_at' => $user->created_at->format('Y-m-d h:i:s'),
-                'updated_at' => $user->updated_at->format('Y-m-d h:i:s'),
-            ],
-            'token' => $token,
-        ], 200);
+        // return ApiResponse::success('User successfully logged in.', [
+        //     'user' => [
+        //         'id' => $user->id,
+        //         'name' => $user->name,
+        //         'email' => $user->email,
+        //         'created_at' => $user->created_at->format('Y-m-d h:i:s'),
+        //         'updated_at' => $user->updated_at->format('Y-m-d h:i:s'),
+        //     ],
+        //     'token' => $token,
+        // ], 200);
+        return redirect()->to("http://localhost:5173/auth/google/callback?token=$token");
     }
 }
