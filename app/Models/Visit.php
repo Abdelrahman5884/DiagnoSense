@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\LogsActivity;
 
 class Visit extends Model
 {
+    use LogsActivity;
     protected $fillable = [
         'next_visit_date',
         'status',

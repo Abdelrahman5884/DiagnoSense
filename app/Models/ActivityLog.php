@@ -8,6 +8,7 @@ class ActivityLog extends Model
 {
     protected $fillable = [
         'doctor_id',
+        'patient_id',
         'model_type',
         'model_id',
         'action',

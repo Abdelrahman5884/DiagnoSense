@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\LogsActivity;
 
 class MedicalHistory extends Model
 {
+    use LogsActivity;
     protected $fillable = [
         'patient_id',
         'is_smoker',

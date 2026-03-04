@@ -24,34 +24,59 @@ trait LogsActivity
     public function logActivity(string $event)
     {
         $doctor = request()->user()?->doctor;
+        $patientId = null;
 
-        $changes = $this->getChanges();
-        $original = $this->getOriginal();
+        if ($this instanceof \App\Models\Patient) {
+            $patientId = $this->id;
+        }
 
-        unset($changes['updated_at']);
+        elseif (array_key_exists('patient_id', $this->getAttributes())) {
+              $patientId = $this->getAttribute('patient_id');
+        }
 
-        $filteredChanges = [];
+        elseif (method_exists($this, 'aiAnalysisResult')) {
+               $analysis = $this->aiAnalysisResult()->first();
+
+            if ($analysis && isset($analysis->patient_id)) {
+                $patientId = $analysis->patient_id;
+            }
+       }
+
+        $changes = [];
+        $original = [];
+
+        if ($event === 'updated') {
+            $changes = $this->getChanges();
+            $original = $this->getOriginal();
+
+            unset($changes['updated_at']);
+
+            if (empty($changes)) {
+                return;
+            }
+        }
+
+        $formattedChanges = [];
 
         foreach ($changes as $field => $newValue) {
-            $filteredChanges[$field] = [
+            $formattedChanges[$field] = [
                 'old' => $original[$field] ?? null,
                 'new' => $newValue,
             ];
         }
 
-        $activityData = $this->generateActivityData($event, $filteredChanges);
-
         ActivityLog::create([
             'doctor_id' => $doctor?->id,
+            'patient_id' => $patientId,
             'model_type' => class_basename($this),
             'model_id' => $this->id,
-            'action' => $activityData['type'],
-            'description' => $activityData['message'],
-            'changes' => $filteredChanges ?: null,
+            'action' => strtolower(class_basename($this)).'_'.$event,
+            'description' => $this->generateDescription($event, $formattedChanges),
+            'changes' => $formattedChanges ?: null,
         ]);
     }
 
-    protected function generateActivityData($event, $changes)
+    protected function generateDescription($event, $changes)
     {
         $doctorName = request()->user()?->doctor?->user?->name ?? 'System';
         $modelName = class_basename($this);
@@ -59,44 +84,24 @@ trait LogsActivity
         $displayName = $this->user?->name ?? "{$modelName} (ID: {$this->id})";
 
         if ($event === 'created') {
-            return [
-                'type' => strtolower($modelName).'_created',
-                'message' => "Dr. {$doctorName} created new {$displayName}",
-            ];
+            return "Dr. {$doctorName} created {$displayName}";
         }
 
         if ($event === 'deleted') {
-            return [
-                'type' => strtolower($modelName).'_deleted',
-                'message' => "Dr. {$doctorName} deleted {$displayName}",
-            ];
+            return "Dr. {$doctorName} deleted {$displayName}";
         }
 
-        if ($event === 'updated' && ! empty($changes)) {
+        if ($event === 'updated') {
 
             $messages = [];
 
             foreach ($changes as $field => $values) {
-
-                if ($field === 'status') {
-                    return [
-                        'type' => 'status_updated',
-                        'message' => "Dr. {$doctorName} changed {$displayName} status from '{$values['old']}' to '{$values['new']}'",
-                    ];
-                }
-
-                $messages[] = "{$field} from '{$values['old']}' to '{$values['new']}'";
+                $messages[] = "{$field} changed from '{$values['old']}' to '{$values['new']}'";
             }
 
-            return [
-                'type' => strtolower($modelName).'_updated',
-                'message' => "Dr. {$doctorName} updated {$displayName}: ".implode(', ', $messages),
-            ];
+            return "Dr. {$doctorName} updated {$displayName}: " . implode(', ', $messages);
         }
 
-        return [
-            'type' => strtolower($modelName).'_'.$event,
-            'message' => "{$modelName} {$event}",
-        ];
+        return "{$modelName} {$event}";
     }
 }

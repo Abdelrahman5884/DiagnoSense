@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\LogsActivity;
 
 class AiAnalysisResult extends Model
 {
+    use LogsActivity;
     protected $fillable = [
         'patient_id',
         'response',
