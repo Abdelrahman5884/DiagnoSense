@@ -12,19 +12,21 @@ trait LogsActivity
             $modelName = class_basename($model);
             if ($modelName === 'KeyPoint' && $model->is_manual) {
                 $model->logActivity('created');
+            }elseif (in_array($modelName, ['Task', 'Medication'])) {
+                $model->logActivity('created');
             }
         });
 
         static::updated(function ($model) {
             $modelName = class_basename($model);
-            if (in_array($modelName, ['Patient', 'KeyPoint'])) {
+            if (in_array($modelName, ['Patient', 'KeyPoint', 'Task', 'Medication'])) {
                 $model->logActivity('updated');
             }
         });
 
         static::deleted(function ($model) {
             $modelName = class_basename($model);
-            if ($modelName === 'KeyPoint') {
+            if (in_array($modelName, ['KeyPoint', 'Task', 'Medication'])) {
                 $model->logActivity('deleted');
             }
         });
@@ -88,9 +90,9 @@ trait LogsActivity
 
         $displayName = match (true) {
             $this instanceof \App\Models\Patient => $this->user?->name,
-
             $this instanceof \App\Models\KeyPoint => ($this->is_manual ? "Doctor Note" : "Key Point") . ": '{$this->insight}'",
-
+            $this instanceof \App\Models\Task => "Task: '{$this->title}'",
+            $this instanceof \App\Models\Medication => "Medication: '{$this->name}'",
             default => "{$modelName} (ID: {$this->id})"
         };
 
