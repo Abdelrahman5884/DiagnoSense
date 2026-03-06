@@ -246,4 +246,11 @@ class PatientController extends Controller
 
         return ApiResponse::success('Decision Support retrieved successfully.', DecisionSupportResource::collection($decisions), 200);
     }
+    public function destroy($patientId)
+    {
+        $doctor = auth()->user()->doctor;
+        $patient = $doctor->patients()->findOrFail($patientId);
+        $patient->delete();
+        return ApiResponse::success('Patient deleted successfully.', null, 200);
+    }
 }
