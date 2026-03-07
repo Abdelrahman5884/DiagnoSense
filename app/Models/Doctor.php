@@ -41,4 +41,9 @@ class Doctor extends Model
     {
         return $this->hasMany(Task::class);
     }
+
+    public function wallet()
+    {
+        return $this->hasOne(Wallet::class);
+    }
 }
