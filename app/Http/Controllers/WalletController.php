@@ -8,7 +8,8 @@ use Stripe\Stripe;
 
 class WalletController extends Controller
 {
-    public function charge(ChargeWalletRequest $request) {
+    public function charge(ChargeWalletRequest $request)
+    {
         Stripe::setApiKey(config('services.stripe.secret'));
 
         $session = Session::create([
@@ -19,14 +20,14 @@ class WalletController extends Controller
                     'product_data' => [
                         'name' => 'Wallet Charge',
                     ],
-                    'unit_amount' => $request->balance * 100
+                    'unit_amount' => $request->balance * 100,
                 ],
                 'quantity' => 1,
             ]],
             'mode' => 'payment',
             'client_reference_id' => auth()->user()->doctor->id,
             'metadata' => [
-                'doctor_id'  => auth()->user()->doctor->id,
+                'doctor_id' => auth()->user()->doctor->id,
                 'amount' => $request->balance,
             ],
             'success_url' => route('payment.success'),

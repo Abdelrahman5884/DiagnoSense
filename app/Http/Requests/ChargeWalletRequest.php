@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class ChargeWalletRequest extends FormRequest
 {
-
     /**
      * Get the validation rules that apply to the request.
      *

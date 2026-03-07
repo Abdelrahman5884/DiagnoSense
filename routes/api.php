@@ -10,8 +10,10 @@ use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\KeyPointController;
 use App\Http\Controllers\Patient\PatientController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\StripeWebhookController;
 use App\Http\Controllers\VisitController;
 use App\Http\Controllers\VisitItemController;
+use App\Http\Controllers\WalletController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('check-user-type')->group(function () {
@@ -54,4 +56,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/patients/{patientId}/key-info', [KeyPointController::class, 'store']);
     Route::get('/patients/{patientId}/decision-support', [PatientController::class, 'getDecisionSupport']);
     Route::delete('/patients/{patientId}', [PatientController::class, 'destroy']);
+    Route::post('/wallet/charge', [WalletController::class, 'charge']);
 });
+
+Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);
+
+Route::get('/payment-success', function () {
+    return response()->json(['message' => 'Payment successful! You can close this tab.']);
+})->name('payment.success');
+
+Route::get('/payment-cancel', function () {
+    return response()->json(['message' => 'Payment cancelled.']);
+})->name('payment.cancel');
