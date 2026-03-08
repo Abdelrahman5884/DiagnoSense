@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SubscribePlanRequest;
+use App\Http\Resources\PlanResource;
 use App\Http\Responses\ApiResponse;
+use App\Models\Plan;
 use App\Services\SubscriptionService;
 use Illuminate\Http\Request;
 
@@ -26,7 +28,7 @@ class SubscriptionController extends Controller
 
             return ApiResponse::success(
                 "Successfully subscribed to the plan!",
-                $subscription,
+                null,
                 201
             );
         } catch (\Exception $e) {
@@ -45,6 +47,15 @@ class SubscriptionController extends Controller
         return ApiResponse::success(
             "Switched to Pay-Per-Use mode. E£ 25 will be charged per file.",
             null,
+            200
+        );
+    }
+
+    public function index(){
+        $plans = Plan::all();
+        return ApiResponse::success(
+            "Available plans retrieved successfully",
+            PlanResource::collection($plans),
             200
         );
     }
