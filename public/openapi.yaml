@@ -980,3 +980,135 @@ paths:
         required: true
         schema:
           type: string
+  /api/wallet/charge:
+    post:
+      summary: 'Charge Credits'
+      operationId: postApiWalletCharge
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                balance:
+                  type: number
+                  description: 'Must be at least 50.'
+                  example: 83
+              required:
+                - balance
+      security: []
+  /api/transactions:
+    get:
+      summary: 'Get Transaction History'
+      operationId: getApiTransactions
+      description: ''
+      parameters: []
+      responses:
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthenticated.
+                properties:
+                  message:
+                    type: string
+                    example: Unauthenticated.
+      tags:
+        - Endpoints
+      security: []
+  /api/subscription/subscribe:
+    post:
+      summary: 'Subscribe to a Plan'
+      operationId: postApiSubscriptionSubscribe
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                plan_id:
+                  type: integer
+                  description: 'The <code>id</code> of an existing record in the plans table.'
+                  example: 17
+              required:
+                - plan_id
+      security: []
+  /api/subscription/pay-per-use:
+    post:
+      summary: 'Switch to Pay-Per-Use mode'
+      operationId: postApiSubscriptionPayPerUse
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      security: []
+  /api/subscription/plans:
+    get:
+      summary: 'Get Available Plans'
+      operationId: getApiSubscriptionPlans
+      description: ''
+      parameters: []
+      responses:
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthenticated.
+                properties:
+                  message:
+                    type: string
+                    example: Unauthenticated.
+      tags:
+        - Endpoints
+      security: []
+  /api/subscription/current:
+    get:
+      summary: 'Get Current Subscription'
+      operationId: getApiSubscriptionCurrent
+      description: ''
+      parameters: []
+      responses:
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: Unauthenticated.
+                properties:
+                  message:
+                    type: string
+                    example: Unauthenticated.
+      tags:
+        - Endpoints
+      security: []
+  /api/subscription/cancel:
+    post:
+      summary: 'Cancel Subscription'
+      operationId: postApiSubscriptionCancel
+      description: ''
+      parameters: []
+      responses: {  }
+      tags:
+        - Endpoints
+      security: []
