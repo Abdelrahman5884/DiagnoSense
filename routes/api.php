@@ -11,6 +11,7 @@ use App\Http\Controllers\KeyPointController;
 use App\Http\Controllers\Patient\PatientController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\StripeWebhookController;
+use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\VisitController;
 use App\Http\Controllers\VisitItemController;
 use App\Http\Controllers\WalletController;
@@ -58,6 +59,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/patients/{patientId}', [PatientController::class, 'destroy']);
     Route::post('/wallet/charge', [WalletController::class, 'store']);
     Route::get('/transactions', [WalletController::class, 'index']);
+    Route::post('/subscription/subscribe', [SubscriptionController::class, 'subscribe']);
+    Route::post('/subscription/pay-per-use', [SubscriptionController::class, 'switchToPayPerUse']);
 });
 
 Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);

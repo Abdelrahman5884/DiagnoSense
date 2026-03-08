@@ -10,8 +10,9 @@ class Plan extends Model
     protected $fillable = [
         'name',
         'price',
-        'users_limit',
+        'summaries_limit',
         'duration_days',
+        'features',
     ];
 
     public function subscriptions()

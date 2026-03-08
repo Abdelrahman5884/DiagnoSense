@@ -9,8 +9,10 @@ class Subscriptions extends Model
     protected $fillable = [
         'doctor_id',
         'plan_id',
-        'start_date',
-        'end_date',
+        'status',
+        'started_at',
+        'expires_at',
+        'used_summaries',
     ];
 
     public function doctor()

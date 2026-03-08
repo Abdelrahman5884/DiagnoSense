@@ -11,6 +11,7 @@ class Doctor extends Model
 
     protected $fillable = [
         'user_id',
+        'billing_mode',
         //        'specialization',
         //        'phone',
         //        'profile_image',
