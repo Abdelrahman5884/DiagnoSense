@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Subscriptions;
 use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Model;
 
@@ -65,7 +66,9 @@ class Doctor extends Model
 
     public function activeSubscription()
     {
-        return $this->hasOne(Subscriptions::class)->where('status', 'active');
+        return $this->hasOne(Subscriptions::class)
+                    ->whereIn('status', ['active', 'cancelled'])
+                    ->where('expires_at', '>', now());
     }
 
     public function hasFeature(string $featureName): bool

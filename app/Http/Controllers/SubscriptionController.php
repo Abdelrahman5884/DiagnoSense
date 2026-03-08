@@ -77,4 +77,23 @@ class SubscriptionController extends Controller
         );
     }
 
+
+    public function cancel(Request $request)
+    {
+        $doctor = $request->user()->doctor;
+        $subscription = $doctor->activeSubscription;
+
+        if (!$subscription) {
+            return ApiResponse::error("No active subscription to cancel.", null, 404);
+        }
+
+        $subscription->update(['status' => 'cancelled']);
+
+        return ApiResponse::success(
+            "Subscription cancelled. You can still use your remaining summaries until " . $subscription->expires_at->format('D, F j, Y'),
+            null,
+            200
+        );
+    }
+
 }

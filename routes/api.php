@@ -63,6 +63,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/subscription/pay-per-use', [SubscriptionController::class, 'switchToPayPerUse']);
     Route::get('/subscription/plans', [SubscriptionController::class, 'index']);
     Route::get('/subscription/current', [SubscriptionController::class, 'current']);
+    Route::post('/subscription/cancel', [SubscriptionController::class, 'cancel']);
 });
 
 Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);
