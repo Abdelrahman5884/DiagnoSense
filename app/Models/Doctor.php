@@ -71,6 +71,11 @@ class Doctor extends Model
                     ->where('expires_at', '>', now());
     }
 
+    public function latestSubscription()
+    {
+        return $this->hasOne(Subscriptions::class)->latestOfMany();
+    }
+
     public function hasFeature(string $featureName): bool
     {
         if ($this->billing_mode === 'pay_per_use') return true;

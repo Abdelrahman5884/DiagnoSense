@@ -16,7 +16,8 @@ class CurrentSubscriptionResource extends JsonResource
     public function toArray(Request $request): array
     {
         $mode = $this->billing_mode;
-        $activeSub = $this->subscriptions->where('status', 'active')->first();
+        $activeSub = $this->activeSubscription;
+        $latestSub = $this->latestSubscription;
 
         $data = [
             'billing_mode' => $mode,
@@ -31,6 +32,8 @@ class CurrentSubscriptionResource extends JsonResource
             ]);
         }
 
+
+
         if ($activeSub) {
             $plan = $activeSub->plan;
             return array_merge($data, [
@@ -44,6 +47,23 @@ class CurrentSubscriptionResource extends JsonResource
                 ],
                 'starts_at' => $activeSub->started_at->format('D, F j, Y'),
                 'expires_at' => $activeSub->expires_at->format('D, F j, Y'),
+                'features' => is_string($plan->features) ? json_decode($plan->features) : $plan->features,
+            ]);
+        }
+
+        if ($latestSub) {
+            $plan = $latestSub->plan;
+            return array_merge($data, [
+                'plan_name' => $plan->name,
+                'status' => 'expired',
+                'usage' => [
+                    'used' => $latestSub->used_summaries,
+                    'total' => $plan->summaries_limit,
+                    'remaining' => max(0, $plan->summaries_limit - $latestSub->used_summaries),
+                    'percentage' => round(($latestSub->used_summaries / $plan->summaries_limit) * 100, 2),
+                ],
+                'starts_at' => $latestSub->started_at->format('D, F j, Y'),
+                'expires_at' => $latestSub->expires_at->format('D, F j, Y'),
                 'features' => is_string($plan->features) ? json_decode($plan->features) : $plan->features,
             ]);
         }
