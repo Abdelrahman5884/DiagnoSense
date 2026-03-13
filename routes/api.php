@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\KeyPointController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Patient\PatientController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\StripeWebhookController;
@@ -66,6 +67,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/subscription/plans', [SubscriptionController::class, 'index']);
     Route::get('/subscription/current', [SubscriptionController::class, 'current']);
     Route::post('/subscription/cancel', [SubscriptionController::class, 'cancel']);
+    Route::get('/notifications', [NotificationController::class, 'index']);
 });
 
 Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);
