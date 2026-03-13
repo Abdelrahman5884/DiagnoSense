@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Models\AiAnalysisResult;
 use App\Models\Doctor;
 use App\Models\Plan;
+use App\Notifications\UsageExhausted;
 use App\Notifications\UsageThresholdReached;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -121,6 +122,9 @@ class ProcessAi implements ShouldQueue
                         if ($usagePercentage >= 80 && !$subscription->usage_warning_sent) {
                             $doctor->user->notify(new UsageThresholdReached(80));
                             $subscription->update(['usage_warning_sent' => true]);
+                        }
+                        if ($subscription->used_summaries >= $totalLimit) {
+                            $doctor->user->notify(new UsageExhausted());
                         }
                     } else {
                         $doctor->wallet->decrement('balance', Plan::PAY_PER_USE_PRICE);
