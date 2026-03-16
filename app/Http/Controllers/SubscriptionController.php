@@ -55,8 +55,9 @@ class SubscriptionController extends Controller
         $doctor->wallet->refresh();
         $request->user()->notify(new PlanSubscribed($subscription->plan->name));
         if ($doctor->wallet->balance <= 0) {
-            $doctor->user->notify(new CreditsExhausted());
+            $doctor->user->notify(new CreditsExhausted);
         }
+
         return ApiResponse::success(
             'Successfully subscribed to the plan!',
             null,
@@ -68,7 +69,8 @@ class SubscriptionController extends Controller
     public function switchToPayPerUse(Request $request)
     {
         $this->subscriptionService->setPayPerUseMode($request->user()->doctor);
-        $request->user()->notify(new PayPerUseActivated());
+        $request->user()->notify(new PayPerUseActivated);
+
         return ApiResponse::success(
             'Switched to Pay-Per-Use mode. E£ 25 will be charged per file.',
             null,

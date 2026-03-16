@@ -12,7 +12,9 @@ class CreditAdded extends Notification implements ShouldQueue
     use Queueable;
 
     protected $amount;
+
     protected $newBalance;
+
     public function __construct($amount, $newBalance)
     {
         $this->amount = $amount;
@@ -26,22 +28,22 @@ class CreditAdded extends Notification implements ShouldQueue
      */
     public function via(object $notifiable): array
     {
-        return ['database','broadcast'];
+        return ['database', 'broadcast'];
     }
 
     public function toDatabase(object $notifiable): array
     {
         return [
             'title' => 'Your credits have been charged successfully',
-            'message' => "Your account has been credited with {$this->amount}. Your new balance is {$this->newBalance}."
+            'message' => "Your account has been credited with {$this->amount}. Your new balance is {$this->newBalance}.",
         ];
     }
 
     public function toBroadcast(object $notifiable): BroadcastMessage
     {
-        return new BroadcastMessage( [
+        return new BroadcastMessage([
             'title' => 'Your credits have been charged successfully',
-            'message' => "Your account has been credited with {$this->amount}. Your new balance is {$this->newBalance}."
+            'message' => "Your account has been credited with {$this->amount}. Your new balance is {$this->newBalance}.",
         ]);
     }
 }

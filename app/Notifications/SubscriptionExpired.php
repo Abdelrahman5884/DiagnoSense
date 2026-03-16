@@ -29,14 +29,16 @@ class SubscriptionExpired extends Notification implements ShouldQueue
         return ['database', 'broadcast'];
     }
 
-    public function toDatabase(object $notifiable): array {
+    public function toDatabase(object $notifiable): array
+    {
         return [
             'title' => 'Subscription Expired',
             'message' => 'Your subscription has expired. Access to features is now restricted.',
         ];
     }
 
-    public function toBroadcast(object $notifiable): BroadcastMessage {
+    public function toBroadcast(object $notifiable): BroadcastMessage
+    {
         return new BroadcastMessage([
             'title' => 'Subscription Expired',
             'message' => 'Your subscription has expired. Access to features is now restricted.',

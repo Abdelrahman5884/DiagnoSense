@@ -12,6 +12,7 @@ class PlanSubscribed extends Notification implements ShouldQueue
     use Queueable;
 
     protected $planName;
+
     public function __construct($planName)
     {
         $this->planName = $planName;

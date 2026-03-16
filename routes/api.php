@@ -17,7 +17,6 @@ use App\Http\Controllers\VisitController;
 use App\Http\Controllers\VisitItemController;
 use App\Http\Controllers\WalletController;
 use Illuminate\Support\Facades\Broadcast;
-use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('check-user-type')->group(function () {

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Doctor;
 use App\Models\Transactions;
 use App\Models\Wallet;
 use App\Notifications\CreditAdded;
@@ -46,9 +45,10 @@ class StripeWebhookController
                     'description' => 'Wallet charge via Stripe',
                     'doctor_id' => $doctorId,
                 ]);
+
                 return $wallet->fresh();
             });
-            if($wallet){
+            if ($wallet) {
                 $user = $wallet->doctor->user;
                 $user->notify(new CreditAdded($amount, $wallet->balance));
             }

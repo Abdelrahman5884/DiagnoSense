@@ -29,13 +29,16 @@ class UsageExhausted extends Notification implements ShouldQueue
         return ['database', 'broadcast'];
     }
 
-    public function toDatabase(object $notifiable): array {
+    public function toDatabase(object $notifiable): array
+    {
         return [
             'title' => 'Usage Limit Reached',
             'message' => 'You have used all your available summaries. Please top up or upgrade to continue.',
         ];
     }
-    public function toBroadcast(object $notifiable): BroadcastMessage {
+
+    public function toBroadcast(object $notifiable): BroadcastMessage
+    {
         return new BroadcastMessage([
             'title' => 'Usage Limit Reached',
             'message' => 'You have used all your available summaries. Please top up or upgrade to continue.',

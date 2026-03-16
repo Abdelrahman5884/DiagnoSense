@@ -29,18 +29,19 @@ class SubscriptionExpiringSoon extends Notification implements ShouldQueue
         return ['database', 'broadcast'];
     }
 
-    public function toDatabase(object $notifiable): array {
+    public function toDatabase(object $notifiable): array
+    {
         return [
             'title' => 'Subscription Expiring Soon',
             'message' => 'Your plan will expire in 3 days be careful.',
         ];
     }
 
-    public function toBroadcast(object $notifiable): BroadcastMessage {
+    public function toBroadcast(object $notifiable): BroadcastMessage
+    {
         return new BroadcastMessage([
             'title' => 'Subscription Expiring Soon',
             'message' => 'Your plan will expire in 3 days be careful.',
         ]);
     }
-
 }
