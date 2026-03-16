@@ -8,7 +8,7 @@ class AIGatewayService
 {
     public function ingest($patientId, $filesData)
     {
-        Http::post(config('services.ai.url').'ingest-patient-data', [
+        Http::timeout(config('services.ai.ingest_timeout'))->post(config('services.ai.url').'ingest-patient-data', [
             'patient_id' => $patientId,
             'files_data' => $filesData,
         ])->throw();
@@ -16,7 +16,7 @@ class AIGatewayService
 
     public function answer($patientId, $question)
     {
-        $answer = Http::post(config('services.ai.url').'ingest/query', [
+        $answer = Http::timeout(config('services.ai.answer_timeout'))->post(config('services.ai.url').'ingest/query', [
             'patient_id' => $patientId,
             'question' => $question,
         ])->throw();

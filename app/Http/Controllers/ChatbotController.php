@@ -16,9 +16,9 @@ class ChatbotController extends Controller
     {
         $question = $request->question;
         try {
-            $answer = $this->chatbotService->ask($question, $patientId);
+            $result = $this->chatbotService->ask($question, $patientId);
 
-            return ApiResponse::success('Answer from chatbot', $answer, 200);
+            return ApiResponse::success('Answer from chatbot', $result['message'], $result['status']);
         } catch (\Exception $e) {
             return ApiResponse::error('Failed to get answer from chatbot', null, 500);
         }

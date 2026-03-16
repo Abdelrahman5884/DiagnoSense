@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Jobs\IngestPatientJob;
 use App\Models\Patient;
 use App\Models\PatientIngestion;
 use Illuminate\Support\Facades\Storage;
@@ -27,25 +28,20 @@ class ChatbotService
                 ];
             })->values()->toArray();
 
-            try {
-                $this->aiGatewayService->ingest($patientId, $filesData);
-                PatientIngestion::query()->create([
-                    'patient_id' => $patientId,
-                    'status' => 'completed',
-                    'files_hash' => $hash,
-                ]);
-            } catch (\Exception $e) {
-                PatientIngestion::query()->create([
-                    'patient_id' => $patientId,
-                    'status' => 'failed',
-                    'error_message' => $e->getMessage(),
-                    'files_hash' => null,
-                ]);
-                throw $e;
-            }
+            dispatch(new IngestPatientJob($patientId, auth()->user()->doctor->id, $filesData, $hash, $question));
+
+            return [
+                'message' => 'Preparing patient data...',
+                'status' => 202,
+            ];
         }
 
-        return $this->aiGatewayService->answer($patientId, $question);
+        $answer = $this->aiGatewayService->answer($patientId, $question);
+
+        return [
+            'message' => $answer,
+            'status' => 200,
+        ];
     }
 
     private function isIngested($patientId, $hash)

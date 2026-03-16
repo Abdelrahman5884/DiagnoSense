@@ -46,6 +46,8 @@ return [
     ],
     'ai' => [
         'url' => env('AI_API_URL'),
+        'ingest_timeout' => env('AI_INGEST_TIMEOUT', 120),
+        'answer_timeout' => env('AI_ANSWER_TIMEOUT', 60),
     ],
 
     'stripe' => [
