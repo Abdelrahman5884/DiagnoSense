@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\SocialAuthController;
+use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\KeyPointController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Patient\PatientController;
@@ -71,6 +72,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
     Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead']);
     Route::delete('/notifications/clear-all', [NotificationController::class, 'clearAll']);
+    Route::post('/chatbot/{patientId}', [ChatbotController::class, 'store']);
 });
 
 Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);
