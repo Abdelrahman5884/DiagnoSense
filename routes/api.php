@@ -73,16 +73,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
     Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead']);
     Route::delete('/notifications/clear-all', [NotificationController::class, 'clearAll']);
+    Route::get('/dashboard/summary', [DashboardController::class, 'summary']);
+    Route::get('/dashboard/status-distribution', [DashboardController::class, 'statusDistribution']);
+    Route::get('/dashboard/top-diseases', [DashboardController::class, 'topDiseases']);
+    Route::get('/dashboard/today-visits', [DashboardController::class, 'todayVisits']);
+    Route::patch('/dashboard/{patientId}/attend', [DashboardController::class, 'markAttended']);
 });
 
 Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);
 Broadcast::routes(['middleware' => ['auth:sanctum']]);
 
-
-Route::middleware('auth:sanctum')->group(function () {
-
-    Route::get('/dashboard/summary', [DashboardController::class, 'summary']);
-    Route::get('/dashboard/status-distribution', [DashboardController::class, 'statusDistribution']);
-    Route::get('/dashboard/top-diseases', [DashboardController::class, 'topDiseases']);
-    Route::get('/dashboard/today-visits', [DashboardController::class, 'todayVisits']);
-});
