@@ -191,12 +191,6 @@
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-DELETEapi-notifications-clear-all">
                                 <a href="#endpoints-DELETEapi-notifications-clear-all">DELETE api/notifications/clear-all</a>
                             </li>
-                                                                                <li class="tocify-item level-2" data-unique="endpoints-POSTapi-stripe-webhook">
-                                <a href="#endpoints-POSTapi-stripe-webhook">POST api/stripe/webhook</a>
-                            </li>
-                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-broadcasting-auth">
-                                <a href="#endpoints-GETapi-broadcasting-auth">Authenticate the request for channel access.</a>
-                            </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-dashboard-summary">
                                 <a href="#endpoints-GETapi-dashboard-summary">GET api/dashboard/summary</a>
                             </li>
@@ -209,6 +203,15 @@
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-dashboard-today-visits">
                                 <a href="#endpoints-GETapi-dashboard-today-visits">GET api/dashboard/today-visits</a>
                             </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-PATCHapi-dashboard--patientId--attend">
+                                <a href="#endpoints-PATCHapi-dashboard--patientId--attend">PATCH api/dashboard/{patientId}/attend</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-POSTapi-stripe-webhook">
+                                <a href="#endpoints-POSTapi-stripe-webhook">POST api/stripe/webhook</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-broadcasting-auth">
+                                <a href="#endpoints-GETapi-broadcasting-auth">Authenticate the request for channel access.</a>
+                            </li>
                                                                         </ul>
                             </ul>
             </div>
@@ -220,7 +223,7 @@
     </ul>
 
     <ul class="toc-footer" id="last-updated">
-        <li>Last updated: March 18, 2026</li>
+        <li>Last updated: March 19, 2026</li>
     </ul>
 </div>
 
@@ -1880,16 +1883,16 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --form "gender=female"\
     --form "national_id=mqeopfuudtdsu"\
     --form "is_smoker=1"\
-    --form "previous_surgeries=1"\
+    --form "previous_surgeries="\
     --form "chronic_diseases[]=consequatur"\
     --form "previous_surgeries_name=consequatur"\
     --form "medications=consequatur"\
     --form "allergies=consequatur"\
     --form "family_history=consequatur"\
     --form "current_complaint=consequatur"\
-    --form "lab[]=@C:\Users\Solo\AppData\Local\Temp\phpDA14.tmp" \
-    --form "radiology[]=@C:\Users\Solo\AppData\Local\Temp\phpDA25.tmp" \
-    --form "medical_history[]=@C:\Users\Solo\AppData\Local\Temp\phpDA26.tmp" </code></pre></div>
+    --form "lab[]=@C:\Users\Solo\AppData\Local\Temp\phpEA73.tmp" \
+    --form "radiology[]=@C:\Users\Solo\AppData\Local\Temp\phpEA74.tmp" \
+    --form "medical_history[]=@C:\Users\Solo\AppData\Local\Temp\phpEA85.tmp" </code></pre></div>
 
 
 <div class="javascript-example">
@@ -1910,7 +1913,7 @@ body.append('age', '17');
 body.append('gender', 'female');
 body.append('national_id', 'mqeopfuudtdsu');
 body.append('is_smoker', '1');
-body.append('previous_surgeries', '1');
+body.append('previous_surgeries', '');
 body.append('chronic_diseases[]', 'consequatur');
 body.append('previous_surgeries_name', 'consequatur');
 body.append('medications', 'consequatur');
@@ -2119,7 +2122,7 @@ Must be one of:
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>true</code></p>
+<p>Example: <code>false</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>chronic_diseases</code></b>&nbsp;&nbsp;
@@ -2397,8 +2400,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Accept: application/json" \
     --data "{
     \"patient_id\": \"consequatur\",
-    \"has_next_visit\": true,
-    \"next_visit_date\": \"2026-03-18T04:19:00\",
+    \"has_next_visit\": false,
+    \"next_visit_date\": \"2026-03-19T00:43:30\",
     \"action\": \"mqeopfuudtdsufvyvddqa\"
 }"
 </code></pre></div>
@@ -2416,8 +2419,8 @@ const headers = {
 
 let body = {
     "patient_id": "consequatur",
-    "has_next_visit": true,
-    "next_visit_date": "2026-03-18T04:19:00",
+    "has_next_visit": false,
+    "next_visit_date": "2026-03-19T00:43:30",
     "action": "mqeopfuudtdsufvyvddqa"
 };
 
@@ -2535,7 +2538,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>true</code></p>
+<p>Example: <code>false</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>next_visit_date</code></b>&nbsp;&nbsp;
@@ -2544,10 +2547,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="next_visit_date"                data-endpoint="POSTapi-visits"
-               value="2026-03-18T04:19:00"
+               value="2026-03-19T00:43:30"
                data-component="body">
     <br>
-<p>This field is required when <code>has_next_visit</code> is <code>true</code>. Must be a valid date. Example: <code>2026-03-18T04:19:00</code></p>
+<p>This field is required when <code>has_next_visit</code> is <code>true</code>. Must be a valid date. Example: <code>2026-03-19T00:43:30</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>action</code></b>&nbsp;&nbsp;
@@ -2590,7 +2593,7 @@ Must be one of:
     \"title\": \"vazjrcnfbaqywuxhgjjmz\",
     \"description\": \"Dolores dolorum amet iste laborum eius est dolor.\",
     \"notes\": \"consequatur\",
-    \"next_visit_date\": \"2026-03-18T04:19:00\",
+    \"next_visit_date\": \"2026-03-19T00:43:30\",
     \"action\": \"mqeopfuudtdsufvyvddqa\"
 }"
 </code></pre></div>
@@ -2615,7 +2618,7 @@ let body = {
     "title": "vazjrcnfbaqywuxhgjjmz",
     "description": "Dolores dolorum amet iste laborum eius est dolor.",
     "notes": "consequatur",
-    "next_visit_date": "2026-03-18T04:19:00",
+    "next_visit_date": "2026-03-19T00:43:30",
     "action": "mqeopfuudtdsufvyvddqa"
 };
 
@@ -2819,10 +2822,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="next_visit_date"                data-endpoint="POSTapi-visits--visit--items"
-               value="2026-03-18T04:19:00"
+               value="2026-03-19T00:43:30"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-03-18T04:19:00</code></p>
+<p>Must be a valid date. Example: <code>2026-03-19T00:43:30</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>action</code></b>&nbsp;&nbsp;
@@ -3409,7 +3412,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"status\": \"stable\"
+    \"status\": \"under review\"
 }"
 </code></pre></div>
 
@@ -3425,7 +3428,7 @@ const headers = {
 };
 
 let body = {
-    "status": "stable"
+    "status": "under review"
 };
 
 fetch(url, {
@@ -3530,10 +3533,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="status"                data-endpoint="PATCHapi-patients--patient--status"
-               value="stable"
+               value="under review"
                data-component="body">
     <br>
-<p>Example: <code>stable</code></p>
+<p>Example: <code>under review</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>critical</code></li> <li><code>stable</code></li> <li><code>under review</code></li></ul>
         </div>
@@ -4233,7 +4236,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Accept: application/json" \
     --data "{
     \"insight\": \"consequatur\",
-    \"priority\": \"low\"
+    \"priority\": \"high\"
 }"
 </code></pre></div>
 
@@ -4250,7 +4253,7 @@ const headers = {
 
 let body = {
     "insight": "consequatur",
-    "priority": "low"
+    "priority": "high"
 };
 
 fetch(url, {
@@ -4367,10 +4370,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="priority"                data-endpoint="POSTapi-patients--patientId--key-info"
-               value="low"
+               value="high"
                data-component="body">
     <br>
-<p>Example: <code>low</code></p>
+<p>Example: <code>high</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>high</code></li> <li><code>medium</code></li> <li><code>low</code></li></ul>
         </div>
@@ -6107,248 +6110,6 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                         </form>
 
-                    <h2 id="endpoints-POSTapi-stripe-webhook">POST api/stripe/webhook</h2>
-
-<p>
-</p>
-
-
-
-<span id="example-requests-POSTapi-stripe-webhook">
-<blockquote>Example request:</blockquote>
-
-
-<div class="bash-example">
-    <pre><code class="language-bash">curl --request POST \
-    "http://localhost:8000/api/stripe/webhook" \
-    --header "Content-Type: application/json" \
-    --header "Accept: application/json"</code></pre></div>
-
-
-<div class="javascript-example">
-    <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/stripe/webhook"
-);
-
-const headers = {
-    "Content-Type": "application/json",
-    "Accept": "application/json",
-};
-
-
-fetch(url, {
-    method: "POST",
-    headers,
-}).then(response =&gt; response.json());</code></pre></div>
-
-</span>
-
-<span id="example-responses-POSTapi-stripe-webhook">
-</span>
-<span id="execution-results-POSTapi-stripe-webhook" hidden>
-    <blockquote>Received response<span
-                id="execution-response-status-POSTapi-stripe-webhook"></span>:
-    </blockquote>
-    <pre class="json"><code id="execution-response-content-POSTapi-stripe-webhook"
-      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
-</span>
-<span id="execution-error-POSTapi-stripe-webhook" hidden>
-    <blockquote>Request failed with error:</blockquote>
-    <pre><code id="execution-error-message-POSTapi-stripe-webhook">
-
-Tip: Check that you&#039;re properly connected to the network.
-If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
-You can check the Dev Tools console for debugging information.</code></pre>
-</span>
-<form id="form-POSTapi-stripe-webhook" data-method="POST"
-      data-path="api/stripe/webhook"
-      data-authed="0"
-      data-hasfiles="0"
-      data-isarraybody="0"
-      autocomplete="off"
-      onsubmit="event.preventDefault(); executeTryOut('POSTapi-stripe-webhook', this);">
-    <h3>
-        Request&nbsp;&nbsp;&nbsp;
-                    <button type="button"
-                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-tryout-POSTapi-stripe-webhook"
-                    onclick="tryItOut('POSTapi-stripe-webhook');">Try it out ⚡
-            </button>
-            <button type="button"
-                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-canceltryout-POSTapi-stripe-webhook"
-                    onclick="cancelTryOut('POSTapi-stripe-webhook');" hidden>Cancel 🛑
-            </button>&nbsp;&nbsp;
-            <button type="submit"
-                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-executetryout-POSTapi-stripe-webhook"
-                    data-initial-text="Send Request 💥"
-                    data-loading-text="⏱ Sending..."
-                    hidden>Send Request 💥
-            </button>
-            </h3>
-            <p>
-            <small class="badge badge-black">POST</small>
-            <b><code>api/stripe/webhook</code></b>
-        </p>
-                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
-                                <div style="padding-left: 28px; clear: unset;">
-                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
-&nbsp;
- &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="Content-Type"                data-endpoint="POSTapi-stripe-webhook"
-               value="application/json"
-               data-component="header">
-    <br>
-<p>Example: <code>application/json</code></p>
-            </div>
-                                <div style="padding-left: 28px; clear: unset;">
-                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
-&nbsp;
- &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="Accept"                data-endpoint="POSTapi-stripe-webhook"
-               value="application/json"
-               data-component="header">
-    <br>
-<p>Example: <code>application/json</code></p>
-            </div>
-                        </form>
-
-                    <h2 id="endpoints-GETapi-broadcasting-auth">Authenticate the request for channel access.</h2>
-
-<p>
-</p>
-
-
-
-<span id="example-requests-GETapi-broadcasting-auth">
-<blockquote>Example request:</blockquote>
-
-
-<div class="bash-example">
-    <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8000/api/broadcasting/auth" \
-    --header "Content-Type: application/json" \
-    --header "Accept: application/json"</code></pre></div>
-
-
-<div class="javascript-example">
-    <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/broadcasting/auth"
-);
-
-const headers = {
-    "Content-Type": "application/json",
-    "Accept": "application/json",
-};
-
-
-fetch(url, {
-    method: "GET",
-    headers,
-}).then(response =&gt; response.json());</code></pre></div>
-
-</span>
-
-<span id="example-responses-GETapi-broadcasting-auth">
-            <blockquote>
-            <p>Example response (401):</p>
-        </blockquote>
-                <details class="annotation">
-            <summary style="cursor: pointer;">
-                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
-            </summary>
-            <pre><code class="language-http">cache-control: no-cache, private
-content-type: application/json
-vary: Origin
- </code></pre></details>         <pre>
-
-<code class="language-json" style="max-height: 300px;">{
-    &quot;message&quot;: &quot;Unauthenticated.&quot;
-}</code>
- </pre>
-    </span>
-<span id="execution-results-GETapi-broadcasting-auth" hidden>
-    <blockquote>Received response<span
-                id="execution-response-status-GETapi-broadcasting-auth"></span>:
-    </blockquote>
-    <pre class="json"><code id="execution-response-content-GETapi-broadcasting-auth"
-      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
-</span>
-<span id="execution-error-GETapi-broadcasting-auth" hidden>
-    <blockquote>Request failed with error:</blockquote>
-    <pre><code id="execution-error-message-GETapi-broadcasting-auth">
-
-Tip: Check that you&#039;re properly connected to the network.
-If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
-You can check the Dev Tools console for debugging information.</code></pre>
-</span>
-<form id="form-GETapi-broadcasting-auth" data-method="GET"
-      data-path="api/broadcasting/auth"
-      data-authed="0"
-      data-hasfiles="0"
-      data-isarraybody="0"
-      autocomplete="off"
-      onsubmit="event.preventDefault(); executeTryOut('GETapi-broadcasting-auth', this);">
-    <h3>
-        Request&nbsp;&nbsp;&nbsp;
-                    <button type="button"
-                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-tryout-GETapi-broadcasting-auth"
-                    onclick="tryItOut('GETapi-broadcasting-auth');">Try it out ⚡
-            </button>
-            <button type="button"
-                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-canceltryout-GETapi-broadcasting-auth"
-                    onclick="cancelTryOut('GETapi-broadcasting-auth');" hidden>Cancel 🛑
-            </button>&nbsp;&nbsp;
-            <button type="submit"
-                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-executetryout-GETapi-broadcasting-auth"
-                    data-initial-text="Send Request 💥"
-                    data-loading-text="⏱ Sending..."
-                    hidden>Send Request 💥
-            </button>
-            </h3>
-            <p>
-            <small class="badge badge-green">GET</small>
-            <b><code>api/broadcasting/auth</code></b>
-        </p>
-            <p>
-            <small class="badge badge-black">POST</small>
-            <b><code>api/broadcasting/auth</code></b>
-        </p>
-                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
-                                <div style="padding-left: 28px; clear: unset;">
-                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
-&nbsp;
- &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="Content-Type"                data-endpoint="GETapi-broadcasting-auth"
-               value="application/json"
-               data-component="header">
-    <br>
-<p>Example: <code>application/json</code></p>
-            </div>
-                                <div style="padding-left: 28px; clear: unset;">
-                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
-&nbsp;
- &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="Accept"                data-endpoint="GETapi-broadcasting-auth"
-               value="application/json"
-               data-component="header">
-    <br>
-<p>Example: <code>application/json</code></p>
-            </div>
-                        </form>
-
                     <h2 id="endpoints-GETapi-dashboard-summary">GET api/dashboard/summary</h2>
 
 <p>
@@ -6850,6 +6611,372 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="Accept"                data-endpoint="GETapi-dashboard-today-visits"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        </form>
+
+                    <h2 id="endpoints-PATCHapi-dashboard--patientId--attend">PATCH api/dashboard/{patientId}/attend</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-PATCHapi-dashboard--patientId--attend">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request PATCH \
+    "http://localhost:8000/api/dashboard/consequatur/attend" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost:8000/api/dashboard/consequatur/attend"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+
+fetch(url, {
+    method: "PATCH",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-PATCHapi-dashboard--patientId--attend">
+</span>
+<span id="execution-results-PATCHapi-dashboard--patientId--attend" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-PATCHapi-dashboard--patientId--attend"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-PATCHapi-dashboard--patientId--attend"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-PATCHapi-dashboard--patientId--attend" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-PATCHapi-dashboard--patientId--attend">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-PATCHapi-dashboard--patientId--attend" data-method="PATCH"
+      data-path="api/dashboard/{patientId}/attend"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('PATCHapi-dashboard--patientId--attend', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-PATCHapi-dashboard--patientId--attend"
+                    onclick="tryItOut('PATCHapi-dashboard--patientId--attend');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-PATCHapi-dashboard--patientId--attend"
+                    onclick="cancelTryOut('PATCHapi-dashboard--patientId--attend');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-PATCHapi-dashboard--patientId--attend"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-purple">PATCH</small>
+            <b><code>api/dashboard/{patientId}/attend</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="PATCHapi-dashboard--patientId--attend"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="PATCHapi-dashboard--patientId--attend"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>patientId</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="patientId"                data-endpoint="PATCHapi-dashboard--patientId--attend"
+               value="consequatur"
+               data-component="url">
+    <br>
+<p>Example: <code>consequatur</code></p>
+            </div>
+                    </form>
+
+                    <h2 id="endpoints-POSTapi-stripe-webhook">POST api/stripe/webhook</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-POSTapi-stripe-webhook">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request POST \
+    "http://localhost:8000/api/stripe/webhook" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost:8000/api/stripe/webhook"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+
+fetch(url, {
+    method: "POST",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-POSTapi-stripe-webhook">
+</span>
+<span id="execution-results-POSTapi-stripe-webhook" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-POSTapi-stripe-webhook"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-POSTapi-stripe-webhook"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-POSTapi-stripe-webhook" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-POSTapi-stripe-webhook">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-POSTapi-stripe-webhook" data-method="POST"
+      data-path="api/stripe/webhook"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('POSTapi-stripe-webhook', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-POSTapi-stripe-webhook"
+                    onclick="tryItOut('POSTapi-stripe-webhook');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-POSTapi-stripe-webhook"
+                    onclick="cancelTryOut('POSTapi-stripe-webhook');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-POSTapi-stripe-webhook"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-black">POST</small>
+            <b><code>api/stripe/webhook</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="POSTapi-stripe-webhook"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="POSTapi-stripe-webhook"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        </form>
+
+                    <h2 id="endpoints-GETapi-broadcasting-auth">Authenticate the request for channel access.</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-GETapi-broadcasting-auth">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost:8000/api/broadcasting/auth" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost:8000/api/broadcasting/auth"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-broadcasting-auth">
+            <blockquote>
+            <p>Example response (401):</p>
+        </blockquote>
+                <details class="annotation">
+            <summary style="cursor: pointer;">
+                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+            </summary>
+            <pre><code class="language-http">cache-control: no-cache, private
+content-type: application/json
+vary: Origin
+ </code></pre></details>         <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;Unauthenticated.&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-broadcasting-auth" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-broadcasting-auth"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-broadcasting-auth"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-broadcasting-auth" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-broadcasting-auth">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-broadcasting-auth" data-method="GET"
+      data-path="api/broadcasting/auth"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-broadcasting-auth', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-broadcasting-auth"
+                    onclick="tryItOut('GETapi-broadcasting-auth');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-broadcasting-auth"
+                    onclick="cancelTryOut('GETapi-broadcasting-auth');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-broadcasting-auth"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/broadcasting/auth</code></b>
+        </p>
+            <p>
+            <small class="badge badge-black">POST</small>
+            <b><code>api/broadcasting/auth</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-broadcasting-auth"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-broadcasting-auth"
                value="application/json"
                data-component="header">
     <br>

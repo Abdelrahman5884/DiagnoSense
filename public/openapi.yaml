@@ -1219,90 +1219,160 @@ paths:
       security: []
   /api/dashboard/summary:
     get:
-      summary: 'Retreive Dashboard Wedgets Info'
+      summary: 'Retrieve Dashboard Widgets Summary'
       operationId: getApiDashboardSummary
-      description: ''
-      parameters: []
+      description: 'Fetches core doctor statistics including total patients, today’s appointments, and monthly growth metrics for the top cards.'
+      tags:
+        - Dashboard
+      security:
+        - sanctum: []
       responses:
-        401:
-          description: ''
+        200:
+          description: 'Dashboard stats retrieved successfully'
           content:
             application/json:
               schema:
                 type: object
                 example:
-                  message: Unauthenticated.
-                properties:
-                  message:
-                    type: string
-                    example: Unauthenticated.
-      tags:
-        - Endpoints
-      security: []
+                  success: true
+                  message: "Dashboard summary retrieved successfully"
+                  data:
+                    doctor_name: "Dr. Layla"
+                    widgets:
+                      total_patients: "248"
+                      today_appointments: 8
+                      reports_analyzed: "1,340"
+                      monthly_growth:
+                        details:
+                          last_month: 34
+                          this_month: 45
+                          difference: "+11"
+                          growth_rate: "32.35%"
+                          trend: "up"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+
   /api/dashboard/status-distribution:
     get:
-      summary: 'Retreive Pie-Chart Status Distribution Data'
+      summary: 'Retrieve Status Distribution (Pie Chart)'
       operationId: getApiDashboardStatusDistribution
-      description: ''
-      parameters: []
+      description: 'Returns the count and percentage of patients by status (Critical, Stable, Under Review).'
+      tags:
+        - Dashboard
+      security:
+        - sanctum: []
       responses:
-        401:
-          description: ''
+        200:
+          description: 'Success'
           content:
             application/json:
               schema:
                 type: object
                 example:
-                  message: Unauthenticated.
-                properties:
-                  message:
-                    type: string
-                    example: Unauthenticated.
-      tags:
-        - Endpoints
-      security: []
+                  success: true
+                  data:
+                    total_registered_patients: 248
+                    pie-chart_data:
+                      - { status: "stable", value: 150, percentage: 60 }
+                      - { status: "critical", value: 62, percentage: 25 }
+                      - { status: "under review", value: 36, percentage: 15 }
+        401:
+          $ref: '#/components/responses/Unauthorized'
+
   /api/dashboard/top-diseases:
     get:
-      summary: 'Retreive Bar-Chart Top Diseases Data'
+      summary: 'Retrieve Top 5 Chronic Diseases (Bar Chart)'
       operationId: getApiDashboardTopDiseases
-      description: ''
-      parameters: []
+      description: 'Aggregates patient medical history to find the most prevalent chronic conditions.'
+      tags:
+        - Dashboard
+      security:
+        - sanctum: []
       responses:
-        401:
-          description: ''
+        200:
+          description: 'Success'
           content:
             application/json:
               schema:
-                type: object
+                type: array
+                items:
+                  type: object
                 example:
-                  message: Unauthenticated.
-                properties:
-                  message:
-                    type: string
-                    example: Unauthenticated.
-      tags:
-        - Endpoints
-      security: []
+                  success: true
+                  data:
+                    - { label: "Hypertension", value: 156 }
+                    - { label: "Diabetes", value: 142 }
+                    - { label: "Heart Disease", value: 98 }
+        401:
+          $ref: '#/components/responses/Unauthorized'
+
   /api/dashboard/today-visits:
     get:
-      summary: 'Retreive Today Visits Data Card'
+      summary: 'Retrieve Daily Appointment Queue'
       operationId: getApiDashboardTodayVisits
-      description: ''
-      parameters: []
+      description: 'Lists today’s queue, highlighting the patient currently being attended and their AI-generated diagnostic insights.'
+      tags:
+        - Dashboard
+      security:
+        - sanctum: []
       responses:
-        401:
-          description: ''
+        200:
+          description: 'Success'
           content:
             application/json:
               schema:
                 type: object
                 example:
-                  message: Unauthenticated.
-                properties:
-                  message:
-                    type: string
-                    example: Unauthenticated.
+                  success: true
+                  data:
+                    current_attending:
+                      id: 1
+                      name: "Ahmed Mohamed"
+                      age: "52 y/o"
+                      gender: "Male"
+                      appointment_time: "09:00 AM"
+                      ai_insight:
+                        summary: "AI detected potential cardiac anomaly. Elevated troponin levels observed."
+                    full_queue_list:
+                      - { id: 1, name: "Ahmed Mohamed", age: 52, gender: "Male", appointment_time: "09:00 AM", status_tag: "Now" }
+                      - { id: 2, name: "Sarah Kamal", age: 38, gender: "Female", appointment_time: "10:00 AM", status_tag: "Waiting" }
+                    remaining_count_label: "4 remaining"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/dashboard/{patientId}/attend:
+    patch:
+      summary: 'Mark Patient as Attended'
+      operationId: patchApiDashboardPatientIdAttend
       tags:
-        - Endpoints
-      security: []
+        - Dashboard
+      parameters:
+        - in: path
+          name: patientId
+          required: true
+          schema:
+            type: integer
+      security:
+        - sanctum: []
+      responses:
+        200:
+          description: 'Success'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: "Patient marked as attended and queue updated successfully."
+
+components:
+  responses:
+    Unauthorized:
+      description: 'Unauthenticated'
+      content:
+        application/json:
+          schema:
+            type: object
+            example:
+              message: "Unauthenticated."
 
