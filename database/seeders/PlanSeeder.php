@@ -15,8 +15,8 @@ class PlanSeeder extends Seeder
         $plans = [
             [
                 'name' => 'Basic',
-                'price' => 2400.00,
-                'summaries_limit' => 270,
+                'price' => 1200.00,
+                'summaries_limit' => 200,
                 'duration_days' => 30,
                 'features' => json_encode([
                     'Key Important Information',
@@ -25,8 +25,8 @@ class PlanSeeder extends Seeder
             ],
             [
                 'name' => 'Pro',
-                'price' => 6000.00,
-                'summaries_limit' => 450,
+                'price' => 3000.00,
+                'summaries_limit' => 350,
                 'duration_days' => 30,
                 'features' => json_encode([
                     'Key Important Information',
@@ -36,8 +36,8 @@ class PlanSeeder extends Seeder
             ],
             [
                 'name' => 'Premium',
-                'price' => 12000.00,
-                'summaries_limit' => 660,
+                'price' => 5500.00,
+                'summaries_limit' => 550,
                 'duration_days' => 30,
                 'features' => json_encode([
                     'Key Important Information',
