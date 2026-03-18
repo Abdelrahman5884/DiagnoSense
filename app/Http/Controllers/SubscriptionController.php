@@ -7,6 +7,9 @@ use App\Http\Resources\CurrentSubscriptionResource;
 use App\Http\Resources\PlanResource;
 use App\Http\Responses\ApiResponse;
 use App\Models\Plan;
+use App\Notifications\CreditsExhausted;
+use App\Notifications\PayPerUseActivated;
+use App\Notifications\PlanSubscribed;
 use App\Services\SubscriptionService;
 use Illuminate\Http\Request;
 
@@ -49,7 +52,11 @@ class SubscriptionController extends Controller
         if (! $subscription) {
             return ApiResponse::error('Failed to process the subscription. Please try again later.', null, 500);
         }
-
+        $doctor->wallet->refresh();
+        $request->user()->notify(new PlanSubscribed($subscription->plan->name));
+        if ($doctor->wallet->balance <= 0) {
+            $doctor->user->notify(new CreditsExhausted());
+        }
         return ApiResponse::success(
             'Successfully subscribed to the plan!',
             null,
@@ -61,7 +68,7 @@ class SubscriptionController extends Controller
     public function switchToPayPerUse(Request $request)
     {
         $this->subscriptionService->setPayPerUseMode($request->user()->doctor);
-
+        $request->user()->notify(new PayPerUseActivated());
         return ApiResponse::success(
             'Switched to Pay-Per-Use mode. E£ 25 will be charged per file.',
             null,

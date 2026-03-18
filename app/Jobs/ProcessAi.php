@@ -5,6 +5,9 @@ namespace App\Jobs;
 use App\Models\AiAnalysisResult;
 use App\Models\Doctor;
 use App\Models\Plan;
+use App\Notifications\CreditsExhausted;
+use App\Notifications\UsageExhausted;
+use App\Notifications\UsageThresholdReached;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Queue\Queueable;
@@ -110,12 +113,27 @@ class ProcessAi implements ShouldQueue
                     }
                 }
 
-                $doctor = Doctor::with(['activeSubscription', 'wallet'])->find($this->jobData['doctor_id']);
+                $doctor = Doctor::with(['activeSubscription', 'wallet', 'user'])->find($this->jobData['doctor_id']);
                 if ($doctor) {
                     if ($doctor->billing_mode === 'subscription' && $doctor->activeSubscription) {
                         $doctor->activeSubscription->increment('used_summaries');
+                        $doctor->activeSubscription->refresh();
+                        $subscription = $doctor->activeSubscription;
+                        $totalLimit = $subscription->plan->summaries_limit;
+                        $usagePercentage = ($subscription->used_summaries / $totalLimit) * 100;
+                        if ($usagePercentage >= 80 && !$subscription->usage_warning_sent) {
+                            $doctor->user->notify(new UsageThresholdReached(80));
+                            $subscription->update(['usage_warning_sent' => true]);
+                        }
+                        if ($subscription->used_summaries >= $totalLimit) {
+                            $doctor->user->notify(new UsageExhausted());
+                        }
                     } else {
                         $doctor->wallet->decrement('balance', Plan::PAY_PER_USE_PRICE);
+                        $doctor->wallet->refresh();
+                        if ($doctor->wallet->balance <= 0) {
+                            $doctor->user->notify(new CreditsExhausted());
+                        }
                         $doctor->transactions()->create([
                             'amount' => Plan::PAY_PER_USE_PRICE,
                             'type' => 'usage',

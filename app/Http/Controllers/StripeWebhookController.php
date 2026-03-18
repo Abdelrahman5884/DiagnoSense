@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Doctor;
 use App\Models\Transactions;
 use App\Models\Wallet;
+use App\Notifications\CreditAdded;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Stripe\Webhook;
@@ -27,7 +29,7 @@ class StripeWebhookController
             $doctorId = $session->metadata->doctor_id;
             $amount = $session->metadata->amount;
 
-            DB::transaction(function () use ($doctorId, $amount, $session) {
+            $wallet = DB::transaction(function () use ($doctorId, $amount, $session) {
                 $transactionExists = Transactions::query()->where('payment_id', $session->id)->exists();
                 if ($transactionExists) {
                     return response()->json(['message' => 'Already processed']);
@@ -44,7 +46,12 @@ class StripeWebhookController
                     'description' => 'Wallet charge via Stripe',
                     'doctor_id' => $doctorId,
                 ]);
+                return $wallet->fresh();
             });
+            if($wallet){
+                $user = $wallet->doctor->user;
+                $user->notify(new CreditAdded($amount, $wallet->balance));
+            }
 
             return response()->json(['success' => true]);
         }
