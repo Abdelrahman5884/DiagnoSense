@@ -12,6 +12,7 @@ use App\Http\Controllers\Patient\PatientController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\VisitController;
 use App\Http\Controllers\VisitItemController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('check-user-type')->group(function () {
@@ -54,4 +55,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/patients/{patientId}/key-info', [KeyPointController::class, 'store']);
     Route::get('/patients/{patientId}/decision-support', [PatientController::class, 'getDecisionSupport']);
     Route::delete('/patients/{patientId}', [PatientController::class, 'destroy']);
+});
+
+
+
+Route::middleware('auth:sanctum')->group(function () {
+
+    Route::get('/dashboard/summary', [DashboardController::class, 'summary']);
+    Route::get('/dashboard/status-distribution', [DashboardController::class, 'statusDistribution']);
+    Route::get('/dashboard/top-diseases', [DashboardController::class, 'topDiseases']);
+    Route::get('/dashboard/today-visits', [DashboardController::class, 'todayVisits']);
 });
