@@ -77,6 +77,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/dashboard/top-diseases', [DashboardController::class, 'topDiseases']);
     Route::get('/dashboard/today-visits', [DashboardController::class, 'todayVisits']);
     Route::patch('/dashboard/{patientId}/attend', [DashboardController::class, 'markAttended']);
+    Route::get('/patients/{patientId}', [PatientController::class, 'show']);
 });
 
 Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);

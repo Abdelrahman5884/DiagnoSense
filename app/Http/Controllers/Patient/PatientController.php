@@ -8,6 +8,7 @@ use App\Http\Requests\UpdatePatientStatusRequest;
 use App\Http\Resources\ActivityLogResource;
 use App\Http\Resources\DecisionSupportResource;
 use App\Http\Resources\KeyPointResource;
+use App\Http\Resources\PatientEditResource;
 use App\Http\Resources\PatientListResource;
 use App\Http\Resources\PatientOverviewResource;
 use App\Http\Responses\ApiResponse;
@@ -260,5 +261,11 @@ class PatientController extends Controller
         $patient->delete();
 
         return ApiResponse::success('Patient deleted successfully.', null, 200);
+    }
+    public function show($patientId){
+        $doctor = auth()->user()->doctor;
+        $patient = $doctor->patients()->findOrFail($patientId);
+        $patient->load(['user', 'medicalHistory', 'reports']);
+        return ApiResponse::success('Data retrieved successfully', new PatientEditResource($patient),200);
     }
 }
