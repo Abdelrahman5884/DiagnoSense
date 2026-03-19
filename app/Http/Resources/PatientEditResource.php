@@ -26,7 +26,7 @@ class PatientEditResource extends JsonResource
                 'national_id' => $this->national_id,
             ],
             'medical_history' => new MedicalHistoryResource($this->medicalHistory),
-            'existing_files' => $this->reports->map(fn($report) => [
+            'existing_files' => $this->reports->map(fn ($report) => [
                 'id' => $report->id,
                 'type' => $report->type,
                 'name' => $report->file_name,

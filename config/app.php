@@ -122,5 +122,6 @@ return [
         'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
+    'pay_per_use_cost' => env('APP_PAY_PER_USE_COST', 20.00),
 
 ];
