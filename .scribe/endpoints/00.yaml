@@ -705,7 +705,7 @@ endpoints:
         name: gender
         description: ''
         required: true
-        example: male
+        example: female
         type: string
         enumValues:
           - male
@@ -740,7 +740,7 @@ endpoints:
         name: previous_surgeries
         description: ''
         required: false
-        example: false
+        example: true
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -854,10 +854,10 @@ endpoints:
       email: kunde.eloisa@example.com
       phone: hfqcoynlazghd
       age: 17
-      gender: male
+      gender: female
       national_id: mqeopfuudtdsu
       is_smoker: true
-      previous_surgeries: false
+      previous_surgeries: true
       chronic_diseases:
         - consequatur
       previous_surgeries_name: consequatur
@@ -980,7 +980,7 @@ endpoints:
         name: next_visit_date
         description: 'This field is required when <code>has_next_visit</code> is <code>true</code>. Must be a valid date.'
         required: false
-        example: '2026-03-19T06:09:12'
+        example: '2026-03-24T20:08:19'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1002,7 +1002,7 @@ endpoints:
     cleanBodyParameters:
       patient_id: consequatur
       has_next_visit: true
-      next_visit_date: '2026-03-19T06:09:12'
+      next_visit_date: '2026-03-24T20:08:19'
       action: mqeopfuudtdsufvyvddqa
     fileParameters: []
     responses: []
@@ -1141,7 +1141,7 @@ endpoints:
         name: next_visit_date
         description: 'Must be a valid date.'
         required: false
-        example: '2026-03-19T06:09:12'
+        example: '2026-03-24T20:08:19'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1169,7 +1169,7 @@ endpoints:
       title: vazjrcnfbaqywuxhgjjmz
       description: 'Dolores dolorum amet iste laborum eius est dolor.'
       notes: consequatur
-      next_visit_date: '2026-03-19T06:09:12'
+      next_visit_date: '2026-03-24T20:08:19'
       action: mqeopfuudtdsufvyvddqa
     fileParameters: []
     responses: []
@@ -1432,7 +1432,7 @@ endpoints:
         name: status
         description: ''
         required: true
-        example: stable
+        example: critical
         type: string
         enumValues:
           - critical
@@ -1442,7 +1442,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanBodyParameters:
-      status: stable
+      status: critical
     fileParameters: []
     responses: []
     responseFields: []
@@ -2313,6 +2313,61 @@ endpoints:
   -
     custom: []
     httpMethods:
+      - POST
+    uri: 'api/chatbot/{patientId}'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      patientId:
+        custom: []
+        name: patientId
+        description: ''
+        required: true
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      patientId: consequatur
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      question:
+        custom: []
+        name: question
+        description: 'Must be at least 3 characters.'
+        required: true
+        example: vmqeopfuudtdsufvyvddqamniihfqcoynlazghdtqtqxbajwbpilpmufinllwloauydlsmsjur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      question: vmqeopfuudtdsufvyvddqamniihfqcoynlazghdtqtqxbajwbpilpmufinllwloauydlsmsjur
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
       - GET
     uri: api/dashboard/summary
     metadata:
@@ -2673,7 +2728,7 @@ endpoints:
         name: is_smoker
         description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -2800,7 +2855,7 @@ endpoints:
       age: 17
       gender: female
       national_id: consequatur
-      is_smoker: true
+      is_smoker: false
       previous_surgeries: true
       chronic_diseases:
         - consequatur

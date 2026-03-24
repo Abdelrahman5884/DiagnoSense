@@ -1457,6 +1457,81 @@ paths:
                   success: true
                   message: "Patient marked as attended and queue updated successfully."
 
+  '/api/chatbot/{patientId}':
+      post:
+        summary: 'Ask DiagnoBot about Patient'
+        operationId: postApiChatbotPatientId
+        description: 'Sends a medical question to the AI chatbot regarding a specific patient. If the patient data is not yet processed, it triggers an ingestion job.'
+        tags:
+          - Patient Profile
+        security:
+          - sanctum: []
+        parameters:
+          - in: path
+            name: patientId
+            required: true
+            description: 'The ID of the patient the question is about.'
+            schema:
+              type: integer
+            example: 101
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - question
+                properties:
+                  question:
+                    type: string
+                    minLength: 3
+                    description: 'The specific question about the patient’s medical history or reports.'
+                    example: "What are the key risks found in the latest blood test?"
+        responses:
+          200:
+            description: 'AI Answer retrieved successfully'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  example:
+                    success: true
+                    message: "Answer from chatbot"
+                    data: "Based on the reports, the patient shows elevated glucose levels suggesting a risk of Type 2 Diabetes."
+          202:
+            description: 'Accepted - Data is being prepared'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  example:
+                    success: true
+                    message: "Preparing patient data..."
+                    data: null
+          403:
+            description: 'Forbidden - Doctor does not own this patient record'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  example:
+                    success: false
+                    message: "Unauthorized"
+          404:
+            description: 'Patient not found'
+          401:
+            $ref: '#/components/responses/Unauthorized'
+          500:
+            description: 'Internal Server Error'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  example:
+                    success: false
+                    message: "Failed to get answer from chatbot"
+
 components:
   responses:
     Unauthorized:
