@@ -70,7 +70,7 @@ class ProcessAi implements ShouldQueue
                 'decision_support' => (bool) ($this->jobData['features']['decision_support'] ?? false),
             ];
 
-            $response = Http::timeout($this->timeout)->post(config('services.ai.url')."analyze", $ApiData);
+            $response = Http::timeout($this->timeout)->post(config('services.ai.url').'analyze', $ApiData);
 
             if ($response->successful()) {
                 $data = $response->json();

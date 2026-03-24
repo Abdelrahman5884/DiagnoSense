@@ -16,6 +16,7 @@ use App\Http\Responses\ApiResponse;
 use App\Jobs\ProcessAi;
 use App\Models\ActivityLog;
 use App\Models\AiAnalysisResult;
+use App\Models\DecisionSupport;
 use App\Models\MedicalHistory;
 use App\Models\Patient;
 use App\Models\Report;
@@ -24,7 +25,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use function PHPUnit\Framework\isNull;
 
 class PatientController extends Controller
 {
@@ -320,9 +320,18 @@ class PatientController extends Controller
             }
 
             $complaintChanged = $request->has('current_complaint') && $request->current_complaint !== $oldComplaint;
-
-            if ($hasNewFiles || $complaintChanged) {
-                if(!$doctor->billing_mode){
+            $doctorHasDS = $doctor->hasFeature('Decision Support');
+            $lastSuccessfulAnalysis = AiAnalysisResult::where('patient_id', $patient->id)
+                ->where('status', 'completed')
+                ->latest()
+                ->first();
+            $hasExistingDecision = false;
+            if ($lastSuccessfulAnalysis) {
+                $hasExistingDecision = DecisionSupport::where('ai_analysis_result_id', $lastSuccessfulAnalysis->id)->exists();
+            }
+            $needsDecisionSupportNow = $doctorHasDS && ! $hasExistingDecision;
+            if ($hasNewFiles || $complaintChanged || $needsDecisionSupportNow) {
+                if (! $doctor->billing_mode) {
                     throw new \Exception('No billing mode found you can not access AI features.');
                 }
 
@@ -330,10 +339,9 @@ class PatientController extends Controller
                     throw new \Exception('Insufficient balance for AI analysis. Please recharge your wallet.');
                 }
 
-                if ($doctor->billing_mode == 'subscription' && !$doctor->activeSubscription) {
+                if ($doctor->billing_mode == 'subscription' && ! $doctor->activeSubscription) {
                     throw new \Exception('No active subscription found. Please subscribe to a plan to access AI features.');
                 }
-
 
                 $analysis = AiAnalysisResult::create([
                     'patient_id' => $patient->id,
@@ -346,7 +354,7 @@ class PatientController extends Controller
                     'gender' => $patient->gender,
                     'history' => $patient->medicalHistory->fresh()->toArray(),
                     'file_paths' => $newPathsForAI,
-                    'features' => ['decision_support' => $doctor->hasFeature('Decision Support')],
+                    'features' => ['decision_support' => $doctorHasDS],
                 ];
 
                 ProcessAi::dispatch($analysis->id, $jobData);
