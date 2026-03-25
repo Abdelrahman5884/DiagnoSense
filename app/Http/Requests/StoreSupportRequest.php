@@ -15,6 +15,7 @@ class StoreSupportRequest extends FormRequest
         if (! $currentDoctor) {
             return false;
         }
+
         return true;
     }
 
@@ -30,7 +31,7 @@ class StoreSupportRequest extends FormRequest
             'category' => ['required', 'in:technical,billing,general'],
             'urgency' => ['required', 'in:low,medium,high'],
             'message' => ['required', 'string'],
-            'attachment' => ['nullable', 'file','mimes:jpg,png,pdf', 'max:10240'],
+            'attachment' => ['nullable', 'file', 'mimes:jpg,png,pdf', 'max:10240'],
         ];
     }
 }

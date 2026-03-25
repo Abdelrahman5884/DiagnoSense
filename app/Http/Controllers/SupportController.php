@@ -19,24 +19,24 @@ class SupportController extends Controller
             $attachmentPath = null;
             if ($request->hasFile('attachment')) {
                 $file = $request->file('attachment');
-                $uniqueName = time() . '_' . Str::random(5) . '.' . $file->getClientOriginalExtension();
+                $uniqueName = time().'_'.Str::random(5).'.'.$file->getClientOriginalExtension();
                 $attachmentPath = Storage::disk('azure')->putFileAs('support-attachments', $file, $uniqueName);
             }
 
             $message = SupportTeam::create([
-                'doctor_id'  => $doctor->id,
-                'name'       => $validated['name'] ?? $user->name,
-                'identity'   => $user->email ?? $user->phone,
-                'category'   => $validated['category'],
-                'urgency'    => $validated['urgency'],
-                'message'    => $validated['message'],
+                'doctor_id' => $doctor->id,
+                'name' => $validated['name'] ?? $user->name,
+                'identity' => $user->email ?? $user->phone,
+                'category' => $validated['category'],
+                'urgency' => $validated['urgency'],
+                'message' => $validated['message'],
                 'attachment_path' => $attachmentPath,
             ]);
 
-            return ApiResponse::success('Support message submitted successfully we will get back to you shortly.', null , 201);
+            return ApiResponse::success('Support message submitted successfully we will get back to you shortly.', null, 201);
 
         } catch (\Exception $e) {
-            return ApiResponse::error('Failed to submit message: ' . $e->getMessage(), null, 500);
+            return ApiResponse::error('Failed to submit message: '.$e->getMessage(), null, 500);
         }
     }
 }

@@ -9,6 +9,7 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\KeyPointController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Patient\PatientController;
@@ -83,6 +84,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/patients/{patientId}', [PatientController::class, 'show']);
     Route::put('/patients/{patientId}', [PatientController::class, 'update']);
     Route::post('/support', [SupportController::class, 'store']);
+    Route::get('/doctors/{doctorId}', [DoctorController::class, 'edit']);
+    Route::put('/doctors/{doctorId}', [DoctorController::class, 'update']);
 });
 
 Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);
