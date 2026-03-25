@@ -15,6 +15,7 @@ use App\Http\Controllers\Patient\PatientController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\StripeWebhookController;
 use App\Http\Controllers\SubscriptionController;
+use App\Http\Controllers\SupportController;
 use App\Http\Controllers\VisitController;
 use App\Http\Controllers\VisitItemController;
 use App\Http\Controllers\WalletController;
@@ -81,6 +82,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/dashboard/{patientId}/attend', [DashboardController::class, 'markAttended']);
     Route::get('/patients/{patientId}', [PatientController::class, 'show']);
     Route::put('/patients/{patientId}', [PatientController::class, 'update']);
+    Route::post('/support', [SupportController::class, 'store']);
 });
 
 Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);
