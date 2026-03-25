@@ -17,7 +17,7 @@ use App\Http\Controllers\VisitItemController;
 use App\Http\Controllers\WalletController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\MedicalFileController;
-
+use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('check-user-type')->group(function () {
@@ -91,8 +91,11 @@ Route::get('/payment-cancel', function () {
 
 Route::middleware('auth:sanctum')->group(function () {
 
- Route::get('/patient/medical-history', [MedicalFileController::class, 'medicalHistoryFiles']);
- Route::get('/patient/lab-reports', [MedicalFileController::class, 'labReports']);
- Route::get('/patient/radiology-reports', [MedicalFileController::class, 'radiologyReports']);
+    Route::get('/patient/medical-history', [MedicalFileController::class, 'medicalHistoryFiles']);
+    Route::get('/patient/lab-reports', [MedicalFileController::class, 'labReports']);
+    Route::get('/patient/radiology-reports', [MedicalFileController::class, 'radiologyReports']);
+    Route::get('/patient/medications', [MedicalFileController::class, 'medications']);
+    Route::get('/patient/timeline', [MedicalFileController::class, 'timeline']);
+    Route::get('/patient/notifications', [NotificationController::class, 'index']);
 
  });
