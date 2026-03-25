@@ -25,9 +25,9 @@ class NotificationResource extends JsonResource
         }
 
         return match ($this->model_type) {
-            'Task' => 'New Task',
+            'Task' => 'Task',
             'Visit' => 'New Visit',
-            'Medication' => 'New Medication',
+            'Medication' => 'Medication',
             default => 'Update',
         };
     }

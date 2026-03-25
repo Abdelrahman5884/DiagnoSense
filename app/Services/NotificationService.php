@@ -37,8 +37,8 @@ class NotificationService
             'description' => 'You have a visit tomorrow at ' .
              $visit->next_visit_date->format('h:i A') .
             ' with Dr. ' .
-            ($visit->doctor?->user?->name ?? 'Unknown'),
-           'time' => 'now',
+            ($visit->doctor?->user?->name),
+           'time' => $visit->next_visit_date->diffForHumans(),
             'date' => $visit->next_visit_date,
            'type' => 'reminder'
         ];
@@ -54,8 +54,8 @@ class NotificationService
     private function getTitle($type)
     {
         return match ($type) {
-            'Task' => 'New Task',
-            'Medication' => 'New Medication',
+            'Task' => 'Task',
+            'Medication' => 'Medication',
             'Visit' => 'New Visit',
             default => 'Update',
         };

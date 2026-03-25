@@ -97,5 +97,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/patient/medications', [MedicalFileController::class, 'medications']);
     Route::get('/patient/timeline', [MedicalFileController::class, 'timeline']);
     Route::get('/patient/notifications', [NotificationController::class, 'index']);
-
+    Route::put('/patient/profile', [MedicalFileController::class, 'update']);
  });

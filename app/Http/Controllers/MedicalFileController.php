@@ -9,6 +9,7 @@ use App\Http\Resources\LabReportResource;
 use App\Http\Resources\MedicationListResource;
 use App\Http\Resources\TimelineResource;
 use App\Http\Resources\RadiologyReportResource;
+use App\Http\Responses\ApiResponse;
 
 class MedicalFileController extends Controller
 {
@@ -123,7 +124,7 @@ class MedicalFileController extends Controller
                return [
                 'type' => 'visit',
                 'title' => 'Visit',
-                'description' => $visit->next_visit_date->format('Y-m-d'),
+                'description' => $visit->next_visit_date->format('Y-m-d- h:i A'),
                 'doctor' => $visit->doctor?->user?->name,
                 'date' => $visit->created_at, 
                ];
@@ -150,6 +151,28 @@ class MedicalFileController extends Controller
             ->values();
 
        return TimelineResource::collection($timeline);
+    }
+    
+    public function update(Request $request)
+    {
+        $user = $request->user();
+        $validated = $request->validate([
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'phone' => 'required|string|unique:users,phone,' . $user->id . '|max:20',
+        ]);
+        $user->update([
+            'email' => $validated['email'],
+            'phone' => $validated['phone'],
+        ]);
+        return ApiResponse::success(
+            message: 'Profile updated successfully',
+            data: [
+                'name' => $user->name,
+                'email' => $user->email,
+                'phone' => $user->phone,
+            ],
+            statusCode: 200
+        );
     }
 
 }

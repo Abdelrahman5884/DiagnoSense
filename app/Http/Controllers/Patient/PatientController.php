@@ -17,6 +17,7 @@ use App\Models\AiAnalysisResult;
 use App\Models\MedicalHistory;
 use App\Models\Patient;
 use App\Models\Report;
+use App\Models\Visit;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -287,10 +288,19 @@ class PatientController extends Controller
         );
     }
 
-    return ApiResponse::success(
-        'Next visit retrieved successfully',
-        new NextVisitResource($patient),
-        200
-    );
-}
+    $visit = Visit::where('patient_id', $patient->id)
+        ->whereDate('next_visit_date', '>=', now())
+        ->with('doctor.user')
+        ->orderBy('next_visit_date')
+        ->first();
+
+    if (!$visit) {
+         return ApiResponse::success(
+        'No upcoming visit',
+         null,200
+       );
+    }
+
+    return ApiResponse::success('Next visit retrieved successfully',new NextVisitResource($visit),200);
+    }
 }
