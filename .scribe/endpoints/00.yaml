@@ -740,7 +740,7 @@ endpoints:
         name: previous_surgeries
         description: ''
         required: false
-        example: false
+        example: true
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -857,7 +857,7 @@ endpoints:
       gender: female
       national_id: mqeopfuudtdsu
       is_smoker: false
-      previous_surgeries: false
+      previous_surgeries: true
       chronic_diseases:
         - consequatur
       previous_surgeries_name: consequatur
@@ -969,7 +969,7 @@ endpoints:
         name: has_next_visit
         description: ''
         required: true
-        example: false
+        example: true
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -980,7 +980,7 @@ endpoints:
         name: next_visit_date
         description: 'This field is required when <code>has_next_visit</code> is <code>true</code>. Must be a valid date.'
         required: false
-        example: '2026-03-25T03:49:36'
+        example: '2026-03-26T04:54:36'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1001,8 +1001,8 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       patient_id: consequatur
-      has_next_visit: false
-      next_visit_date: '2026-03-25T03:49:36'
+      has_next_visit: true
+      next_visit_date: '2026-03-26T04:54:36'
       action: mqeopfuudtdsufvyvddqa
     fileParameters: []
     responses: []
@@ -1141,7 +1141,7 @@ endpoints:
         name: next_visit_date
         description: 'Must be a valid date.'
         required: false
-        example: '2026-03-25T03:49:36'
+        example: '2026-03-26T04:54:36'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1169,7 +1169,7 @@ endpoints:
       title: vazjrcnfbaqywuxhgjjmz
       description: 'Dolores dolorum amet iste laborum eius est dolor.'
       notes: consequatur
-      next_visit_date: '2026-03-25T03:49:36'
+      next_visit_date: '2026-03-26T04:54:36'
       action: mqeopfuudtdsufvyvddqa
     fileParameters: []
     responses: []
@@ -1432,7 +1432,7 @@ endpoints:
         name: status
         description: ''
         required: true
-        example: 'under review'
+        example: critical
         type: string
         enumValues:
           - critical
@@ -1442,7 +1442,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanBodyParameters:
-      status: 'under review'
+      status: critical
     fileParameters: []
     responses: []
     responseFields: []
@@ -1743,7 +1743,7 @@ endpoints:
         name: priority
         description: ''
         required: true
-        example: high
+        example: low
         type: string
         enumValues:
           - high
@@ -1754,7 +1754,7 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       insight: consequatur
-      priority: high
+      priority: low
     fileParameters: []
     responses: []
     responseFields: []
@@ -2704,7 +2704,7 @@ endpoints:
         name: gender
         description: ''
         required: true
-        example: male
+        example: female
         type: string
         enumValues:
           - male
@@ -2728,7 +2728,7 @@ endpoints:
         name: is_smoker
         description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -2739,7 +2739,7 @@ endpoints:
         name: previous_surgeries
         description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -2853,10 +2853,10 @@ endpoints:
       email: kunde.eloisa@example.com
       phone: hfqcoynlazghd
       age: 17
-      gender: male
+      gender: female
       national_id: consequatur
-      is_smoker: true
-      previous_surgeries: true
+      is_smoker: false
+      previous_surgeries: false
       chronic_diseases:
         - consequatur
       previous_surgeries_name: consequatur
@@ -2916,7 +2916,7 @@ endpoints:
         name: category
         description: ''
         required: true
-        example: technical
+        example: billing
         type: string
         enumValues:
           - technical
@@ -2930,7 +2930,7 @@ endpoints:
         name: urgency
         description: ''
         required: true
-        example: high
+        example: medium
         type: string
         enumValues:
           - low
@@ -2963,11 +2963,185 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       name: vmqeopfuudtdsufvyvddq
-      category: technical
-      urgency: high
+      category: billing
+      urgency: medium
       message: consequatur
     fileParameters:
       attachment: null
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/doctors/{doctorId}'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      doctorId:
+        custom: []
+        name: doctorId
+        description: ''
+        required: true
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      doctorId: consequatur
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"message":"Unauthenticated."}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          vary: Origin
+        description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+    uri: 'api/doctors/{doctorId}'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      doctorId:
+        custom: []
+        name: doctorId
+        description: ''
+        required: true
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      doctorId: consequatur
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        custom: []
+        name: name
+        description: 'Must not be greater than 255 characters.'
+        required: true
+        example: vmqeopfuudtdsufvyvddq
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      specialization:
+        custom: []
+        name: specialization
+        description: 'Must not be greater than 255 characters.'
+        required: false
+        example: amniihfqcoynlazghdtqt
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      name: vmqeopfuudtdsufvyvddq
+      specialization: amniihfqcoynlazghdtqt
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PATCH
+    uri: api/change-password
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      current_password:
+        custom: []
+        name: current_password
+        description: ''
+        required: true
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      new_password:
+        custom: []
+        name: new_password
+        description: 'Must be at least 8 characters.'
+        required: true
+        example: mqeopfuudtdsufvyvddqamniihfqcoynlazghdtqtqxbajwbpilpmufinllwloauydlsmsjuryv
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      current_password: consequatur
+      new_password: mqeopfuudtdsufvyvddqamniihfqcoynlazghdtqtqxbajwbpilpmufinllwloauydlsmsjuryv
+    fileParameters: []
     responses: []
     responseFields: []
     auth: []

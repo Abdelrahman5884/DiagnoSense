@@ -265,7 +265,7 @@ class PatientController extends Controller
         return ApiResponse::success('Patient deleted successfully.', null, 200);
     }
 
-    public function show($patientId)
+    public function edit($patientId)
     {
         $doctor = auth()->user()->doctor;
         $patient = $doctor->patients()->findOrFail($patientId);
