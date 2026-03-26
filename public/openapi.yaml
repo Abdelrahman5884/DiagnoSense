@@ -19,6 +19,10 @@ tags:
     description: 'Operations related to user notifications.'
   - name: Dashboard
     description: 'Operations related to dashboard data and summaries.'
+  - name: Support & Help
+    description: 'Operations related to customer support and help resources.'
+  - name: Doctor Profile
+    description: 'Operations related to doctor profile management.'
 paths:
   '/api/register/{type}':
     post:
@@ -1606,7 +1610,131 @@ paths:
                   example:
                     success: false
                     message: "Failed to submit message: [Error details]"
+  '/api/doctors/{doctorId}':
+      get:
+        summary: 'Get Doctor Profile Information'
+        operationId: getApiDoctorsDoctorId
+        description: 'Returns the personal and professional information of the authenticated doctor.'
+        tags:
+          - Doctor Profile
+        security:
+          - sanctum: []
+        parameters:
+          - in: path
+            name: doctorId
+            required: true
+            schema:
+              type: integer
+            example: 12
+        responses:
+          200:
+            description: 'Doctor information retrieved successfully'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  example:
+                    success: true
+                    message: "Doctor Information"
+                    data:
+                      id: 12
+                      name: "Dr. Layla"
+                      identity: "layla@diagnosense.com"
+                      speciality: "Cardiology"
+          403:
+            description: 'Forbidden - You can only view your own profile'
+          401:
+            $ref: '#/components/responses/Unauthorized'
 
+      put:
+        summary: 'Update Doctor Information'
+        operationId: putApiDoctorsDoctorId
+        description: 'Allows the doctor to update their name and specialization.'
+        tags:
+          - Doctor Profile
+        security:
+          - sanctum: []
+        parameters:
+          - in: path
+            name: doctorId
+            required: true
+            schema:
+              type: integer
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - name
+                properties:
+                  name:
+                    type: string
+                    example: "Dr. Layla M."
+                  specialization:
+                    type: string
+                    example: "Advanced Cardiology"
+        responses:
+          200:
+            description: 'Profile updated successfully'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  example:
+                    success: true
+                    message: "Doctor Information Updated Successfully"
+                    data: null
+          422:
+            description: 'Validation Error'
+
+  '/api/change-password':
+      patch:
+        summary: 'Change Password'
+        operationId: patchApiChangePassword
+        description: 'Allows the authenticated user to change their account password.'
+        tags:
+          - Doctor Profile
+        security:
+          - sanctum: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - current_password
+                  - new_password
+                  - new_password_confirmation
+                properties:
+                  current_password:
+                    type: string
+                    format: password
+                    example: "old_password_123"
+                  new_password:
+                    type: string
+                    format: password
+                    minLength: 8
+                    example: "new_secure_password_456"
+                  new_password_confirmation:
+                    type: string
+                    format: password
+                    example: "new_secure_password_456"
+        responses:
+          200:
+            description: 'Password changed successfully'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  example:
+                    success: true
+                    message: "Password Changed Successfully"
+                    data: null
+          422:
+            description: 'Validation Error - Current password incorrect or new password too short'
 
 components:
   responses:
