@@ -157,13 +157,11 @@ class MedicalFileController extends Controller
     {
         $user = $request->user();
         $validated = $request->validate([
-            'email' => 'required|email|unique:users,email,' . $user->id,
-            'phone' => 'required|string|unique:users,phone,' . $user->id . '|max:20',
+            'email' => 'sometimes|email|unique:users,email,' . $user->id,
+            'phone' => 'sometimes|string|unique:users,phone,' . $user->id . '|max:20',
         ]);
-        $user->update([
-            'email' => $validated['email'],
-            'phone' => $validated['phone'],
-        ]);
+            $user->update($validated);
+
         return ApiResponse::success(
             message: 'Profile updated successfully',
             data: [
