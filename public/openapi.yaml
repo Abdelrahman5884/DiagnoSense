@@ -1786,6 +1786,69 @@ paths:
                     data: null
           422:
             description: 'Validation Error - Current password incorrect or new password too short'
+  '/api/patients/{patientId}/comparative-analysis':
+    get:
+      summary: 'Get Comparative Analysis'
+      operationId: getApiPatientsPatientIdComparativeAnalysis
+      description: 'Returns a detailed comparison between the latest lab results and previous ones, including historical data points for chart plotting.'
+      tags:
+        - Patient Profile
+      security:
+        - sanctum: []
+      parameters:
+        - in: path
+          name: patientId
+          required: true
+          schema:
+            type: integer
+          example: 48
+      responses:
+        200:
+          description: 'Comparative data retrieved successfully'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: "Comparative data retrieved successfully."
+                  data:
+                    - test_name: "Hemoglobin (Hb)"
+                      category: "CBC"
+                      unit: "g/dL"
+                      comparison:
+                        current_value: 14.5
+                        previous_value: 13.2
+                        change_value: 1.3
+                        change_percentage: 9.8
+                        trend: "up"
+                        status: "Normal"
+                      all_points:
+                        - { visit_label: "Visit #1", value: 13.2, status: "Normal", date: "2024-01-10" }
+                        - { visit_label: "Visit #2", value: 14.5, status: "Normal", date: "2024-03-20" }
+                    - test_name: "Blood Sugar"
+                      category: "Diabetes"
+                      unit: "mg/dL"
+                      comparison:
+                        current_value: 110
+                        previous_value: "No previous"
+                        change_value: 0
+                        change_percentage: 0
+                        trend: "stable"
+                        status: "Normal"
+                      all_points:
+                        - { visit_label: "Visit #1", value: 110, status: "Normal", date: "2024-03-20" }
+        404:
+          description: 'Not Found - Patient or analysis data not found'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: "No analysis data found."
+        401:
+          $ref: '#/components/responses/Unauthorized'
 
 components:
   responses:

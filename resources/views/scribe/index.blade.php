@@ -230,6 +230,9 @@
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-PATCHapi-change-password">
                                 <a href="#endpoints-PATCHapi-change-password">PATCH api/change-password</a>
                             </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-patients--patientId--comparative-analysis">
+                                <a href="#endpoints-GETapi-patients--patientId--comparative-analysis">GET api/patients/{patientId}/comparative-analysis</a>
+                            </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-POSTapi-stripe-webhook">
                                 <a href="#endpoints-POSTapi-stripe-webhook">POST api/stripe/webhook</a>
                             </li>
@@ -247,7 +250,7 @@
     </ul>
 
     <ul class="toc-footer" id="last-updated">
-        <li>Last updated: March 27, 2026</li>
+        <li>Last updated: March 30, 2026</li>
     </ul>
 </div>
 
@@ -1904,7 +1907,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --form "email=kunde.eloisa@example.com"\
     --form "phone=hfqcoynlazghd"\
     --form "age=17"\
-    --form "gender=male"\
+    --form "gender=female"\
     --form "national_id=mqeopfuudtdsu"\
     --form "is_smoker="\
     --form "previous_surgeries="\
@@ -1914,9 +1917,9 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --form "allergies=consequatur"\
     --form "family_history=consequatur"\
     --form "current_complaint=consequatur"\
-    --form "lab[]=@C:\Users\Solo\AppData\Local\Temp\php8E0E.tmp" \
-    --form "radiology[]=@C:\Users\Solo\AppData\Local\Temp\php8E1E.tmp" \
-    --form "medical_history[]=@C:\Users\Solo\AppData\Local\Temp\php8E1F.tmp" </code></pre></div>
+    --form "lab[]=@C:\Users\Solo\AppData\Local\Temp\phpC0D4.tmp" \
+    --form "radiology[]=@C:\Users\Solo\AppData\Local\Temp\phpC0E4.tmp" \
+    --form "medical_history[]=@C:\Users\Solo\AppData\Local\Temp\phpC0E5.tmp" </code></pre></div>
 
 
 <div class="javascript-example">
@@ -1934,7 +1937,7 @@ body.append('name', 'vmqeopfuudtdsufvyvddq');
 body.append('email', 'kunde.eloisa@example.com');
 body.append('phone', 'hfqcoynlazghd');
 body.append('age', '17');
-body.append('gender', 'male');
+body.append('gender', 'female');
 body.append('national_id', 'mqeopfuudtdsu');
 body.append('is_smoker', '');
 body.append('previous_surgeries', '');
@@ -2085,10 +2088,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="gender"                data-endpoint="POSTapi-patients"
-               value="male"
+               value="female"
                data-component="body">
     <br>
-<p>Example: <code>male</code></p>
+<p>Example: <code>female</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>male</code></li> <li><code>female</code></li></ul>
         </div>
@@ -2424,8 +2427,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Accept: application/json" \
     --data "{
     \"patient_id\": \"consequatur\",
-    \"has_next_visit\": false,
-    \"next_visit_date\": \"2026-03-27T02:15:03\",
+    \"has_next_visit\": true,
+    \"next_visit_date\": \"2026-03-30T23:40:50\",
     \"action\": \"mqeopfuudtdsufvyvddqa\"
 }"
 </code></pre></div>
@@ -2443,8 +2446,8 @@ const headers = {
 
 let body = {
     "patient_id": "consequatur",
-    "has_next_visit": false,
-    "next_visit_date": "2026-03-27T02:15:03",
+    "has_next_visit": true,
+    "next_visit_date": "2026-03-30T23:40:50",
     "action": "mqeopfuudtdsufvyvddqa"
 };
 
@@ -2562,7 +2565,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>false</code></p>
+<p>Example: <code>true</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>next_visit_date</code></b>&nbsp;&nbsp;
@@ -2571,10 +2574,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="next_visit_date"                data-endpoint="POSTapi-visits"
-               value="2026-03-27T02:15:03"
+               value="2026-03-30T23:40:50"
                data-component="body">
     <br>
-<p>This field is required when <code>has_next_visit</code> is <code>true</code>. Must be a valid date. Example: <code>2026-03-27T02:15:03</code></p>
+<p>This field is required when <code>has_next_visit</code> is <code>true</code>. Must be a valid date. Example: <code>2026-03-30T23:40:50</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>action</code></b>&nbsp;&nbsp;
@@ -2617,7 +2620,7 @@ Must be one of:
     \"title\": \"vazjrcnfbaqywuxhgjjmz\",
     \"description\": \"Dolores dolorum amet iste laborum eius est dolor.\",
     \"notes\": \"consequatur\",
-    \"next_visit_date\": \"2026-03-27T02:15:03\",
+    \"next_visit_date\": \"2026-03-30T23:40:50\",
     \"action\": \"mqeopfuudtdsufvyvddqa\"
 }"
 </code></pre></div>
@@ -2642,7 +2645,7 @@ let body = {
     "title": "vazjrcnfbaqywuxhgjjmz",
     "description": "Dolores dolorum amet iste laborum eius est dolor.",
     "notes": "consequatur",
-    "next_visit_date": "2026-03-27T02:15:03",
+    "next_visit_date": "2026-03-30T23:40:50",
     "action": "mqeopfuudtdsufvyvddqa"
 };
 
@@ -2846,10 +2849,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="next_visit_date"                data-endpoint="POSTapi-visits--visit--items"
-               value="2026-03-27T02:15:03"
+               value="2026-03-30T23:40:50"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-03-27T02:15:03</code></p>
+<p>Must be a valid date. Example: <code>2026-03-30T23:40:50</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>action</code></b>&nbsp;&nbsp;
@@ -3436,7 +3439,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"status\": \"stable\"
+    \"status\": \"critical\"
 }"
 </code></pre></div>
 
@@ -3452,7 +3455,7 @@ const headers = {
 };
 
 let body = {
-    "status": "stable"
+    "status": "critical"
 };
 
 fetch(url, {
@@ -3557,10 +3560,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="status"                data-endpoint="PATCHapi-patients--patient--status"
-               value="stable"
+               value="critical"
                data-component="body">
     <br>
-<p>Example: <code>stable</code></p>
+<p>Example: <code>critical</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>critical</code></li> <li><code>stable</code></li> <li><code>under review</code></li></ul>
         </div>
@@ -4260,7 +4263,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Accept: application/json" \
     --data "{
     \"insight\": \"consequatur\",
-    \"priority\": \"low\"
+    \"priority\": \"medium\"
 }"
 </code></pre></div>
 
@@ -4277,7 +4280,7 @@ const headers = {
 
 let body = {
     "insight": "consequatur",
-    "priority": "low"
+    "priority": "medium"
 };
 
 fetch(url, {
@@ -4394,10 +4397,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="priority"                data-endpoint="POSTapi-patients--patientId--key-info"
-               value="low"
+               value="medium"
                data-component="body">
     <br>
-<p>Example: <code>low</code></p>
+<p>Example: <code>medium</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>high</code></li> <li><code>medium</code></li> <li><code>low</code></li></ul>
         </div>
@@ -7081,9 +7084,9 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --form "allergies=consequatur"\
     --form "family_history=consequatur"\
     --form "current_complaint=consequatur"\
-    --form "lab[]=@C:\Users\Solo\AppData\Local\Temp\php91D9.tmp" \
-    --form "radiology[]=@C:\Users\Solo\AppData\Local\Temp\php91DA.tmp" \
-    --form "medical_history[]=@C:\Users\Solo\AppData\Local\Temp\php91DB.tmp" </code></pre></div>
+    --form "lab[]=@C:\Users\Solo\AppData\Local\Temp\phpC2CB.tmp" \
+    --form "radiology[]=@C:\Users\Solo\AppData\Local\Temp\phpC2CC.tmp" \
+    --form "medical_history[]=@C:\Users\Solo\AppData\Local\Temp\phpC2CD.tmp" </code></pre></div>
 
 
 <div class="javascript-example">
@@ -7463,10 +7466,10 @@ Must be one of:
     --header "Content-Type: multipart/form-data" \
     --header "Accept: application/json" \
     --form "name=vmqeopfuudtdsufvyvddq"\
-    --form "category=general"\
+    --form "category=technical"\
     --form "urgency=low"\
     --form "message=consequatur"\
-    --form "attachment=@C:\Users\Solo\AppData\Local\Temp\php91FC.tmp" </code></pre></div>
+    --form "attachment=@C:\Users\Solo\AppData\Local\Temp\phpC2DD.tmp" </code></pre></div>
 
 
 <div class="javascript-example">
@@ -7481,7 +7484,7 @@ const headers = {
 
 const body = new FormData();
 body.append('name', 'vmqeopfuudtdsufvyvddq');
-body.append('category', 'general');
+body.append('category', 'technical');
 body.append('urgency', 'low');
 body.append('message', 'consequatur');
 body.append('attachment', document.querySelector('input[name="attachment"]').files[0]);
@@ -7587,10 +7590,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="category"                data-endpoint="POSTapi-support"
-               value="general"
+               value="technical"
                data-component="body">
     <br>
-<p>Example: <code>general</code></p>
+<p>Example: <code>technical</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>technical</code></li> <li><code>billing</code></li> <li><code>general</code></li></ul>
         </div>
@@ -7630,7 +7633,7 @@ Must be one of:
                value=""
                data-component="body">
     <br>
-<p>Must be a file. Must not be greater than 10240 kilobytes. Example: <code>C:\Users\Solo\AppData\Local\Temp\php91FC.tmp</code></p>
+<p>Must be a file. Must not be greater than 10240 kilobytes. Example: <code>C:\Users\Solo\AppData\Local\Temp\phpC2DD.tmp</code></p>
         </div>
         </form>
 
@@ -8223,6 +8226,146 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <p>Must be at least 8 characters. Example: <code>mqeopfuudtdsufvyvddqamniihfqcoynlazghdtqtqxbajwbpilpmufinllwloauydlsmsjuryv</code></p>
         </div>
         </form>
+
+                    <h2 id="endpoints-GETapi-patients--patientId--comparative-analysis">GET api/patients/{patientId}/comparative-analysis</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-GETapi-patients--patientId--comparative-analysis">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost:8000/api/patients/consequatur/comparative-analysis" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost:8000/api/patients/consequatur/comparative-analysis"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-patients--patientId--comparative-analysis">
+            <blockquote>
+            <p>Example response (401):</p>
+        </blockquote>
+                <details class="annotation">
+            <summary style="cursor: pointer;">
+                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+            </summary>
+            <pre><code class="language-http">cache-control: no-cache, private
+content-type: application/json
+vary: Origin
+ </code></pre></details>         <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;Unauthenticated.&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-patients--patientId--comparative-analysis" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-patients--patientId--comparative-analysis"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-patients--patientId--comparative-analysis"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-patients--patientId--comparative-analysis" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-patients--patientId--comparative-analysis">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-patients--patientId--comparative-analysis" data-method="GET"
+      data-path="api/patients/{patientId}/comparative-analysis"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-patients--patientId--comparative-analysis', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-patients--patientId--comparative-analysis"
+                    onclick="tryItOut('GETapi-patients--patientId--comparative-analysis');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-patients--patientId--comparative-analysis"
+                    onclick="cancelTryOut('GETapi-patients--patientId--comparative-analysis');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-patients--patientId--comparative-analysis"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/patients/{patientId}/comparative-analysis</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-patients--patientId--comparative-analysis"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-patients--patientId--comparative-analysis"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>patientId</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="patientId"                data-endpoint="GETapi-patients--patientId--comparative-analysis"
+               value="consequatur"
+               data-component="url">
+    <br>
+<p>Example: <code>consequatur</code></p>
+            </div>
+                    </form>
 
                     <h2 id="endpoints-POSTapi-stripe-webhook">POST api/stripe/webhook</h2>
 
