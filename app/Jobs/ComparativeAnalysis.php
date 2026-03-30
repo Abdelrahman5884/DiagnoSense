@@ -22,7 +22,7 @@ class ComparativeAnalysis implements ShouldQueue
     public $tries = 3;
     public $backoff = 10;
 
-    public $timeout = 300;
+    public $timeout = 60;
     public function __construct($patientId, $analysisId)
     {
         $this->patientId = $patientId;
@@ -46,7 +46,7 @@ class ComparativeAnalysis implements ShouldQueue
             if(empty($labResults)){
                 throw new Exception("No lab results found in AI response.");
             }
-            
+
             foreach ($labResults as $result) {
                 PatientLabResult::create([
                     'patient_id'             => $this->patientId,

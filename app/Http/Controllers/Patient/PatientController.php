@@ -23,6 +23,7 @@ use App\Models\Patient;
 use App\Models\Report;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -107,6 +108,7 @@ class PatientController extends Controller
             $doctor = $request->user()->doctor;
 
             $jobData = [
+                'patient_id' => $patient->id,
                 'doctor_id' => $doctor->id,
                 'age' => $patient->age,
                 'gender' => $patient->gender,
@@ -119,11 +121,15 @@ class PatientController extends Controller
 
             DB::commit();
 
-            ProcessAi::dispatch($analysisResult->id, $jobData);
+            $chain = [
+                new ProcessAi($analysisResult->id, $jobData)
+            ];
 
             if (!empty($pathsForAI['lab'])) {
-                ComparativeAnalysis::dispatch($patient->id, $analysisResult->id);
+                $chain[] = new ComparativeAnalysis($patient->id, $analysisResult->id);
             }
+
+            Bus::chain($chain)->dispatch();
 
             return ApiResponse::success('Patient created successfully and AI analysis is in progress.', [
                 'patient_id' => $patient->id,

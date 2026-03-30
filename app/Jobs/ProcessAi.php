@@ -22,9 +22,9 @@ class ProcessAi implements ShouldQueue
 
     public $timeout = 300;
 
-    public $tries = 3;
+    public $tries = 2;
 
-    public $backoff = 60;
+    public $backoff = 10;
 
     protected $analysisId;
 
@@ -52,6 +52,7 @@ class ProcessAi implements ShouldQueue
         try {
             $analysisRecord->update(['status' => 'processing']);
             $ApiData = [
+                'patient_id' => $this->jobData['patient_id'],
                 'medical_pdf_urls' => $this->generateUrls('medical_history'),
                 'lab_pdf_urls' => $this->generateUrls('lab'),
                 'radiology_pdf_urls' => $this->generateUrls('radiology'),
@@ -150,12 +151,14 @@ class ProcessAi implements ShouldQueue
                     'response' => ['error' => 'AI analysis failed', 'details' => $response->body()],
                     'status' => 'failed',
                 ]);
+                throw new \Exception('AI analysis failed with status '.$response->status());
             }
         } catch (\Exception $e) {
             $analysisRecord->update([
                 'response' => ['error' => 'AI analysis failed', 'details' => $e->getMessage()],
                 'status' => 'failed',
             ]);
+            throw $e;
         }
     }
 
