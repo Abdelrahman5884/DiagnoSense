@@ -20,6 +20,7 @@ use App\Models\AiAnalysisResult;
 use App\Models\DecisionSupport;
 use App\Models\MedicalHistory;
 use App\Models\Patient;
+use App\Models\PatientLabResult;
 use App\Models\Report;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -27,7 +28,7 @@ use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-
+use Illuminate\Support\Collection;
 class PatientController extends Controller
 {
     public function index(Request $request)
@@ -380,5 +381,57 @@ class PatientController extends Controller
 
             return ApiResponse::error('Update failed: '.$e->getMessage(), null, 500);
         }
+    }
+    public function getComparativeAnalysis($patientId)
+    {
+        $doctor = auth()->user()->doctor;
+        $patient = $doctor->patients()->findorfail($patientId);
+        $allResults = PatientLabResult::where('patient_id', $patientId)
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        if ($allResults->isEmpty()) {
+            return ApiResponse::error('No analysis data found.', null, 404);
+        }
+        $groupedData = $allResults->groupBy('standard_name');
+        $analysisResponse = $groupedData->map(function (Collection $testResults, $testName) {
+            $count = $testResults->count();
+            $currentRecord = $testResults->last();
+            $previousRecord = $count > 1 ? $testResults->get($count - 2) : $currentRecord;
+            $currentVal = (float) $currentRecord->numeric_value;
+            $previousVal = (float) $previousRecord->numeric_value;
+            $changeValue = round($currentVal - $previousVal, 2);
+            $percentage = $previousVal != 0
+                ? round(($changeValue / $previousVal) * 100, 1)
+                : 0;
+            $trend = 'stable';
+            if ($currentVal > $previousVal) $trend = 'up';
+            elseif ($currentVal < $previousVal) $trend = 'down';
+            $previousDisplay = ($count > 1) ? $previousVal: "No previous";
+            return [
+                'test_name' => $testName,
+                'category'  => $currentRecord->category,
+                'unit'      => $currentRecord->unit,
+                'comparison' => [
+                    'current_value'     => $currentVal,
+                    'previous_value'    => $previousDisplay,
+                    'change_value'      => $changeValue,
+                    'change_percentage' => $percentage,
+                    'trend'             => $trend,
+                    'status'            => $currentRecord->status,
+                ],
+                'all_points' => $testResults->map(function ($item, $index) {
+                    return [
+                        'visit_label' => 'Visit #' . ($index + 1),
+                        'value'       => (float) $item->numeric_value,
+                        'status'      => $item->status,
+                        'date'        => $item->created_at->format('Y-m-d'),
+                    ];
+                })->values()
+            ];
+        })->values();
+
+        return ApiResponse::success('Comparative data retrieved successfully.', $analysisResponse, 200);
+
     }
 }

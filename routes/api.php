@@ -88,6 +88,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/doctors/{doctorId}', [DoctorController::class, 'update']);
     Route::delete('/doctors/{doctorId}', [DoctorController::class, 'destroy']);
     Route::patch('/change-password', [DoctorController::class, 'changePassword']);
+    Route::get('/patients/{patientId}/comparative-analysis', [PatientController::class, 'getComparativeAnalysis']);
+
 });
 
 Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);
