@@ -13,6 +13,7 @@ use App\Http\Resources\PatientEditResource;
 use App\Http\Resources\PatientListResource;
 use App\Http\Resources\PatientOverviewResource;
 use App\Http\Responses\ApiResponse;
+use App\Jobs\ComparativeAnalysis;
 use App\Jobs\ProcessAi;
 use App\Models\ActivityLog;
 use App\Models\AiAnalysisResult;
@@ -119,6 +120,10 @@ class PatientController extends Controller
             DB::commit();
 
             ProcessAi::dispatch($analysisResult->id, $jobData);
+
+            if (!empty($pathsForAI['lab'])) {
+                ComparativeAnalysis::dispatch($patient->id, $analysisResult->id);
+            }
 
             return ApiResponse::success('Patient created successfully and AI analysis is in progress.', [
                 'patient_id' => $patient->id,
