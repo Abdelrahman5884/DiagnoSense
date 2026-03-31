@@ -393,12 +393,26 @@ class PatientController extends Controller
     {
         $doctor = auth()->user()->doctor;
         $patient = $doctor->patients()->findorfail($patientId);
+        $latestAnalysis = AiAnalysisResult::where('patient_id', $patientId)
+                        ->latest()
+                        ->first();
+        if ($latestAnalysis && $latestAnalysis->status === 'processing') {
+            return ApiResponse::success(
+                'The AI is currently analyzing new reports. Please refresh soon.',
+                null,
+                202
+            );
+        }
         $allResults = PatientLabResult::where('patient_id', $patientId)
             ->orderBy('created_at', 'asc')
             ->get();
 
         if ($allResults->isEmpty()) {
             return ApiResponse::error('No analysis data found.', null, 404);
+        }
+        $message = 'Comparative data retrieved successfully.';
+        if ($latestAnalysis && $latestAnalysis->status === 'failed') {
+            $message = 'Note: The AI failed to extract data from the latest reports. Showing historical data only.';
         }
         $groupedData = $allResults->groupBy('standard_name');
         $analysisResponse = $groupedData->map(function (Collection $testResults, $testName) {
@@ -438,7 +452,7 @@ class PatientController extends Controller
             ];
         })->values();
 
-        return ApiResponse::success('Comparative data retrieved successfully.', $analysisResponse, 200);
+        return ApiResponse::success($message, $analysisResponse, 200);
 
     }
 }

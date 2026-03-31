@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\AiAnalysisResult;
 use App\Models\PatientLabResult;
 use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -39,11 +40,15 @@ class ComparativeAnalysis implements ShouldQueue
                 'patient_id' => $this->patientId,
             ]);
             if ($response->failed()) {
+                AiAnalysisResult::where('id', $this->analysisId)
+                ->update(['status' => 'failed']);
                 throw new Exception("AI Server returned an error: " . $response->status());
             }
 
             $labResults = $response->json()['data']['lab_results'] ?? [];
             if(empty($labResults)){
+                AiAnalysisResult::where('id', $this->analysisId)
+                ->update(['status' => 'failed']);
                 throw new Exception("No lab results found in AI response.");
             }
 
@@ -59,7 +64,11 @@ class ComparativeAnalysis implements ShouldQueue
                     'created_at'            => now(),
                 ]);
             }
+            AiAnalysisResult::where('id', $this->analysisId)
+            ->update(['status' => 'completed']);
         }catch(Exception $e){
+            AiAnalysisResult::where('id', $this->analysisId)
+            ->update(['status' => 'failed']);
             throw $e;
         }
     }

@@ -20,7 +20,7 @@ class ProcessAi implements ShouldQueue
 {
     use Dispatchable , InteractsWithQueue , Queueable, SerializesModels;
 
-    public $timeout = 300;
+    public $timeout = 600;
 
     public $tries = 2;
 
@@ -78,12 +78,12 @@ class ProcessAi implements ShouldQueue
 
                 $insight = $data['key_information']['ai_insight'] ?? null;
                 $summary = $data['key_information']['ai_summary'] ?? null;
-
+                $hasLabFiles = !empty($this->jobData['file_paths']['lab']);
                 $analysisRecord->update([
                     'ai_insight' => $insight,
                     'ai_summary' => $summary,
                     'response' => $data,
-                    'status' => 'completed',
+                    'status'     => $hasLabFiles ? 'processing' : 'completed',
                 ]);
 
                 if ($this->jobData['features']['decision_support']) {
