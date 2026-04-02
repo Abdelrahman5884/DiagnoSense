@@ -29,6 +29,8 @@ use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use MicrosoftAzure\Storage\Blob\BlobRestProxy;
+use MicrosoftAzure\Storage\Blob\Models\SetBlobPropertiesOptions;
 
 class PatientController extends Controller
 {
@@ -163,6 +165,9 @@ class PatientController extends Controller
                 $latestAnalysis->response,
                 422
             );
+        }
+        if ($latestAnalysis->ocr_file_path) {
+            $this->fixAzureBlobProperties($latestAnalysis->ocr_file_path);
         }
         $ocrFileUrl = $latestAnalysis->ocr_file_path ? Storage::disk('azure')->temporaryUrl($latestAnalysis->ocr_file_path, now()->addMinutes(60)) : null;
         $keyPoints = $latestAnalysis->keyPoints()
@@ -462,5 +467,24 @@ class PatientController extends Controller
 
         return ApiResponse::success($message, $analysisResponse, 200);
 
+    }
+
+    private function fixAzureBlobProperties($blobPath)
+    {
+            $connectionString = config('filesystems.disks.azure.connection_string');
+            $containerName = config('filesystems.disks.azure.container');
+            $blobClient = BlobRestProxy::createBlobService($connectionString);
+            $extension = strtolower(pathinfo($blobPath, PATHINFO_EXTENSION));
+            $mimeTypes = [
+                'pdf'  => 'application/pdf',
+                'png'  => 'image/png',
+                'jpg'  => 'image/jpeg',
+                'jpeg' => 'image/jpeg'
+            ];
+            $contentType = $mimeTypes[$extension] ?? 'application/pdf';
+            $properties = new SetBlobPropertiesOptions();
+            $properties->setContentType($contentType);
+            $properties->setContentDisposition('inline');
+            $blobClient->setBlobProperties($containerName, $blobPath, $properties);
     }
 }
