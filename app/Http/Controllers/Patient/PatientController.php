@@ -474,14 +474,7 @@ class PatientController extends Controller
         $connectionString = config('filesystems.disks.azure.connection_string');
         $containerName = config('filesystems.disks.azure.container');
         $blobClient = BlobRestProxy::createBlobService($connectionString);
-        $extension = strtolower(pathinfo($blobPath, PATHINFO_EXTENSION));
-        $mimeTypes = [
-            'pdf' => 'application/pdf',
-            'png' => 'image/png',
-            'jpg' => 'image/jpeg',
-            'jpeg' => 'image/jpeg',
-        ];
-        $contentType = $mimeTypes[$extension] ?? 'application/pdf';
+        $contentType = 'application/pdf';
         $properties = new SetBlobPropertiesOptions;
         $properties->setContentType($contentType);
         $properties->setContentDisposition('inline');
