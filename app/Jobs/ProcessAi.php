@@ -5,6 +5,9 @@ namespace App\Jobs;
 use App\Models\AiAnalysisResult;
 use App\Models\Doctor;
 use App\Models\Plan;
+use App\Notifications\CreditsExhausted;
+use App\Notifications\UsageExhausted;
+use App\Notifications\UsageThresholdReached;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Queue\Queueable;
@@ -17,11 +20,11 @@ class ProcessAi implements ShouldQueue
 {
     use Dispatchable , InteractsWithQueue , Queueable, SerializesModels;
 
-    public $timeout = 300;
+    public $timeout = 600;
 
-    public $tries = 3;
+    public $tries = 2;
 
-    public $backoff = 60;
+    public $backoff = 10;
 
     protected $analysisId;
 
@@ -49,6 +52,7 @@ class ProcessAi implements ShouldQueue
         try {
             $analysisRecord->update(['status' => 'processing']);
             $ApiData = [
+                'patient_id' => $this->jobData['patient_id'],
                 'medical_pdf_urls' => $this->generateUrls('medical_history'),
                 'lab_pdf_urls' => $this->generateUrls('lab'),
                 'radiology_pdf_urls' => $this->generateUrls('radiology'),
@@ -67,23 +71,23 @@ class ProcessAi implements ShouldQueue
                 'decision_support' => (bool) ($this->jobData['features']['decision_support'] ?? false),
             ];
 
-            $response = Http::timeout($this->timeout)->post(config('services.ai.url'), $ApiData);
+            $response = Http::timeout($this->timeout)->post(config('services.ai.url').'analyze', $ApiData);
 
             if ($response->successful()) {
                 $data = $response->json();
-
                 $insight = $data['key_information']['ai_insight'] ?? null;
                 $summary = $data['key_information']['ai_summary'] ?? null;
-
+                $hasLabFiles = ! empty($this->jobData['file_paths']['lab']);
+                $ocr_file_path = $data['pdf_path'] ?? null;
                 $analysisRecord->update([
                     'ai_insight' => $insight,
                     'ai_summary' => $summary,
                     'response' => $data,
-                    'status' => 'completed',
+                    'status' => $hasLabFiles ? 'processing' : 'completed',
+                    'ocr_file_path' => $ocr_file_path,
                 ]);
 
-
-                if($this->jobData['features']['decision_support']) {
+                if ($this->jobData['features']['decision_support']) {
                     $decisions = $data['decision_support'] ?? [];
                     unset($data['decision_support']);
                     foreach ($decisions as $decision) {
@@ -95,7 +99,6 @@ class ProcessAi implements ShouldQueue
                         ]);
                     }
                 }
-
 
                 unset($data['key_information']['ai_insight']);
                 unset($data['key_information']['ai_summary']);
@@ -112,19 +115,32 @@ class ProcessAi implements ShouldQueue
                     }
                 }
 
-
-
-                $doctor = Doctor::with(['activeSubscription', 'wallet'])->find($this->jobData['doctor_id']);
+                $doctor = Doctor::with(['activeSubscription', 'wallet', 'user'])->find($this->jobData['doctor_id']);
                 if ($doctor) {
                     if ($doctor->billing_mode === 'subscription' && $doctor->activeSubscription) {
                         $doctor->activeSubscription->increment('used_summaries');
+                        $doctor->activeSubscription->refresh();
+                        $subscription = $doctor->activeSubscription;
+                        $totalLimit = $subscription->plan->summaries_limit;
+                        $usagePercentage = ($subscription->used_summaries / $totalLimit) * 100;
+                        if ($usagePercentage >= 80 && ! $subscription->usage_warning_sent) {
+                            $doctor->user->notify(new UsageThresholdReached(80));
+                            $subscription->update(['usage_warning_sent' => true]);
+                        }
+                        if ($subscription->used_summaries >= $totalLimit) {
+                            $doctor->user->notify(new UsageExhausted);
+                        }
                     } else {
                         $doctor->wallet->decrement('balance', Plan::PAY_PER_USE_PRICE);
+                        $doctor->wallet->refresh();
+                        if ($doctor->wallet->balance <= 0) {
+                            $doctor->user->notify(new CreditsExhausted);
+                        }
                         $doctor->transactions()->create([
                             'amount' => Plan::PAY_PER_USE_PRICE,
                             'type' => 'usage',
                             'status' => 'completed',
-                            'description' => "Pay-per-use Analysis File",
+                            'description' => 'Pay-per-use Analysis File',
                             'source_type' => get_class($analysisRecord),
                             'source_id' => $analysisRecord->id,
                         ]);
@@ -136,12 +152,14 @@ class ProcessAi implements ShouldQueue
                     'response' => ['error' => 'AI analysis failed', 'details' => $response->body()],
                     'status' => 'failed',
                 ]);
+                throw new \Exception('AI analysis failed with status '.$response->status());
             }
         } catch (\Exception $e) {
             $analysisRecord->update([
                 'response' => ['error' => 'AI analysis failed', 'details' => $e->getMessage()],
                 'status' => 'failed',
             ]);
+            throw $e;
         }
     }
 

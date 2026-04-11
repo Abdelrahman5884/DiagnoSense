@@ -21,7 +21,6 @@ class CurrentSubscriptionResource extends JsonResource
 
         $data = [
             'billing_mode' => $mode,
-            'wallet_balance' => (float) ($this->wallet->balance ?? 0),
         ];
 
         if ($mode === 'pay_per_use') {
@@ -32,10 +31,9 @@ class CurrentSubscriptionResource extends JsonResource
             ]);
         }
 
-
-
         if ($activeSub) {
             $plan = $activeSub->plan;
+
             return array_merge($data, [
                 'plan_name' => $plan->name,
                 'status' => $activeSub->status,

@@ -2,32 +2,47 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Services\NotificationService;
 use App\Http\Resources\NotificationResource;
+use App\Http\Responses\ApiResponse;
+use Illuminate\Http\Request;
 
 class NotificationController extends Controller
 {
-    protected $notificationService;
-
-    public function __construct(NotificationService $notificationService)
-    {
-        $this->notificationService = $notificationService;
-    }
-
     public function index(Request $request)
     {
-        $user = $request->user();
-
-        if (!$user->patient) {
-            return response()->json([
-                'message' => 'Unauthorized'
-            ], 403);
-        }
-
-        $notifications = $this->notificationService
-            ->getPatientNotifications($user->patient->id);
+        $notifications = $request->user()->doctor
+            ->notifications()
+            ->cursorPaginate(10);
 
         return NotificationResource::collection($notifications);
+    }
+
+    public function unreadCount(Request $request)
+    {
+        return ApiResponse::success('Unread notifications count retrieved successfully', [
+            'unread_count' => $request->user()->doctor->unreadNotifications()->count(),
+        ], 200);
+    }
+
+    public function markAsRead(Request $request, $id)
+    {
+        $notification = $request->user()->doctor->notifications()->findOrFail($id);
+        $notification->markAsRead();
+
+        return ApiResponse::success('Notification marked as read', null, 200);
+    }
+
+    public function markAllAsRead(Request $request)
+    {
+        $request->user()->doctor->unreadNotifications->markAsRead();
+
+        return ApiResponse::success('All notifications marked as read', null, 200);
+    }
+
+    public function clearAll(Request $request)
+    {
+        $request->user()->doctor->notifications()->delete();
+
+        return ApiResponse::success('All notifications deleted', null, 200);
     }
 }

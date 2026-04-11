@@ -7,7 +7,8 @@ use Stripe\Subscription;
 
 class Plan extends Model
 {
-    CONST PAY_PER_USE_PRICE = 25.00; 
+    const PAY_PER_USE_PRICE = 20.00;
+
     protected $fillable = [
         'name',
         'price',

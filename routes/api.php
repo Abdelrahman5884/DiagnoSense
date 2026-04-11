@@ -7,17 +7,23 @@ use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\SocialAuthController;
+use App\Http\Controllers\ChatbotController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\KeyPointController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Patient\PatientController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\StripeWebhookController;
 use App\Http\Controllers\SubscriptionController;
+use App\Http\Controllers\TaskController;
+use App\Http\Controllers\MedicalFileController;
+use App\Http\Controllers\FlutterNotificationController;
+use App\Http\Controllers\SupportController;
 use App\Http\Controllers\VisitController;
 use App\Http\Controllers\VisitItemController;
 use App\Http\Controllers\WalletController;
-use App\Http\Controllers\TaskController;
-use App\Http\Controllers\MedicalFileController;
-use App\Http\Controllers\NotificationController;
+use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('check-user-type')->group(function () {
@@ -68,7 +74,25 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/subscription/current', [SubscriptionController::class, 'current']);
     Route::post('/subscription/cancel', [SubscriptionController::class, 'cancel']);
     Route::get('/patient/next-visit', [PatientController::class, 'nextVisit']);
-    
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
+    Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead']);
+    Route::delete('/notifications/clear-all', [NotificationController::class, 'clearAll']);
+    Route::post('/chatbot/{patientId}', [ChatbotController::class, 'store'])->middleware('check-ai-access');
+    Route::get('/dashboard/summary', [DashboardController::class, 'summary']);
+    Route::get('/dashboard/status-distribution', [DashboardController::class, 'statusDistribution']);
+    Route::get('/dashboard/top-diseases', [DashboardController::class, 'topDiseases']);
+    Route::get('/dashboard/today-visits', [DashboardController::class, 'todayVisits']);
+    Route::patch('/dashboard/{patientId}/attend', [DashboardController::class, 'markAttended']);
+    Route::get('/patients/{patientId}', [PatientController::class, 'edit']);
+    Route::put('/patients/{patientId}', [PatientController::class, 'update']);
+    Route::post('/support', [SupportController::class, 'store']);
+    Route::get('/doctors/{doctorId}', [DoctorController::class, 'edit']);
+    Route::put('/doctors/{doctorId}', [DoctorController::class, 'update']);
+    Route::delete('/doctors/{doctorId}', [DoctorController::class, 'destroy']);
+    Route::patch('/change-password', [DoctorController::class, 'changePassword']);
+    Route::get('/patients/{patientId}/comparative-analysis', [PatientController::class, 'getComparativeAnalysis']);
 });
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -96,6 +120,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/patient/radiology-reports', [MedicalFileController::class, 'radiologyReports']);
     Route::get('/patient/medications', [MedicalFileController::class, 'medications']);
     Route::get('/patient/timeline', [MedicalFileController::class, 'timeline']);
-    Route::get('/patient/notifications', [NotificationController::class, 'index']);
+    Route::get('/patient/notifications', [FlutterNotificationController::class, 'index']);
     Route::put('/patient/profile', [MedicalFileController::class, 'update']);
  });
+
+Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);
+Broadcast::routes(['middleware' => ['auth:sanctum']]);

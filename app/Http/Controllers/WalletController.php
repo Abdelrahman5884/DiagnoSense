@@ -13,9 +13,14 @@ class WalletController extends Controller
     public function index()
     {
         $currentDoctor = auth()->user()->doctor;
-        $transactions = $currentDoctor->transactions()->get();
+        $transactions = $currentDoctor->transactions()->latest()->get();
+        $credits = $currentDoctor->wallet->balance;
+        $data = [
+            'credits' => (float) $credits ?? 0,
+            'transactions' => TransactionResource::collection($transactions),
+        ];
 
-        return ApiResponse::success(message: 'Wallet transactions retrieved successfully', data: TransactionResource::collection($transactions), statusCode: 200);
+        return ApiResponse::success(message: 'Wallet transactions retrieved successfully', data: $data, statusCode: 200);
     }
 
     public function store(ChargeWalletRequest $request)
@@ -40,8 +45,8 @@ class WalletController extends Controller
                 'doctor_id' => auth()->user()->doctor->id,
                 'amount' => $request->balance,
             ],
-            'success_url' => route('payment.success'),
-            'cancel_url' => route('payment.cancel'),
+            'success_url' => 'http://localhost:5173/subscription?status=success',
+            'cancel_url' => 'http://localhost:5173/subscription?status=cancel',
         ]);
 
         return response()->json([

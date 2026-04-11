@@ -15,6 +15,7 @@ class AiAnalysisResult extends Model
         'ai_insight',
         'ai_summary',
         'status',
+        'ocr_file_path',
     ];
 
     protected $casts = [

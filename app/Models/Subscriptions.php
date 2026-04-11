@@ -14,6 +14,8 @@ class Subscriptions extends Model
         'started_at',
         'expires_at',
         'used_summaries',
+        'usage_warning_sent',
+        'expiring_soon_sent',
     ];
 
     protected $casts = [

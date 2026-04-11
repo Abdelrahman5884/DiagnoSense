@@ -2,21 +2,18 @@
 
 namespace App\Models;
 
-use App\Models\Subscriptions;
 use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
 
 class Doctor extends Model
 {
-    use LogsActivity;
+    use LogsActivity , Notifiable;
 
     protected $fillable = [
         'user_id',
         'billing_mode',
-        //        'specialization',
-        //        'phone',
-        //        'profile_image',
-        //        'bio',
+        'specialization',
     ];
 
     public function user()
@@ -59,16 +56,15 @@ class Doctor extends Model
         return $this->hasMany(Subscriptions::class);
     }
 
-    public function usages()
-    {
-        return $this->hasMany(Usage::class);
-    }
-
     public function activeSubscription()
     {
         return $this->hasOne(Subscriptions::class)
-                    ->whereIn('status', ['active', 'cancelled'])
-                    ->where('expires_at', '>', now());
+            ->whereIn('status', ['active', 'cancelled'])
+            ->where('expires_at', '>', now())
+            ->whereHas('plan', function ($query) {
+                $query->whereColumn('subscriptions.used_summaries', '<', 'plans.summaries_limit');
+            })
+            ->latest();
     }
 
     public function latestSubscription()
@@ -78,10 +74,15 @@ class Doctor extends Model
 
     public function hasFeature(string $featureName): bool
     {
-        if ($this->billing_mode === 'pay_per_use') return true;
+        if ($this->billing_mode === 'pay_per_use') {
+            return true;
+        }
         $sub = $this->activeSubscription;
-        if (!$sub) return false;
+        if (! $sub) {
+            return false;
+        }
         $features = is_string($sub->plan->features) ? json_decode($sub->plan->features, true) : $sub->plan->features;
+
         return in_array($featureName, $features ?? []);
     }
 }
