@@ -10,13 +10,16 @@ use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DoctorController;
+use App\Http\Controllers\FlutterNotificationController;
 use App\Http\Controllers\KeyPointController;
+use App\Http\Controllers\MedicalFileController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Patient\PatientController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\StripeWebhookController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\SupportController;
+use App\Http\Controllers\TaskController;
 use App\Http\Controllers\VisitController;
 use App\Http\Controllers\VisitItemController;
 use App\Http\Controllers\WalletController;
@@ -70,6 +73,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/subscription/plans', [SubscriptionController::class, 'index']);
     Route::get('/subscription/current', [SubscriptionController::class, 'current']);
     Route::post('/subscription/cancel', [SubscriptionController::class, 'cancel']);
+    Route::get('/patient/next-visit', [PatientController::class, 'nextVisit']);
     Route::get('/notifications', [NotificationController::class, 'index']);
     Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
     Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
@@ -89,7 +93,34 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/doctors/{doctorId}', [DoctorController::class, 'destroy']);
     Route::patch('/change-password', [DoctorController::class, 'changePassword']);
     Route::get('/patients/{patientId}/comparative-analysis', [PatientController::class, 'getComparativeAnalysis']);
+});
 
+Route::middleware('auth:sanctum')->group(function () {
+
+    Route::get('/patient/tasks', [TaskController::class, 'index']);
+    Route::get('/patient/tasks/{task}', [TaskController::class, 'show']);
+    Route::patch('/patient/tasks/{task}/complete', [TaskController::class, 'complete']);
+});
+
+Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);
+
+Route::get('/payment-success', function () {
+    return response()->json(['message' => 'Payment successful! You can close this tab.']);
+})->name('payment.success');
+
+Route::get('/payment-cancel', function () {
+    return response()->json(['message' => 'Payment cancelled.']);
+})->name('payment.cancel');
+
+Route::middleware('auth:sanctum')->group(function () {
+
+    Route::get('/patient/medical-history', [MedicalFileController::class, 'medicalHistoryFiles']);
+    Route::get('/patient/lab-reports', [MedicalFileController::class, 'labReports']);
+    Route::get('/patient/radiology-reports', [MedicalFileController::class, 'radiologyReports']);
+    Route::get('/patient/medications', [MedicalFileController::class, 'medications']);
+    Route::get('/patient/timeline', [MedicalFileController::class, 'timeline']);
+    Route::get('/patient/notifications', [FlutterNotificationController::class, 'index']);
+    Route::put('/patient/profile', [MedicalFileController::class, 'update']);
 });
 
 Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);

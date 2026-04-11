@@ -3,6 +3,11 @@
 namespace App\Traits;
 
 use App\Models\ActivityLog;
+use App\Models\KeyPoint;
+use App\Models\Medication;
+use App\Models\Patient;
+use App\Models\Task;
+use App\Models\Visit;
 
 trait LogsActivity
 {
@@ -12,21 +17,21 @@ trait LogsActivity
             $modelName = class_basename($model);
             if ($modelName === 'KeyPoint' && $model->is_manual) {
                 $model->logActivity('created');
-            } elseif (in_array($modelName, ['Task', 'Medication'])) {
+            } elseif (in_array($modelName, ['Task', 'Medication', 'Visit'])) {
                 $model->logActivity('created');
             }
         });
 
         static::updated(function ($model) {
             $modelName = class_basename($model);
-            if (in_array($modelName, ['Patient', 'KeyPoint', 'Task', 'Medication'])) {
+            if (in_array($modelName, ['Patient', 'KeyPoint', 'Task', 'Medication', 'Visit'])) {
                 $model->logActivity('updated');
             }
         });
 
         static::deleted(function ($model) {
             $modelName = class_basename($model);
-            if (in_array($modelName, ['KeyPoint', 'Task', 'Medication'])) {
+            if (in_array($modelName, ['KeyPoint', 'Task', 'Medication', 'Visit'])) {
                 $model->logActivity('deleted');
             }
         });
@@ -34,13 +39,15 @@ trait LogsActivity
 
     public function logActivity(string $event)
     {
-        $doctor = request()->user()?->doctor;
+        $doctor = auth()->user()?->doctor;
         $patientId = null;
 
-        if ($this instanceof \App\Models\Patient) {
+        if ($this instanceof Patient) {
             $patientId = $this->id;
-        } elseif (array_key_exists('patient_id', $this->getAttributes())) {
-            $patientId = $this->getAttribute('patient_id');
+        } elseif (isset($this->patient_id)) {
+            $patientId = $this->patient_id;
+        } elseif (method_exists($this, 'patient')) {
+            $patientId = $this->patient?->id;
         } elseif (method_exists($this, 'aiAnalysisResult')) {
             $analysis = $this->aiAnalysisResult()->first();
 
@@ -89,10 +96,11 @@ trait LogsActivity
         $modelName = class_basename($this);
 
         $displayName = match (true) {
-            $this instanceof \App\Models\Patient => $this->user?->name,
-            $this instanceof \App\Models\KeyPoint => ($this->is_manual ? 'Doctor Note' : 'Key Point') ,
-            $this instanceof \App\Models\Task => "Task: '{$this->title}'",
-            $this instanceof \App\Models\Medication => "Medication: '{$this->name}'",
+            $this instanceof Visit => 'Visit on '.\Carbon\Carbon::parse($this->next_visit_date)->format('M d, Y'),
+            $this instanceof Patient => $this->user?->name,
+            $this instanceof KeyPoint => ($this->is_manual ? 'Doctor Note' : 'Key Point') ,
+            $this instanceof Task => "Task: '{$this->title}'",
+            $this instanceof Medication => "Medication: '{$this->name}'",
             default => "{$modelName} (ID: {$this->id})"
         };
 
@@ -111,7 +119,7 @@ trait LogsActivity
             $messages = [];
 
             foreach ($changes as $field => $values) {
-                if (($this instanceof \App\Models\Patient && $field === 'status') || $this instanceof \App\Models\KeyPoint) {
+                if (($this instanceof Patient && $field === 'status') || $this instanceof KeyPoint) {
                     $messages[] = "{$field} changed from '{$values['old']}' to '{$values['new']}'";
                 } else {
                     if ($field === 'next_visit_date') {

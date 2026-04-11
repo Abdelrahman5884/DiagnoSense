@@ -16,6 +16,7 @@ class Task extends Model
         'visit_id',
         'patient_id',
         'doctor_id',
+        'is_completed',
     ];
 
     public function patient()
