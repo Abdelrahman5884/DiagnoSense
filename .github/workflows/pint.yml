@@ -1,0 +1,30 @@
+name: PHP Linting (Pint)
+on:
+  workflow_dispatch:
+  push:
+  pull_request: 
+jobs:
+  Pint:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6.0.2
+        with:
+         fetch-depth: 0
+         ref: ${{ github.head_ref || github.ref_name }}
+
+      - name: Install Dependencies
+        run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+
+      - name: Fetch main branch
+        run: git fetch origin main
+      
+      - name: Launch Pint inspection
+        run: vendor/bin/pint --diff=origin/main
+ 
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v7.1.0
+        with:
+          commit_message: Fix coding style with Laravel Pint
+          skip_fetch: true
