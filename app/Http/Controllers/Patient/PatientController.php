@@ -163,13 +163,13 @@ class PatientController extends Controller
         }
         if ($latestAnalysis->status === 'failed') {
             $hasData = $latestAnalysis->keyPoints()->exists();
-            if (!$hasData) {
-            return ApiResponse::error(
-                'The AI analysis process failed and no information was retrieved.',
-                $latestAnalysis->response,
-                422
-            );
-        }
+            if (! $hasData) {
+                return ApiResponse::error(
+                    'The AI analysis process failed and no information was retrieved.',
+                    $latestAnalysis->response,
+                    422
+                );
+            }
 
         }
         if ($latestAnalysis->ocr_file_path) {
