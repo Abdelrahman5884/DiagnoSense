@@ -2,8 +2,6 @@
 
 namespace App\Services;
 
-
-
 use App\Events\UserRegistered;
 use App\Models\User;
 use Ichtrojan\Otp\Otp;
@@ -13,14 +11,15 @@ class AuthenticationService
 {
     public function __construct(
         protected Otp $otp
-    ){}
+    ) {}
+
     public function register(array $data): array
     {
         return DB::transaction(function () use ($data) {
             $user = User::create($data);
-                $user->doctor()->create([
-                    'specialization' => $data['specialization'],
-                ]);
+            $user->doctor()->create([
+                'specialization' => $data['specialization'],
+            ]);
 
             $token = $this->getToken($user);
             $userId = $user->doctor->id;

@@ -15,7 +15,6 @@ class ApiResponse
         ], $status);
     }
 
-
     public static function error(?string $message = null, mixed $data = null, int $status = 400): JsonResponse
     {
         return response()->json([

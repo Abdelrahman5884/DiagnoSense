@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Auth;
 
-
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\RegistrationRequest;
 use App\Http\Resources\UserResource;
@@ -12,13 +11,13 @@ use Illuminate\Http\JsonResponse;
 
 class RegisterController extends Controller
 {
-
     public function __construct(
         protected AuthenticationService $authenticationService
-    ){}
-    public function __invoke(RegistrationRequest $request) : JsonResponse
+    ) {}
+
+    public function __invoke(RegistrationRequest $request): JsonResponse
     {
-       try {
+        try {
             $data = $request->validated();
             $data['is_active'] = true;
             $result = $this->authenticationService->register($data);
@@ -26,8 +25,8 @@ class RegisterController extends Controller
             return ApiResponse::success(
                 message: 'User registered successfully',
                 data: [
-                   'user' => (new UserResource($result['user']))->additional(['user_id' => $result['userId']]),
-                   'token' => $result['token'],
+                    'user' => (new UserResource($result['user']))->additional(['user_id' => $result['userId']]),
+                    'token' => $result['token'],
                 ],
                 status: 201
             );

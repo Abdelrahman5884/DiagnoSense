@@ -2,7 +2,6 @@
 
 namespace App\Notifications;
 
-use Ichtrojan\Otp\Otp;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Messages\VonageMessage;
@@ -11,7 +10,6 @@ use Illuminate\Notifications\Notification;
 class EmailVerificationNotification extends Notification
 {
     use Queueable;
-
 
     /**
      * Create a new notification instance.
@@ -27,7 +25,7 @@ class EmailVerificationNotification extends Notification
      */
     public function via(object $notifiable): array
     {
-        if(filter_var($notifiable->contact, FILTER_VALIDATE_EMAIL)) {
+        if (filter_var($notifiable->contact, FILTER_VALIDATE_EMAIL)) {
             return ['mail'];
         } else {
             return ['vonage'];
@@ -40,7 +38,6 @@ class EmailVerificationNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
 
-
         return (new MailMessage)
             ->subject('Verify Your Email')
             ->greeting('Hello '.$notifiable->name)
@@ -49,7 +46,7 @@ class EmailVerificationNotification extends Notification
             ->line('This OTP will expire in 10 minutes.');
     }
 
-    public function toVonage(object $notifiable) : VonageMessage
+    public function toVonage(object $notifiable): VonageMessage
     {
 
         return (new VonageMessage)
