@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\UserSocialAccount;
 use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -24,14 +25,11 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
-        'email',
-        'phone',
+        'contact',
         'password',
         'type',
         'is_active',
-        'email_verified_at',
-        'provider',
-        'provider_id',
+        'contact_verified_at',
     ];
 
     public function toSearchableArray()
@@ -59,7 +57,7 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
+            'contact_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
@@ -67,6 +65,10 @@ class User extends Authenticatable
     public function doctor()
     {
         return $this->hasOne(Doctor::class);
+    }
+
+    public function socialAccounts() {
+        return $this->hasMany(UserSocialAccount::class);
     }
 
     public function patient()
