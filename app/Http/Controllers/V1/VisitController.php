@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\V1;
 
 use App\Http\Requests\StoreNextVisitRequest;
 use App\Http\Resources\NextVisitResource;

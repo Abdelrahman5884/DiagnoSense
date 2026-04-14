@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Controllers\Patient;
+namespace App\Http\Controllers\V1\Patient;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\V1\Controller;
 use App\Http\Requests\StorePatientRequest;
 use App\Http\Requests\UpdatePatientRequest;
 use App\Http\Requests\UpdatePatientStatusRequest;

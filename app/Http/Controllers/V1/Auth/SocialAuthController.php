@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers\V1\Auth;
 
 use App\Events\UserRegistered;
-use App\Http\Controllers\Controller;
-use App\Http\Responses\ApiResponse;
+use App\Http\Controllers\V1\Controller;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
