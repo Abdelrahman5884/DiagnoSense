@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\V1\Auth;
 
 use App\Http\Controllers\V1\Controller;
+use App\Http\Helpers\ApiResponse;
 use App\Http\Requests\Auth\RegistrationRequest;
 use App\Http\Resources\UserResource;
-use App\Http\Helpers\ApiResponse;
 use App\Services\AuthenticationService;
 use Illuminate\Http\JsonResponse;
 

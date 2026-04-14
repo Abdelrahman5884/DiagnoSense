@@ -1,9 +1,9 @@
 <?php
 
+use App\Http\Helpers\ApiResponse;
 use App\Http\Middleware\CheckAiAccess;
 use App\Http\Middleware\CheckUserType;
 use App\Http\Middleware\ForceJsonResponse;
-use App\Http\Helpers\ApiResponse;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
