@@ -10,6 +10,6 @@ class SendVerificationEmail implements ShouldQueue
 {
     public function handle(UserRegistered $event): void
     {
-        $event->user->notify(new EmailVerificationNotification);
+        $event->user->notify(new EmailVerificationNotification($event->otpCode));
     }
 }

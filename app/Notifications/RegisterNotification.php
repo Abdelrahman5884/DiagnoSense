@@ -12,29 +12,17 @@ class RegisterNotification extends Notification
     use Queueable;
 
     /**
-     * Create a new notification instance.
-     */
-    public function __construct()
-    {
-        //
-    }
-
-    /**
      * Get the notification's delivery channels.
      *
      * @return array<int, string>
      */
     public function via(object $notifiable): array
     {
-        $channels = [];
-        if ($notifiable->email) {
-            $channels[] = 'mail';
-        }
-        if ($notifiable->phone) {
-            $channels[] = 'vonage';
-        }
-
-        return $channels;
+       if(filter_var($notifiable->contact, FILTER_VALIDATE_EMAIL)) {
+           return ['mail'];
+       } else {
+           return ['vonage'];
+       }
     }
 
     /**
@@ -49,21 +37,10 @@ class RegisterNotification extends Notification
             ->line('Thank you for joining us!');
     }
 
-    public function toVonage($notifiable)
+    public function toVonage(object $notifiable): VonageMessage
     {
         return (new VonageMessage)
             ->content("Welcome to DiagnoSense 💙. Hello {$notifiable->name}, We are excited to have you on board.");
     }
 
-    /**
-     * Get the array representation of the notification.
-     *
-     * @return array<string, mixed>
-     */
-    public function toArray(object $notifiable): array
-    {
-        return [
-            //
-        ];
-    }
 }
