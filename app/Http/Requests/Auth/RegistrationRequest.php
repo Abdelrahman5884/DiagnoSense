@@ -2,15 +2,11 @@
 
 namespace App\Http\Requests\Auth;
 
-use App\Http\Responses\ApiResponse;
-use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Validation\Rule;
 
 class RegistrationRequest extends FormRequest
 {
-
     /**
      * Get the validation rules that apply to the request.
      *

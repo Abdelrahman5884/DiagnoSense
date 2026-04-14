@@ -18,11 +18,11 @@ class RegisterNotification extends Notification
      */
     public function via(object $notifiable): array
     {
-       if(filter_var($notifiable->contact, FILTER_VALIDATE_EMAIL)) {
-           return ['mail'];
-       } else {
-           return ['vonage'];
-       }
+        if (filter_var($notifiable->contact, FILTER_VALIDATE_EMAIL)) {
+            return ['mail'];
+        } else {
+            return ['vonage'];
+        }
     }
 
     /**
@@ -42,5 +42,4 @@ class RegisterNotification extends Notification
         return (new VonageMessage)
             ->content("Welcome to DiagnoSense 💙. Hello {$notifiable->name}, We are excited to have you on board.");
     }
-
 }
