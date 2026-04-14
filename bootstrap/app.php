@@ -1,8 +1,15 @@
 <?php
 
+use App\Http\Middleware\CheckAiAccess;
+use App\Http\Middleware\CheckUserType;
+use App\Http\Middleware\ForceJsonResponse;
+use App\Http\Responses\ApiResponse;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -14,23 +21,28 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->group('api', [
-            \App\Http\Middleware\ForceJsonResponse::class,
+            ForceJsonResponse::class,
         ]);
 
         $middleware->alias([
-            'check-user-type' => \App\Http\Middleware\CheckUserType::class,
-            'check-ai-access' => \App\Http\Middleware\CheckAiAccess::class,
+            'check-user-type' => CheckUserType::class,
+            'check-ai-access' => CheckAiAccess::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException $e, $request) {
+        $exceptions->render(function (ValidationException $e, $request) {
             if ($request->is('api/*')) {
-                return \App\Http\Responses\ApiResponse::error('Unauthorized access: You do not have permission for this action.', null, 403);
+                return ApiResponse::error(message: 'Validation Errors', data: $e->errors(), status: 422);
             }
         });
-        $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\NotFoundHttpException $e, $request) {
+        $exceptions->render(function (AccessDeniedHttpException $e, $request) {
             if ($request->is('api/*')) {
-                return \App\Http\Responses\ApiResponse::error('The requested resource was not found.', null, 404);
+                return ApiResponse::error('Unauthorized access: You do not have permission for this action.', null, 403);
+            }
+        });
+        $exceptions->render(function (NotFoundHttpException $e, $request) {
+            if ($request->is('api/*')) {
+                return ApiResponse::error('The requested resource was not found.', null, 404);
             }
         });
     })->create();

@@ -19,7 +19,7 @@ class CheckUserType
         $type = $request->route('type');
 
         if (! in_array($type, ['doctor', 'patient'])) {
-            return ApiResponse::error('Invalid user type.', null, 400);
+            return ApiResponse::error(message: 'Invalid user type.');
         }
 
         return $next($request);
