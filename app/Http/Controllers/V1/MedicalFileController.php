@@ -7,7 +7,7 @@ use App\Http\Resources\MedicalFileResource;
 use App\Http\Resources\MedicationListResource;
 use App\Http\Resources\RadiologyReportResource;
 use App\Http\Resources\TimelineResource;
-use App\Http\Responses\ApiResponse;
+use App\Http\Helpers\ApiResponse;
 use Illuminate\Http\Request;
 
 class MedicalFileController extends Controller

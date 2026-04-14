@@ -4,7 +4,7 @@ namespace App\Http\Controllers\V1\Auth;
 
 use App\Http\Controllers\V1\Controller;
 use App\Http\Requests\Auth\ForgetPasswordRequest;
-use App\Http\Responses\ApiResponse;
+use App\Http\Helpers\ApiResponse;
 use App\Models\User;
 use App\Notifications\ResetPasswordNotification;
 

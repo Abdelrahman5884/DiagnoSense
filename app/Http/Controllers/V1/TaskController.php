@@ -4,7 +4,7 @@ namespace App\Http\Controllers\V1;
 
 use App\Http\Requests\CompleteTaskRequest;
 use App\Http\Resources\TaskResource;
-use App\Http\Responses\ApiResponse;
+use App\Http\Helpers\ApiResponse;
 use App\Models\Task;
 
 class TaskController extends Controller

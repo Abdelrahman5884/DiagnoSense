@@ -5,7 +5,7 @@ namespace App\Http\Controllers\V1;
 use App\Http\Resources\CurrentVisitDashboardResource;
 use App\Http\Resources\QueueDashboardResource;
 use App\Http\Resources\WidgetsDashboardResource;
-use App\Http\Responses\ApiResponse;
+use App\Http\Helpers\ApiResponse;
 use App\Models\AiAnalysisResult;
 use App\Models\MedicalHistory;
 use App\Models\Patient;

@@ -13,7 +13,7 @@ use App\Http\Resources\NextVisitResource;
 use App\Http\Resources\PatientEditResource;
 use App\Http\Resources\PatientListResource;
 use App\Http\Resources\PatientOverviewResource;
-use App\Http\Responses\ApiResponse;
+use App\Http\Helpers\ApiResponse;
 use App\Jobs\ComparativeAnalysis;
 use App\Jobs\ProcessAi;
 use App\Models\ActivityLog;

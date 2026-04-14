@@ -7,7 +7,7 @@ use App\Http\Requests\DeleteDoctorAccountRequest;
 use App\Http\Requests\GetDoctorInformationRequest;
 use App\Http\Requests\UpdateDoctorInformationRequest;
 use App\Http\Resources\DoctorResource;
-use App\Http\Responses\ApiResponse;
+use App\Http\Helpers\ApiResponse;
 
 class DoctorController extends Controller
 {

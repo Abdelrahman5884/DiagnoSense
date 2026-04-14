@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\V1\Auth;
 
 use App\Http\Controllers\V1\Controller;
-use App\Http\Responses\ApiResponse;
+use App\Http\Helpers\ApiResponse;
 use Illuminate\Http\Request;
 
 class LogoutController extends Controller

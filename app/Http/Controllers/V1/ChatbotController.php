@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\V1;
 
 use App\Http\Requests\AskChatbotRequest;
-use App\Http\Responses\ApiResponse;
+use App\Http\Helpers\ApiResponse;
 use App\Services\ChatbotService;
 
 class ChatbotController extends Controller

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\V1;
 
 use App\Http\Requests\StoreNextVisitRequest;
 use App\Http\Resources\NextVisitResource;
-use App\Http\Responses\ApiResponse;
+use App\Http\Helpers\ApiResponse;
 
 class VisitController extends Controller
 {

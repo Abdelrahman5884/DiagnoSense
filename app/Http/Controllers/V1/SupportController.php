@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\V1;
 
 use App\Http\Requests\StoreSupportRequest;
-use App\Http\Responses\ApiResponse;
+use App\Http\Helpers\ApiResponse;
 use App\Models\SupportTeam;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;

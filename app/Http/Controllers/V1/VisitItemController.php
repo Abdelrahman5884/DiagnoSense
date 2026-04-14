@@ -5,7 +5,7 @@ namespace App\Http\Controllers\V1;
 use App\Http\Requests\StoreVisitItemRequest;
 use App\Http\Resources\MedicationResource;
 use App\Http\Resources\TaskResource;
-use App\Http\Responses\ApiResponse;
+use App\Http\Helpers\ApiResponse;
 use App\Models\Patient;
 use App\Models\Task;
 use App\Models\Visit;
