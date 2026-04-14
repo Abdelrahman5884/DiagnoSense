@@ -24,14 +24,11 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
-        'email',
-        'phone',
+        'contact',
         'password',
         'type',
         'is_active',
-        'email_verified_at',
-        'provider',
-        'provider_id',
+        'contact_verified_at',
     ];
 
     public function toSearchableArray()
