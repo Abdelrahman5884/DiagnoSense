@@ -6,7 +6,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
-use App\Http\Controllers\Auth\SocialAuthController;
+use App\Http\Controllers\V1\Auth\SocialAuthController;
 use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DoctorController;
@@ -41,12 +41,14 @@ Route::middleware('check-user-type')->group(function () {
     });
 
 });
-
-Route::controller(SocialAuthController::class)->group(function () {
-    Route::get('/google/redirect', 'redirectToGoogle');
-    Route::get('/google/callback', 'handleGoogleCallback');
+Route::prefix('v1')->group(function () {
+    Route::prefix('auth')->group(function () {
+        Route::controller(SocialAuthController::class)->group(function () {
+            Route::get('/google/redirect', 'redirectToGoogle')->name('google.redirect');
+            Route::get('/google/callback', 'handleGoogleCallback')->name('google.callback');
+        });
+    });
 });
-
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/patients', [PatientController::class, 'index']);
     Route::post('/patients', [PatientController::class, 'store'])->middleware('check-ai-access');
