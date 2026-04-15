@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services\Auth;
 
 use App\Events\UserRegistered;
@@ -19,11 +20,13 @@ class SocialAuthService
             ->redirect()
             ->getTargetUrl();
     }
+
     public function handleProviderCallback(string $provider): array
     {
         $socialUser = Socialite::driver($provider)
-                    ->stateless()
-                    ->user();
+            ->stateless()
+            ->user();
+
         return DB::transaction(function () use ($provider, $socialUser) {
 
             $account = UserSocialAccount::with('user')
@@ -37,7 +40,7 @@ class SocialAuthService
 
             $user = User::where('contact', $socialUser->getEmail())->first();
 
-            if (!$user) {
+            if (! $user) {
                 $user = $this->createUser($socialUser);
             }
 
@@ -46,6 +49,7 @@ class SocialAuthService
             return $this->authResponse($user);
         });
     }
+
     private function createUser(SocialiteUser $socialUser): User
     {
         $user = User::create([
@@ -57,6 +61,7 @@ class SocialAuthService
         ]);
         $user->doctor()->create();
         event(new UserRegistered($user));
+
         return $user;
     }
 
@@ -75,5 +80,4 @@ class SocialAuthService
             'token' => $user->createToken('auth_token')->plainTextToken,
         ];
     }
-
 }
