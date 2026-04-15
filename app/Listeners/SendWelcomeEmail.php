@@ -3,18 +3,21 @@
 namespace App\Listeners;
 
 use App\Events\UserRegistered;
-use App\Notifications\RegisterNotification;
+use App\Mail\WelcomeMail;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Facades\Mail;
 
 class SendWelcomeEmail implements ShouldQueue
 {
-    public $delay = 60;
 
     /**
      * Handle the event.
      */
     public function handle(UserRegistered $event): void
     {
-        $event->user->notify(new RegisterNotification);
+        if(filter_var($event->user->contact, FILTER_VALIDATE_EMAIL)) {
+            Mail::to($event->user->contact)->send(new WelcomeMail($event->user));
+        }
+
     }
 }

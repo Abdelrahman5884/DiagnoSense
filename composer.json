@@ -26,6 +26,8 @@
         "microsoft/azure-storage-blob": "^1.5",
         "scalar/laravel": "^0.2.0",
         "stripe/stripe-php": "^19.4",
+        "symfony/brevo-mailer": "^7.4",
+        "symfony/http-client": "^7.4",
         "vonage/client": "^4.3"
     },
     "require-dev": {
