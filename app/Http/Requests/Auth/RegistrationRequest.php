@@ -23,6 +23,7 @@ class RegistrationRequest extends FormRequest
             'contact' => [
                 'required',
                 Rule::unique('users', 'contact'),
+                'bail',
                 Rule::when(filter_var($this->input('contact'), FILTER_VALIDATE_EMAIL), ['email'], ['regex:/^01[0125][0-9]{8}$/']),
             ],
             'password' => [
