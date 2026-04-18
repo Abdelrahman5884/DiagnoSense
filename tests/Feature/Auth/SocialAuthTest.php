@@ -7,7 +7,11 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
 use Laravel\Socialite\Contracts\User as SocialiteUser;
 use Laravel\Socialite\Facades\Socialite;
-use function Pest\Laravel\{get, getJson, assertDatabaseHas, assertDatabaseCount};
+
+use function Pest\Laravel\assertDatabaseHas;
+use function Pest\Laravel\get;
+use function Pest\Laravel\getJson;
+
 uses(Illuminate\Foundation\Testing\RefreshDatabase::class);
 function mockSocialiteUser(
     string $id = '12345',
@@ -88,7 +92,6 @@ describe('Social Authentication', function () {
 
             expect(User::count())->toBe(1);
         });
-
 
         it('logs in user directly if social account already exists', function () {
 
