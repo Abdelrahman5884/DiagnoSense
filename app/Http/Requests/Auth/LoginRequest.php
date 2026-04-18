@@ -2,20 +2,12 @@
 
 namespace App\Http\Requests\Auth;
 
-use App\Http\Helpers\ApiResponse;
-use Illuminate\Contracts\Validation\Validator;
+
+use App\Rules\ValidContactRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\Exceptions\HttpResponseException;
 
 class LoginRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
-    public function authorize(): bool
-    {
-        return true;
-    }
 
     /**
      * Get the validation rules that apply to the request.
@@ -25,24 +17,15 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'identity' => 'required|string',
-            'password' => 'required|string',
+            'contact' => ['required', new ValidContactRule],
+            'password' => ['required', 'string', 'min:8']
         ];
     }
 
     public function messages(): array
     {
         return [
-            'identity.required' => 'Email or Phone is required.',
-            'password.required' => 'Password is required.',
+            'contact.required.required' => 'Contact is required.',
         ];
-    }
-
-    public function failedValidation(Validator $validator)
-    {
-        throw new HttpResponseException(
-            ApiResponse::error('This action could not be completed due to validation errors.',
-                $validator->errors(),
-                422));
     }
 }

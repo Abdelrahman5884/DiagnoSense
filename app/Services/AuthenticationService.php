@@ -3,9 +3,11 @@
 namespace App\Services;
 
 use App\Events\UserRegistered;
+use App\Http\Requests\LogoutRequest;
 use App\Models\User;
 use Ichtrojan\Otp\Otp;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class AuthenticationService
 {
@@ -31,6 +33,23 @@ class AuthenticationService
         });
     }
 
+    public function login(array $data, string $type) : ?array
+    {
+        $user = $this->authenticate($data['contact'], $data['password']);
+        if (!$user) {
+            return null;
+        }
+
+        $token = $this->getToken($user);
+        $userId = $type == 'doctor' ? $user->doctor->id : $user->patient->id;
+        return compact('user', 'token', 'userId');
+    }
+
+    public function logout(LogoutRequest $request): void
+    {
+        $request->user()->currentAccessToken()->delete();
+    }
+
     private function getToken(User $user): string
     {
         return $user->createToken('auth_token.'.$user->name)->plainTextToken;
@@ -40,4 +59,19 @@ class AuthenticationService
     {
         return $this->otp->generate($contact, 'numeric', 6, 10)->token;
     }
+
+    private function getUser(string $contact): ?User
+    {
+        return User::where('contact', $contact)->first();
+    }
+    private function authenticate(string $contact, string $password): ?User
+    {
+        $user = $this->getUser($contact);
+        if (!$user || !Hash::check($password, $user->password)) {
+            return null;
+        }
+
+        return $user;
+    }
+
 }

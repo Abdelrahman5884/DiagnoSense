@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\V1\Auth\AuthenticatedController;
 use App\Http\Controllers\V1\Auth\EmailVerificationController;
 use App\Http\Controllers\V1\Auth\ForgetPasswordController;
 use App\Http\Controllers\V1\Auth\LoginController;
@@ -28,14 +29,14 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/v1/register', RegisterController::class);
 Route::prefix('v1')->middleware('check-user-type')->group(function () {
-    Route::post('/login/{type}', [LoginController::class, 'login']);
+    Route::post('/login/{type}', [AuthenticatedController::class, 'login'])->middleware('throttle:login');
 
     Route::post('/forget-password/{type}', [ForgetPasswordController::class, 'forgetPassword']);
     Route::post('/verify-otp/{type}', [ResetPasswordController::class, 'verifyOtp']);
     Route::post('/reset-password/{type}', [ResetPasswordController::class, 'resetPassword']);
 
     Route::middleware('auth:sanctum')->group(function () {
-        Route::post('/logout/{type}', [LogoutController::class, 'logout']);
+        Route::post('/logout/{type}', [AuthenticatedController::class, 'logout']);
         Route::post('/verify-email/{type}', [EmailVerificationController::class, 'verifyEmail']);
         Route::get('/resend-otp/{type}', [EmailVerificationController::class, 'resendOtp']);
     });
