@@ -10,12 +10,12 @@ class WelcomeSMSNotification extends Notification
 {
     use Queueable;
 
-    public function via(object $notifiable) : array
+    public function via(object $notifiable): array
     {
         return ['vonage'];
     }
 
-    public function toVonage($notifiable) : VonageMessage
+    public function toVonage($notifiable): VonageMessage
     {
         return (new VonageMessage)
             ->content("Welcome to DiagnoSense 💙. Hello {$notifiable->name}, We are excited to have you on board.");
