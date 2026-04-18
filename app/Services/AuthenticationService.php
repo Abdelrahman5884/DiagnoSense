@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Events\UserRegistered;
-use App\Http\Requests\LogoutRequest;
 use App\Models\User;
 use Ichtrojan\Otp\Otp;
 use Illuminate\Support\Facades\DB;
@@ -36,7 +35,7 @@ class AuthenticationService
     public function login(array $data, string $type) : ?array
     {
         $user = $this->authenticate($data['contact'], $data['password']);
-        if (!$user) {
+        if (!$user || $user->type !== $type) {
             return null;
         }
 
@@ -45,9 +44,9 @@ class AuthenticationService
         return compact('user', 'token', 'userId');
     }
 
-    public function logout(LogoutRequest $request): void
+    public function logout(User $user): void
     {
-        $request->user()->currentAccessToken()->delete();
+        $user->currentAccessToken()->delete();
     }
 
     private function getToken(User $user): string

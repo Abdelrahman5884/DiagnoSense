@@ -39,7 +39,8 @@ class AuthenticatedController
     public function logout(LogoutRequest $request) : JsonResponse
     {
         try{
-            $this->authenticationService->logout($request);
+            $user = $request->user();
+            $this->authenticationService->logout($user);
             return ApiResponse::success(message: 'Logout successful');
         }catch (\Exception $e){
             return ApiResponse::error(message: 'Failed to logout, please try again later.', status: 500);
