@@ -12,7 +12,7 @@ class SendVerificationEmail implements ShouldQueue
 {
     public function handle(UserRegistered $event): void
     {
-        if(filter_var($event->user->contact, FILTER_VALIDATE_EMAIL)) {
+        if (filter_var($event->user->contact, FILTER_VALIDATE_EMAIL)) {
             Mail::to($event->user->contact)->send(new EmailVerificationMail($event->user, $event->otpCode));
         } else {
             $event->user->notify(new EmailVerificationSMSNotification($event->otpCode));
