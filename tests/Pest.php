@@ -1,5 +1,8 @@
 <?php
 
+use App\Models\Doctor;
+use App\Models\Patient;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 /*
@@ -43,6 +46,29 @@ expect()->extend('toBeOne', function () {
 |
 */
 
+function createUserWithType(string $type, string $contact) :User
+{
+    $user = User::factory()->create([
+        'type' => $type,
+        'contact' => $contact,
+    ]);
+
+    if ($type === 'doctor') {
+      Doctor::factory()->create([
+          'user_id' => $user->id
+      ]);
+    } else {
+        Patient::factory()->create([
+            'user_id' => $user->id
+        ]);
+    }
+
+    return $user;
+}
+function getDataSets(string $userType, $test) : array
+{
+    return array_values($test->validData[$userType]);
+}
 function insertOtp(string $email, bool $expired = false)
 {
     DB::table('otps')->insert([
