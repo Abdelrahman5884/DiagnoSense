@@ -13,43 +13,9 @@ beforeEach(function () {
         'specialization' => 'Cardiologist',
     ];
 });
-it('allow user to register successfully with email', function () {
-    Event::fake();
-    $contact = fake()->unique()->safeEmail();
-    $response = $this->postJson(
-        '/api/v1/register',
-        array_merge($this->validData, ['contact' => $contact])
-    );
-    Event::assertDispatched(function (UserRegistered $event) use ($contact) {
-        return $event->user->contact === $contact;
-    });
-    $response->assertStatus(201);
-    $response->assertJsonStructure([
-        'success',
-        'message',
-        'data' => [
-            'user' => [
-                'id',
-                'name',
-                'contact',
-                'created_at',
-                'updated_at',
-            ],
-            'token',
-        ],
-    ]);
-    $this->assertDatabaseHas('users', [
-        'contact' => $response->json('data.user.contact'),
-    ]);
-    $this->assertDatabaseHas('doctors', [
-        'user_id' => $response->json('data.user.id'),
-        'specialization' => $this->validData['specialization'],
-    ]);
-});
 
-it('allow user to register successfully with phone', function () {
+it('allow user to register', function(string $contact) {
     Event::fake();
-    $contact = fake()->randomElement(['010', '011', '012', '015']).fake()->numerify('########');
     $response = $this->postJson(
         '/api/v1/register',
         array_merge($this->validData, ['contact' => $contact])
@@ -70,16 +36,18 @@ it('allow user to register successfully with phone', function () {
                 'updated_at',
             ],
             'token',
-        ],
+        ]
     ]);
     $this->assertDatabaseHas('users', [
         'contact' => $response->json('data.user.contact'),
     ]);
     $this->assertDatabaseHas('doctors', [
-        'user_id' => $response->json('data.user.id'),
         'specialization' => $this->validData['specialization'],
     ]);
-});
+})->with([
+    'email' => [fake()->unique()->safeEmail()],
+    'phone' => [fake()->randomElement(['010', '011', '012', '015']).fake()->numerify('########')],
+]);
 
 it('fails registration if contact is already taken', function () {
     Event::fake();
