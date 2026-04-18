@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
+
 /*
 |--------------------------------------------------------------------------
 | Test Case
@@ -12,7 +14,7 @@
 */
 
 pest()->extend(Tests\TestCase::class)
- // ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
+    ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
     ->in('Feature');
 
 /*
@@ -41,7 +43,14 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+function insertOtp(string $email, bool $expired = false)
 {
-    // ..
+    DB::table('otps')->insert([
+        'identifier' => $email,
+        'token' => '123456',
+        'validity' => 15,
+        'valid' => 1,
+        'created_at' => $expired ? now()->subMinutes(30) : now(),
+        'updated_at' => $expired ? now()->subMinutes(30) : now(),
+    ]);
 }
