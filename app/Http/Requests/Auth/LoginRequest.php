@@ -2,13 +2,11 @@
 
 namespace App\Http\Requests\Auth;
 
-
 use App\Rules\ValidContactRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class LoginRequest extends FormRequest
 {
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -18,7 +16,7 @@ class LoginRequest extends FormRequest
     {
         return [
             'contact' => ['required', new ValidContactRule],
-            'password' => ['required', 'string', 'min:8']
+            'password' => ['required', 'string', 'min:8'],
         ];
     }
 

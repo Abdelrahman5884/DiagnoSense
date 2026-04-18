@@ -15,7 +15,7 @@ beforeEach(function () {
             'phone' => [
                 'contact' => $doctorWithPhone->contact,
                 'password' => 'password',
-            ]
+            ],
         ],
         'patient' => [
             'email' => [
@@ -25,8 +25,8 @@ beforeEach(function () {
             'phone' => [
                 'contact' => $patientWithPhone->contact,
                 'password' => 'password',
-            ]
-        ]
+            ],
+        ],
     ];
 });
 
@@ -39,14 +39,14 @@ dataset('invalid_credentials', [
 ]);
 
 dataset('invalid_data', [
-    'empty contact' => [['contact' => null] , ['contact' => ['The contact field is required.']]],
+    'empty contact' => [['contact' => null], ['contact' => ['The contact field is required.']]],
     'empty password' => [['password' => null], ['password' => ['The password field is required.']]],
 ]);
 
 it('allow user to login', function (string $userType) {
     $dataSet = getDataSets($userType, $this);
     foreach ($dataSet as $data) {
-        $response = $this->postJson('/api/v1/login/'. $userType, $data);
+        $response = $this->postJson('/api/v1/login/'.$userType, $data);
         $response->assertStatus(200);
         $response->assertJsonStructure([
             'success',
@@ -54,20 +54,19 @@ it('allow user to login', function (string $userType) {
             'data' => [
                 'user',
                 'token',
-            ]
+            ],
         ]);
     }
 })->with('user_types');
 
-
 it('fails login user with invalid credentials', function (string $userType, array $invalidCredentials) {
     $dataSet = getDataSets($userType, $this);
     foreach ($dataSet as $data) {
-        $response = $this->postJson('/api/v1/login/'. $userType, array_merge($data, $invalidCredentials));
+        $response = $this->postJson('/api/v1/login/'.$userType, array_merge($data, $invalidCredentials));
         $response->assertStatus(401);
         $response->assertJson([
             'success' => false,
-            'message' => 'Invalid credentials'
+            'message' => 'Invalid credentials',
         ]);
     }
 })->with('user_types', 'invalid_credentials');
@@ -75,12 +74,12 @@ it('fails login user with invalid credentials', function (string $userType, arra
 it('fails login user with invalid data', function (string $userType, array $invalidData, array $expectedErrors) {
     $dataSet = getDataSets($userType, $this);
     foreach ($dataSet as $data) {
-        $response = $this->postJson('/api/v1/login/'. $userType, array_merge($data, $invalidData));
+        $response = $this->postJson('/api/v1/login/'.$userType, array_merge($data, $invalidData));
         $response->assertStatus(422);
         $response->assertJson([
             'success' => false,
             'message' => 'Validation Errors',
-            'data' => $expectedErrors
+            'data' => $expectedErrors,
         ]);
     }
 })->with('user_types', 'invalid_data');
@@ -100,5 +99,4 @@ it('allow user to logout', function (string $userType) {
             ->postJson('/api/v1/logout/'.$userType);
         $response2->assertStatus(401);
     }
-})->with('user_types');;
-
+})->with('user_types');

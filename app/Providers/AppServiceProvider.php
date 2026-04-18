@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-
 use App\Helpers\ApiResponse;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
@@ -15,7 +14,6 @@ use Symfony\Component\Mailer\Transport\Dsn;
 
 class AppServiceProvider extends ServiceProvider
 {
-
     /**
      * Bootstrap any application services.
      */

@@ -13,36 +13,37 @@ class AuthenticatedController
 {
     public function __construct(
         protected AuthenticationService $authenticationService
-    ){}
+    ) {}
 
-    public function login(LoginRequest $request, string $type) : JsonResponse
+    public function login(LoginRequest $request, string $type): JsonResponse
     {
-        try{
+        try {
             $data = $request->validated();
             $result = $this->authenticationService->login($data, $type);
-            if(!$result) {
+            if (! $result) {
                 return ApiResponse::error(message: 'Invalid credentials', status: 401);
             }
 
             return ApiResponse::success(
                 message: 'Login successful',
-                data:  [
+                data: [
                     'user' => (new UserResource($result['user']))->additional(['user_id' => $result['userId']]),
                     'token' => $result['token'],
                 ],
             );
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
             return ApiResponse::error(message: 'Failed to login, please try again later.', status: 500);
         }
     }
 
-    public function logout(LogoutRequest $request) : JsonResponse
+    public function logout(LogoutRequest $request): JsonResponse
     {
-        try{
+        try {
             $user = $request->user();
             $this->authenticationService->logout($user);
+
             return ApiResponse::success(message: 'Logout successful');
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             return ApiResponse::error(message: 'Failed to logout, please try again later.', status: 500);
         }
     }

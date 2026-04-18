@@ -18,7 +18,7 @@ class DoctorFactory extends Factory
     public function definition(): array
     {
         return [
-            'specialization' => 'Cardiologist'
+            'specialization' => 'Cardiologist',
         ];
     }
 }

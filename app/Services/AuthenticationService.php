@@ -32,15 +32,16 @@ class AuthenticationService
         });
     }
 
-    public function login(array $data, string $type) : ?array
+    public function login(array $data, string $type): ?array
     {
         $user = $this->authenticate($data['contact'], $data['password']);
-        if (!$user || $user->type !== $type) {
+        if (! $user || $user->type !== $type) {
             return null;
         }
 
         $token = $this->getToken($user);
         $userId = $type == 'doctor' ? $user->doctor->id : $user->patient->id;
+
         return compact('user', 'token', 'userId');
     }
 
@@ -63,14 +64,14 @@ class AuthenticationService
     {
         return User::where('contact', $contact)->first();
     }
+
     private function authenticate(string $contact, string $password): ?User
     {
         $user = $this->getUser($contact);
-        if (!$user || !Hash::check($password, $user->password)) {
+        if (! $user || ! Hash::check($password, $user->password)) {
             return null;
         }
 
         return $user;
     }
-
 }
