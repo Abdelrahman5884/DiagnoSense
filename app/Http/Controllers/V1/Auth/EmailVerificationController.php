@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\V1\Auth;
 
+use App\Helpers\ApiResponse;
 use App\Http\Controllers\V1\Controller;
 use App\Http\Requests\Auth\EmailVerificationRequest;
-use App\Http\Helpers\ApiResponse;
 use App\Models\User;
 use App\Notifications\EmailVerificationNotification;
 use Ichtrojan\Otp\Otp;

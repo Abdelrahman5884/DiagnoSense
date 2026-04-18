@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\V1\Patient;
 
+use App\Helpers\ApiResponse;
 use App\Http\Controllers\V1\Controller;
 use App\Http\Requests\StorePatientRequest;
 use App\Http\Requests\UpdatePatientRequest;
@@ -13,7 +14,6 @@ use App\Http\Resources\NextVisitResource;
 use App\Http\Resources\PatientEditResource;
 use App\Http\Resources\PatientListResource;
 use App\Http\Resources\PatientOverviewResource;
-use App\Http\Helpers\ApiResponse;
 use App\Jobs\ComparativeAnalysis;
 use App\Jobs\ProcessAi;
 use App\Models\ActivityLog;

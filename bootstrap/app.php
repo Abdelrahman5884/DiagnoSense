@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Helpers\ApiResponse;
+use App\Helpers\ApiResponse;
 use App\Http\Middleware\CheckAiAccess;
 use App\Http\Middleware\CheckUserType;
 use App\Http\Middleware\ForceJsonResponse;

@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\V1;
 
+use App\Helpers\ApiResponse;
 use App\Http\Requests\ChangeDoctorPasswordRequest;
 use App\Http\Requests\DeleteDoctorAccountRequest;
 use App\Http\Requests\GetDoctorInformationRequest;
 use App\Http\Requests\UpdateDoctorInformationRequest;
 use App\Http\Resources\DoctorResource;
-use App\Http\Helpers\ApiResponse;
 
 class DoctorController extends Controller
 {

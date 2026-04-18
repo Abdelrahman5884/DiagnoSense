@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\V1;
 
+use App\Helpers\ApiResponse;
 use App\Http\Requests\SubscribePlanRequest;
 use App\Http\Resources\CurrentSubscriptionResource;
 use App\Http\Resources\PlanResource;
-use App\Http\Helpers\ApiResponse;
 use App\Models\Plan;
 use App\Notifications\CreditsExhausted;
 use App\Notifications\PayPerUseActivated;

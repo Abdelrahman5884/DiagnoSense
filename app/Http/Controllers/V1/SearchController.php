@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\V1;
 
+use App\Helpers\ApiResponse;
 use App\Http\Resources\SearchResource;
-use App\Http\Helpers\ApiResponse;
 use App\Models\User;
 use Illuminate\Http\Request;
 
