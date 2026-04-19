@@ -28,7 +28,6 @@ function mockSocialiteUser(
         ->once()
         ->andReturn($socialUser);
 }
-describe('Social Authentication', function () {
 
     describe('Google Redirect', function () {
         it('returns a valid google redirect url', function () {
@@ -136,4 +135,4 @@ describe('Social Authentication', function () {
 
     });
 
-});
+
