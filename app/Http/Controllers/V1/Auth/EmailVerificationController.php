@@ -7,7 +7,6 @@ use App\Http\Controllers\V1\Controller;
 use App\Http\Requests\Auth\EmailVerificationRequest;
 use App\Services\AuthenticationService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class EmailVerificationController extends Controller
 {
@@ -27,6 +26,7 @@ class EmailVerificationController extends Controller
                 status: 401
             );
         }
+
         return ApiResponse::success(
             message: 'User verified successfully.'
         );
@@ -50,6 +50,7 @@ class EmailVerificationController extends Controller
                 status: 403
             );
         }
+
         return ApiResponse::success(
             message: 'A new OTP has been sent to your contact.'
         );

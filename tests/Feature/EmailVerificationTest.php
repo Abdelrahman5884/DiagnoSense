@@ -1,10 +1,10 @@
 <?php
 
-use Illuminate\Support\Facades\Notification;
 use App\Notifications\EmailVerificationNotification;
+use Ichtrojan\Otp\Otp;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
-use Ichtrojan\Otp\Otp;
+use Illuminate\Support\Facades\Notification;
 
 uses(RefreshDatabase::class);
 
@@ -16,14 +16,14 @@ beforeEach(function () {
 
     $mock->shouldReceive('validate')
         ->andReturnUsing(function ($contact, $otp) {
-            return (object)[
-                'status' => $otp === '123456'
+            return (object) [
+                'status' => $otp === '123456',
             ];
         });
 
     $mock->shouldReceive('generate')
-        ->andReturn((object)[
-            'token' => '123456'
+        ->andReturn((object) [
+            'token' => '123456',
         ]);
 
     $this->app->instance(Otp::class, $mock);
@@ -53,7 +53,7 @@ it('allows user to verify email', function (string $userType) {
 
     $response = $this->withHeader('Authorization', 'Bearer '.$token)
         ->postJson('/api/v1/verify-email/'.$userType, [
-            'otp' => '123456'
+            'otp' => '123456',
         ]);
 
     $response->assertStatus(200);
@@ -66,7 +66,7 @@ it('fails verification with invalid otp', function (string $userType) {
 
     $response = $this->withHeader('Authorization', 'Bearer '.$token)
         ->postJson('/api/v1/verify-email/'.$userType, [
-            'otp' => '999999'
+            'otp' => '999999',
         ]);
 
     $response->assertStatus(401);
@@ -120,7 +120,7 @@ it('fails resend otp if already verified', function (string $userType) {
     $user = $this->users[$userType];
 
     $user->update([
-        'contact_verified_at' => now()
+        'contact_verified_at' => now(),
     ]);
 
     $token = $user->createToken('test')->plainTextToken;
