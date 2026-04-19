@@ -11,6 +11,6 @@ class UserSocialAccount extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(related:User::class);
+        return $this->belongsTo(related: User::class);
     }
 }
