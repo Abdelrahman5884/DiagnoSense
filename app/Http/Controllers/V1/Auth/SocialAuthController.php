@@ -16,9 +16,13 @@ class SocialAuthController extends Controller
 
     public function redirectToGoogle(): JsonResponse
     {
-        $url = $this->socialAuthService->getRedirectUrl('google');
-
-        return ApiResponse::success('Redirect URL generated', ['url' => $url], 200);
+        try{
+            $url = $this->socialAuthService->getRedirectUrl('google');
+            return ApiResponse::success('Redirect URL generated', ['url' => $url], 200);
+        }catch (\Exception $e) {
+            \Log::error("Google Redirect Error: " . $e->getMessage());
+            return ApiResponse::error('Unable to connect to Google at the moment',null, 500);
+        }
     }
 
     public function handleGoogleCallback(): RedirectResponse
