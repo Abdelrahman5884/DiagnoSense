@@ -12,7 +12,6 @@ use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\get;
 use function Pest\Laravel\getJson;
 
-uses(Illuminate\Foundation\Testing\RefreshDatabase::class);
 function mockSocialiteUser(
     string $id = '12345',
     string $email = 'doctor@example.com',
@@ -66,7 +65,7 @@ describe('Social Authentication', function () {
 
             $location = $response->headers->get('Location');
 
-            expect($location)->toContain('token=');
+            expect($location)->toContain('#token=');
 
             $user = User::whereContact('new-doctor@example.com')->first();
 
@@ -114,7 +113,7 @@ describe('Social Authentication', function () {
 
             $location = $response->headers->get('Location');
 
-            expect($location)->toContain('token=');
+            expect($location)->toContain('#token=');
 
             expect(User::count())->toBe(1);
             expect(UserSocialAccount::count())->toBe(1);
