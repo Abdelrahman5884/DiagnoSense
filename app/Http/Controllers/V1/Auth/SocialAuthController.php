@@ -33,7 +33,7 @@ class SocialAuthController extends Controller
             $result = $this->socialAuthService->handleProviderCallback('google');
             $frontendUrl = config('services.frontend.url');
 
-            return redirect()->to("{$frontendUrl}?token={$result['token']}");
+            return redirect()->to("{$frontendUrl}#token={$result['token']}");
 
         } catch (\Exception $e) {
             \Log::error('Social login failed', [
