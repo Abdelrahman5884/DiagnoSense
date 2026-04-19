@@ -75,4 +75,8 @@ class User extends Authenticatable
     {
         return '20'.ltrim($this->phone, '0');
     }
+    public function routeNotificationForMail()
+{
+    return $this->contact;
+}
 }

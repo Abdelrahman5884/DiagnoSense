@@ -7,7 +7,7 @@ use App\Models\User;
 use Ichtrojan\Otp\Otp;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-
+use App\Events\OtpRequested;
 class AuthenticationService
 {
     public function __construct(
@@ -74,4 +74,48 @@ class AuthenticationService
 
         return $user;
     }
+private function validateOtpSafely(string $contact, string $otp): bool
+{
+    try {
+        $result = $this->otp->validate($contact, $otp);
+        return isset($result->status) && $result->status;
+    } catch (\Throwable $e) {
+        return false; 
+    }
+}
+public function verifyOtp(array $data, string $type): bool
+{
+    $user = $this->getUser($data['contact']);
+
+    if (! $user || $user->type !== $type) {
+        return false;
+    }
+
+   if (! $this->validateOtpSafely($data['contact'], $data['otp'])) {
+    return false;
+}
+
+    $user->update([
+        'email_verified_at' => now(),
+    ]);
+
+    return true;
+}
+
+private function isAuthorizedUser(User $user, string $type): bool
+{
+    return $user->type === $type;
+}
+public function resendOtp(User $user, string $type): bool
+{
+    if (! $this->isAuthorizedUser($user, $type)) {
+        return false;
+    }
+
+    $otpCode = $this->generateOtp($user->contact);
+
+     OtpRequested::dispatch($user, $otpCode);
+
+    return true;
+}
 }

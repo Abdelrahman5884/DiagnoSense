@@ -6,6 +6,7 @@ use App\Helpers\ApiResponse;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use App\Rules\ValidContactRule;
 
 class EmailVerificationRequest extends FormRequest
 {
@@ -25,17 +26,17 @@ class EmailVerificationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'identity' => 'required|string',
-            'otp' => 'required|max:6',
+            'contact' => ['required',new ValidContactRule,'bail',],
+            'otp' => ['required', 'string', 'size:6'],
         ];
     }
 
     public function messages(): array
     {
         return [
-            'identity.required' => 'Email or phone number is required.',
-            'otp.required' => 'OTP is required.',
-            'otp.max' => 'OTP must not exceed 6 characters.',
+            'contact.required' => 'The contact field is required.',
+            'otp.required' => 'The OTP field is required.',
+            'otp.size' => 'The OTP must be exactly 6 digits.',
         ];
     }
 

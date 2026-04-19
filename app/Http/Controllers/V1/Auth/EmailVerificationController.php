@@ -5,55 +5,61 @@ namespace App\Http\Controllers\V1\Auth;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\V1\Controller;
 use App\Http\Requests\Auth\EmailVerificationRequest;
-use App\Models\User;
-use App\Notifications\EmailVerificationNotification;
-use Ichtrojan\Otp\Otp;
+use App\Services\AuthenticationService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class EmailVerificationController extends Controller
 {
-    private $otp;
+    public function __construct(
+        protected AuthenticationService $authenticationService
+    ) {}
 
-    public function __construct()
+    public function verifyEmail(EmailVerificationRequest $request, string $type): JsonResponse
     {
-        $this->otp = new Otp;
+        try {
+            $data = $request->validated();
+            $result = $this->authenticationService->verifyOtp($data, $type);
+            if (! $result) {
+                return ApiResponse::error(
+                    message: 'Invalid OTP or user not found.',
+                    status: 400
+                );
+            }
+            return ApiResponse::success(
+                message: 'Email has been verified successfully.'
+            );
+        } catch (\Exception $e) {
+            return ApiResponse::error(
+                message: 'Failed to verify email, please try again later.',
+                status: 500
+            );
+        }
     }
-
-    public function verifyEmail(EmailVerificationRequest $request, string $type)
+    public function resendOtp(Request $request, string $type): JsonResponse
     {
-        $validated = $request->validated();
-        $fieldType = filter_var($validated['identity'], FILTER_VALIDATE_EMAIL) ? 'email' : 'phone';
-        $user = User::where($fieldType, $validated['identity'])
-            ->where('type', $type)
-            ->first();
-        if (! $user) {
-            return ApiResponse::error('User not found.', null, 404);
+        try {
+            $user = $request->user();
+            if (! $user) {
+                return ApiResponse::error('User not found.', null, 404);
+            }
+            $result = $this->authenticationService->resendOtp($user, $type);
+            if (! $result) {
+                return ApiResponse::error(
+                    message: 'Unauthorized action.',
+                    status: 403
+                );
+            }
+            $sentTo = $user->contact;
+            return ApiResponse::success(
+                message: "A new OTP has been sent to your {$sentTo} for verification."
+            );
+        } catch (\Exception $e) {
+            return ApiResponse::error(
+                message: 'Failed to resend OTP, please try again later.',
+                status: 500
+            );
         }
-        $otp2 = $this->otp->validate($validated['identity'], $validated['otp']);
-        if (! $otp2->status) {
-            return ApiResponse::error('Invalid or expired OTP.', null, 400);
-        }
-        $user->update([
-            'email_verified_at' => now(),
-        ]);
-
-        return ApiResponse::success('Email has been verified successfully.', null, 200);
-    }
-
-    public function resendOtp(Request $request, string $type)
-    {
-        $user = Auth::user();
-        if (! $user) {
-            return ApiResponse::error('User not found.', null, 404);
-        }
-        if ($type !== $user->type) {
-            return ApiResponse::error('Unauthorized action.', null, 403);
-        }
-        $request->user()->notify(new EmailVerificationNotification);
-
-        $sentTo = $user->phone ? 'phone number' : 'email';
-
-        return ApiResponse::success('A new OTP has been sent to your '.$sentTo.' for verification. Please check your inbox.', null, 200);
     }
 }

@@ -6,6 +6,8 @@ use App\Events\UserRegistered;
 use App\Listeners\SendVerificationEmail;
 use App\Listeners\SendWelcomeEmail;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use App\Events\OtpRequested;
+use App\Listeners\SendOtpNotification;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -13,6 +15,9 @@ class EventServiceProvider extends ServiceProvider
         UserRegistered::class => [
             SendVerificationEmail::class,
             SendWelcomeEmail::class,
+        ],
+        OtpRequested::class => [
+            SendOtpNotification::class,
         ],
     ];
 
@@ -23,7 +28,7 @@ class EventServiceProvider extends ServiceProvider
     {
         //
     }
-
+    
     /**
      * Bootstrap services.
      */
