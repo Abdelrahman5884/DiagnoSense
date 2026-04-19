@@ -8,7 +8,6 @@ use App\Http\Requests\Auth\EmailVerificationRequest;
 use App\Services\AuthenticationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class EmailVerificationController extends Controller
 {
@@ -18,48 +17,41 @@ class EmailVerificationController extends Controller
 
     public function verifyEmail(EmailVerificationRequest $request, string $type): JsonResponse
     {
-        try {
-            $data = $request->validated();
-            $result = $this->authenticationService->verifyOtp($data, $type);
-            if (! $result) {
-                return ApiResponse::error(
-                    message: 'Invalid OTP or user not found.',
-                    status: 400
-                );
-            }
-            return ApiResponse::success(
-                message: 'Email has been verified successfully.'
-            );
-        } catch (\Exception $e) {
+        $data = $request->validated();
+
+        $result = $this->authenticationService->verifyEmail($data, $type);
+
+        if (! $result) {
             return ApiResponse::error(
-                message: 'Failed to verify email, please try again later.',
-                status: 500
+                message: 'Invalid or expired OTP.',
+                status: 401
             );
         }
+        return ApiResponse::success(
+            message: 'User verified successfully.'
+        );
     }
-    public function resendOtp(Request $request, string $type): JsonResponse
+
+    public function resendOtp(string $type): JsonResponse
     {
-        try {
-            $user = $request->user();
-            if (! $user) {
-                return ApiResponse::error('User not found.', null, 404);
-            }
-            $result = $this->authenticationService->resendOtp($user, $type);
-            if (! $result) {
-                return ApiResponse::error(
-                    message: 'Unauthorized action.',
-                    status: 403
-                );
-            }
-            $sentTo = $user->contact;
-            return ApiResponse::success(
-                message: "A new OTP has been sent to your {$sentTo} for verification."
-            );
-        } catch (\Exception $e) {
+        $user = auth()->user();
+
+        $result = $this->authenticationService->resendOtp($user, $type);
+
+        if ($result === 'already_verified') {
             return ApiResponse::error(
-                message: 'Failed to resend OTP, please try again later.',
-                status: 500
+                message: 'User already verified.',
+                status: 400
             );
         }
+        if (! $result) {
+            return ApiResponse::error(
+                message: 'Unauthorized action.',
+                status: 403
+            );
+        }
+        return ApiResponse::success(
+            message: 'A new OTP has been sent to your contact.'
+        );
     }
 }

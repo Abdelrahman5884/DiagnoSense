@@ -5,8 +5,10 @@ namespace App\Notifications;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\VonageMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
-class EmailVerificationSMSNotification extends Notification
+
+class EmailVerificationSMSNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 

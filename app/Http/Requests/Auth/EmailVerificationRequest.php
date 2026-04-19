@@ -26,25 +26,7 @@ class EmailVerificationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'contact' => ['required',new ValidContactRule,'bail',],
             'otp' => ['required', 'string', 'size:6'],
         ];
-    }
-
-    public function messages(): array
-    {
-        return [
-            'contact.required' => 'The contact field is required.',
-            'otp.required' => 'The OTP field is required.',
-            'otp.size' => 'The OTP must be exactly 6 digits.',
-        ];
-    }
-
-    public function failedValidation(Validator $validator)
-    {
-        throw new HttpResponseException(
-            ApiResponse::error('This action could not be completed due to validation errors.',
-                $validator->errors(),
-                422));
     }
 }
