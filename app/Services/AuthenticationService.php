@@ -131,6 +131,6 @@ class AuthenticationService
 
        $this->sendOtp($user, $otpCode);
 
-        return true;
-    }
+      return true;
+   }
 }
