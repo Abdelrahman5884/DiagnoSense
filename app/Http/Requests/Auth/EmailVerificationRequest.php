@@ -2,11 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
-use App\Helpers\ApiResponse;
-use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\Exceptions\HttpResponseException;
-use App\Rules\ValidContactRule;
 
 class EmailVerificationRequest extends FormRequest
 {
