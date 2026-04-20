@@ -27,7 +27,8 @@ class PatientController extends Controller
             );
 
         } catch (\Exception $e) {
-            \Log::error("Patient Index Error: " . $e->getMessage());
+            \Log::error('Patient Index Error: '.$e->getMessage());
+
             return ApiResponse::error('An error occurred while fetching patients.', null, 500);
         }
     }
