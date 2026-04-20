@@ -14,12 +14,12 @@ use App\Http\Controllers\KeyPointController;
 use App\Http\Controllers\MedicalFileController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Patient\PatientController;
-use App\Http\Controllers\SearchController;
 use App\Http\Controllers\StripeWebhookController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\SupportController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\V1\Auth\SocialAuthController;
+use App\Http\Controllers\V1\Patients\SearchController;
 use App\Http\Controllers\VisitController;
 use App\Http\Controllers\VisitItemController;
 use App\Http\Controllers\WalletController;
@@ -48,6 +48,11 @@ Route::prefix('v1')->group(function () {
             Route::get('/google/callback', 'handleGoogleCallback')->name('google.callback');
         });
     });
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::prefix('patients')->group(function () {
+            Route::get('/search', SearchController::class)->name('patients.search');
+        });
+    });
 });
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/patients', [PatientController::class, 'index']);
@@ -61,7 +66,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/patients/{patientId}/overview', [PatientController::class, 'overview']);
     Route::patch('/patients/{patient}/status', [PatientController::class, 'updateStatus']);
     Route::get('/patients/status/{type}', [PatientController::class, 'statusByType']);
-    Route::get('/search', SearchController::class);
     Route::delete('/key-points/{keyPointId}', [KeyPointController::class, 'destroy']);
     Route::get('/patients/{patient}/activities', [PatientController::class, 'activityHistory']);
     Route::patch('/key-points/{keyPointId}', [KeyPointController::class, 'update']);
