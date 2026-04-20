@@ -14,6 +14,7 @@ class SearchController extends Controller
     public function __construct(
         protected SearchService $searchService
     ) {}
+
     public function __invoke(SearchRequest $request): JsonResponse
     {
         try {
@@ -25,7 +26,7 @@ class SearchController extends Controller
             );
 
             if ($patients->isEmpty()) {
-                return ApiResponse::error('No patients match your search',null,404);
+                return ApiResponse::error('No patients match your search', null, 404);
             }
 
             return ApiResponse::success(
@@ -33,9 +34,10 @@ class SearchController extends Controller
                 SearchResource::collection($patients)->response()->getData(true),
                 200
             );
-        }catch (\Exception $e) {
-            \Log::error("Search Error: " . $e->getMessage());
-            return ApiResponse::error('An error occurred during search',null, 500);
+        } catch (\Exception $e) {
+            \Log::error('Search Error: '.$e->getMessage());
+
+            return ApiResponse::error('An error occurred during search', null, 500);
         }
     }
 }

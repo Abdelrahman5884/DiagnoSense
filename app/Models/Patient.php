@@ -32,6 +32,7 @@ class Patient extends Model
     protected $casts = [
         'date_of_birth' => 'date',
     ];
+
     protected function age(): Attribute
     {
         return Attribute::make(
@@ -66,11 +67,12 @@ class Patient extends Model
 
     public function visits(): HasMany
     {
-        return $this->hasMany(related:Visit::class);
+        return $this->hasMany(related: Visit::class);
     }
+
     public function latestVisit(): HasOne
     {
-        return $this->hasOne(related:Visit::class)->latestOfMany();
+        return $this->hasOne(related: Visit::class)->latestOfMany();
     }
 
     public function medications()

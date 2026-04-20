@@ -25,6 +25,7 @@ class ActivityLog extends Model
     {
         return $this->belongsTo(Doctor::class);
     }
+
     public function changeable(): MorphTo
     {
         return $this->morphTo();
