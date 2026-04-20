@@ -53,7 +53,6 @@ Route::prefix('v1')->group(function () {
     });
 });
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/patients', [PatientController::class, 'index']);
     Route::post('/patients', [PatientController::class, 'store'])->middleware('check-ai-access');
     Route::get('/patients/{patientId}/key-info', [PatientController::class, 'getKeyInfo']);
     Route::post('/visits', [VisitController::class, 'store']);

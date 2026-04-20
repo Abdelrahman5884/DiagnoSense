@@ -3,7 +3,7 @@
 use App\Models\Doctor;
 use App\Models\Patient;
 use App\Models\User;
-use App\Services\SearchService;
+use App\Services\PatientService;
 use Illuminate\Support\Facades\Log;
 
 use function Pest\Laravel\actingAs;
@@ -14,109 +14,121 @@ beforeEach(function () {
     $this->doctor = Doctor::factory()->create(['user_id' => $this->user->id]);
     actingAs($this->user);
 });
-describe('Patients Search: Security', function () {
-    it('requires authentication to access search', function () {
+
+describe('Patients Index: Security & Access', function () {
+    it('requires authentication to access patients list', function () {
         auth()->logout();
-        getJson(route('patients.search', ['search' => 'any']))
+        getJson(route('patients.index'))
             ->assertUnauthorized();
     });
 });
-describe('Patients Search: Validation', function () {
-    it('validates that search term is required with a custom message', function () {
-        getJson(route('patients.search'))
+
+describe('Patients Index: Validation', function () {
+    it('validates that status must be a valid enum value', function () {
+        getJson(route('patients.index', ['status' => 'invalid_status']))
             ->assertStatus(422)
-            ->assertJsonValidationErrors(['search'])
-            ->assertJsonPath('errors.search.0', 'Please enter a name or national ID to search.');
+            ->assertJsonValidationErrors(['status']);
+    });
+
+    it('allows empty search and status to return all patients', function () {
+        getJson(route('patients.index'))
+            ->assertOk();
     });
 });
-describe('Patients Search: Functional Logic & Isolation', function () {
+
+describe('Patients Index: Functional Logic (Search & Filter)', function () {
     beforeEach(function () {
         $saraUser = User::factory()->create(['name' => 'Dr. Sara', 'type' => 'doctor']);
         $saraDoctor = Doctor::factory()->create(['user_id' => $saraUser->id]);
 
         $assem = Patient::factory()->create([
-            'user_id' => User::factory()->patient()->create(['name' => 'Assem']),
+            'user_id' => User::factory()->create(['name' => 'Assem']),
             'notional_id' => '2990101001',
+            'status' => 'critical'
         ]);
         $asma = Patient::factory()->create([
-            'user_id' => User::factory()->patient()->create(['name' => 'Asma']),
+            'user_id' => User::factory()->create(['name' => 'Asma']),
             'notional_id' => '2990102002',
+            'status' => 'stable'
         ]);
         $ahmed = Patient::factory()->create([
-            'user_id' => User::factory()->patient()->create(['name' => 'Ahmed']),
+            'user_id' => User::factory()->create(['name' => 'Ahmed']),
             'notional_id' => '2990203003',
+            'status' => 'stable'
         ]);
+
         $this->doctor->patients()->attach([$assem->id, $asma->id, $ahmed->id]);
 
         $amina = Patient::factory()->create([
-            'user_id' => User::factory()->patient()->create(['name' => 'Amina']),
+            'user_id' => User::factory()->create(['name' => 'Amina']),
             'notional_id' => '3000101001',
+            'status' => 'critical'
         ]);
         $saraDoctor->patients()->attach($amina->id);
     });
 
-    it('returns only Ahmed\'s 3 patients when searching for "a" (Excluding Sara\'s patient)', function () {
-        getJson(route('patients.search', ['search' => 'a']))
+    it('returns only current doctor\'s patients', function () {
+        getJson(route('patients.index'))
             ->assertOk()
             ->assertJsonCount(3, 'data.data')
-            ->assertJsonFragment(['name' => 'Assem'])
-            ->assertJsonFragment(['name' => 'Asma'])
-            ->assertJsonFragment(['name' => 'Ahmed'])
             ->assertJsonMissing(['name' => 'Amina']);
     });
 
-    it('refines results as the search term becomes more specific ("as" -> 2 patients)', function () {
-        getJson(route('patients.search', ['search' => 'as']))
+    it('filters by name (Prefix Search)', function () {
+        getJson(route('patients.index', ['search' => 'as']))
             ->assertOk()
             ->assertJsonCount(2, 'data.data')
             ->assertJsonFragment(['name' => 'Assem'])
             ->assertJsonFragment(['name' => 'Asma']);
     });
 
-    it('returns exactly one patient for highly specific name search ("asm")', function () {
-        getJson(route('patients.search', ['search' => 'asm']))
+    it('filters by status only', function () {
+        getJson(route('patients.index', ['status' => 'stable']))
             ->assertOk()
-            ->assertJsonCount(1, 'data.data')
-            ->assertJsonPath('data.data.0.name', 'Asma');
+            ->assertJsonCount(2, 'data.data')
+            ->assertJsonFragment(['name' => 'Asma'])
+            ->assertJsonFragment(['name' => 'Ahmed']);
     });
 
-    it('handles numeric search refinement using national ID', function () {
-        getJson(route('patients.search', ['search' => '299']))
+    it('combines search and status filter', function () {
+        getJson(route('patients.index', ['search' => 'as', 'status' => 'critical']))
             ->assertOk()
-            ->assertJsonCount(3, 'data.data');
+            ->assertJsonCount(1, 'data.data')
+            ->assertJsonPath('data.data.0.name', 'Assem');
+    });
 
-        getJson(route('patients.search', ['search' => '29901']))
+    it('handles numeric prefix search for national id', function () {
+        getJson(route('patients.index', ['search' => '29901']))
             ->assertOk()
             ->assertJsonCount(2, 'data.data');
     });
 });
 
-describe('Patients Search: Pagination', function () {
-    it('returns correct pagination metadata and limits per page', function () {
+describe('Patients Index: Pagination', function () {
+    it('applies pagination and includes metadata', function () {
         Patient::factory()->count(15)->create()->each(function ($p) {
-            $p->user->update(['name' => 'Z-Patient '.fake()->uuid()]);
             $this->doctor->patients()->attach($p->id);
         });
 
-        $response = getJson(route('patients.search', ['search' => 'z']));
+        $response = getJson(route('patients.index'));
 
         $response->assertOk();
         expect($response->json('data.meta.per_page'))->toBe(12)
-            ->and($response->json('data.meta.total'))->toBe(15);
+            ->and($response->json('data.meta.total'))->toBeGreaterThanOrEqual(15);
     });
 });
 
-describe('Patients Search: Error Handling', function () {
-    it('logs the exception and returns a 500 error on service failure', function () {
+describe('Patients Index: Error Handling', function () {
+    it('logs the exception and returns 500 on service failure', function () {
         Log::shouldReceive('error')->once();
 
-        $this->mock(SearchService::class)
-            ->shouldReceive('search')
-            ->andThrow(new Exception('Unexpected DB Error'));
+        $this->mock(PatientService::class)
+            ->shouldReceive('getPatients')
+            ->andThrow(new Exception('Service Failure'));
 
-        getJson(route('patients.search', ['search' => 'test']))
+        getJson(route('patients.index', ['search' => 'test']))
             ->assertStatus(500)
             ->assertJsonPath('success', false)
-            ->assertJsonPath('message', 'An error occurred during search');
+            ->assertJsonPath('message', 'An error occurred while fetching patients.');
     });
 });

@@ -8,7 +8,6 @@ use App\Http\Resources\PatientResource;
 use App\Http\Responses\ApiResponse;
 use App\Services\PatientService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class PatientController extends Controller
 {
@@ -21,9 +20,6 @@ class PatientController extends Controller
         try {
             $doctorId = auth()->user()->doctor->id;
             $patients = $this->patientService->getPatients($doctorId, $request->validated());
-            if ($patients->isEmpty()) {
-                return ApiResponse::error('No patients found matching your criteria.', null, 404);
-            }
             return ApiResponse::success(
                 'Patients list retrieved successfully',
                 PatientResource::collection($patients)->response()->getData(true),
