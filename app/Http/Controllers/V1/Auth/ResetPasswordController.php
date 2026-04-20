@@ -6,45 +6,33 @@ use App\Helpers\ApiResponse;
 use App\Http\Controllers\V1\Controller;
 use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Http\Requests\Auth\VerifyOtpRequest;
-use App\Models\User;
-use Hash;
-use Ichtrojan\Otp\Otp;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
+use App\Services\AuthenticationService;
+use Illuminate\Http\JsonResponse;
 
 class ResetPasswordController extends Controller
 {
-    private $otp;
+    public function __construct(
+        protected AuthenticationService $authenticationService
+    ) {}
 
-    public function __construct()
-    {
-        $this->otp = new Otp;
-    }
+    public function verifyOtp(VerifyOtpRequest $request): JsonResponse
+    { 
 
-    public function verifyOtp(VerifyOtpRequest $request)
-    {
-        $validated = $request->validated();
+         $data = $request->validated();
 
-        $otp2 = $this->otp->validate($validated['identity'], $validated['otp']);
+         $result = $this->authenticationService->verifyOtp($data);
 
-        if (! $otp2->status) {
-            return ApiResponse::error('Invalid or expired OTP.', null, 400);
+        if (! $result) {
+           return ApiResponse::error(
+               message: 'Invalid or expired OTP.',
+               status: 400
+            ); 
         }
-        $token = Str::random(64);
-
-        DB::table('password_reset_tokens')->updateOrInsert(
-            ['identity' => $validated['identity']],
-            [
-                'token' => $token,
-                'created_at' => now(),
-            ]
+        return ApiResponse::success(
+            message: 'OTP verified. Use this token to reset your password.',
+            data: ['reset_token' => $result]
         );
-
-        return ApiResponse::success('OTP verified. Use this token to reset password.', [
-            'reset_token' => $token,
-        ], 200);
     }
-
     public function resetPassword(ResetPasswordRequest $request, string $type)
     {
         $validated = $request->validated();

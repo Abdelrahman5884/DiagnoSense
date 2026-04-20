@@ -3,9 +3,8 @@
 namespace App\Http\Requests\Auth;
 
 use App\Helpers\ApiResponse;
-use Illuminate\Contracts\Validation\Validator;
+use App\Rules\ValidContactRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\Exceptions\HttpResponseException;
 
 class VerifyOtpRequest extends FormRequest
 {
@@ -25,25 +24,8 @@ class VerifyOtpRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'identity' => 'required|string',
-            'otp' => 'required|max:6',
+            'contact' => ['required', new ValidContactRule],
+            'otp' => ['required', 'string', 'size:6'],
         ];
-    }
-
-    public function messages(): array
-    {
-        return [
-            'identity.required' => 'Please enter your email or phone number.',
-            'otp.required' => 'Please enter your OTP.',
-            'otp.max' => 'OTP must not exceed 6 characters.',
-        ];
-    }
-
-    public function failedValidation(Validator $validator)
-    {
-        throw new HttpResponseException(
-            ApiResponse::error('This action could not be completed due to validation errors.',
-                $validator->errors(),
-                422));
     }
 }
