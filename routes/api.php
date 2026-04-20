@@ -19,7 +19,6 @@ use App\Http\Controllers\SupportController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\V1\Auth\SocialAuthController;
 use App\Http\Controllers\V1\PatientController;
-use App\Http\Controllers\V1\Patients\SearchController;
 use App\Http\Controllers\VisitController;
 use App\Http\Controllers\VisitItemController;
 use App\Http\Controllers\WalletController;
@@ -49,7 +48,7 @@ Route::prefix('v1')->group(function () {
         });
     });
     Route::middleware('auth:sanctum')->group(function () {
-            Route::get('/patients',[PatientController::class, 'index'])->name('patients.index');
+        Route::get('/patients', [PatientController::class, 'index'])->name('patients.index');
     });
 });
 Route::middleware('auth:sanctum')->group(function () {
