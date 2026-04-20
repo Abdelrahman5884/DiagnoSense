@@ -20,6 +20,7 @@ class PatientController extends Controller
         try {
             $doctorId = auth()->user()->doctor->id;
             $patients = $this->patientService->getPatients($doctorId, $request->validated());
+
             return ApiResponse::success(
                 'Patients list retrieved successfully',
                 PatientResource::collection($patients)->response()->getData(true),

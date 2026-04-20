@@ -44,17 +44,17 @@ describe('Patients Index: Functional Logic (Search & Filter)', function () {
         $assem = Patient::factory()->create([
             'user_id' => User::factory()->create(['name' => 'Assem']),
             'notional_id' => '2990101001',
-            'status' => 'critical'
+            'status' => 'critical',
         ]);
         $asma = Patient::factory()->create([
             'user_id' => User::factory()->create(['name' => 'Asma']),
             'notional_id' => '2990102002',
-            'status' => 'stable'
+            'status' => 'stable',
         ]);
         $ahmed = Patient::factory()->create([
             'user_id' => User::factory()->create(['name' => 'Ahmed']),
             'notional_id' => '2990203003',
-            'status' => 'stable'
+            'status' => 'stable',
         ]);
 
         $this->doctor->patients()->attach([$assem->id, $asma->id, $ahmed->id]);
@@ -62,7 +62,7 @@ describe('Patients Index: Functional Logic (Search & Filter)', function () {
         $amina = Patient::factory()->create([
             'user_id' => User::factory()->create(['name' => 'Amina']),
             'notional_id' => '3000101001',
-            'status' => 'critical'
+            'status' => 'critical',
         ]);
         $saraDoctor->patients()->attach($amina->id);
     });
