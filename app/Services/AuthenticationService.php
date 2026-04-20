@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use App\Notifications\EmailVerificationNotification;
 use App\Notifications\EmailVerificationSMSNotification;
-use App\Events\OtpRequested;
+
 class AuthenticationService
 {
     public function __construct(
