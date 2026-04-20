@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services;
 
 use App\Models\User;
@@ -16,9 +17,9 @@ class SearchService
 
         $query->where(function ($q) use ($term) {
             if (is_numeric($term)) {
-                $q->where('patients.notional_id', 'LIKE', $term . '%');
+                $q->where('patients.notional_id', 'LIKE', $term.'%');
             } else {
-                $q->where('users.name', 'LIKE', $term . '%');
+                $q->where('users.name', 'LIKE', $term.'%');
             }
         });
 
@@ -27,7 +28,7 @@ class SearchService
             'patient.latestAiAnalysisResult:id,patient_id,ai_insight',
             'patient.latestVisit',
         ])
-        ->paginate(12)
-        ->appends(['search' => $term]);
+            ->paginate(12)
+            ->appends(['search' => $term]);
     }
 }

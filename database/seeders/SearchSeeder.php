@@ -26,9 +26,9 @@ class SearchSeeder extends Seeder
         $doctor1 = Doctor::create(['user_id' => $userDoc1->id, 'specialization' => 'Cardiology']);
         auth()->login($userDoc1);
         $token = $userDoc1->createToken('TestToken')->plainTextToken;
-        $this->command->info("---------------------------------------------");
+        $this->command->info('---------------------------------------------');
         $this->command->info("Token for Dr. Ahmed: {$token}");
-        $this->command->info("---------------------------------------------");
+        $this->command->info('---------------------------------------------');
         $userDoc2 = User::create([
             'name' => 'Dr. Sarah Ali',
             'contact' => 'doctor2@diagno.com',
@@ -57,6 +57,7 @@ class SearchSeeder extends Seeder
             'created_at' => now()->subDays(2),
         ]);
     }
+
     private function createPatient($name, $nationalId, $doctor)
     {
         $user = User::create([
@@ -76,6 +77,7 @@ class SearchSeeder extends Seeder
         ]);
 
         $doctor->patients()->attach($patient->id);
+
         return $patient;
     }
 }
