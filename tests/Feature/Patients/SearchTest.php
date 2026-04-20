@@ -1,10 +1,13 @@
 <?php
-use App\Models\User;
-use App\Models\Patient;
+
 use App\Models\Doctor;
+use App\Models\Patient;
+use App\Models\User;
 use App\Services\SearchService;
 use Illuminate\Support\Facades\Log;
-use function Pest\Laravel\{getJson, actingAs, assertDatabaseHas};
+
+use function Pest\Laravel\actingAs;
+use function Pest\Laravel\getJson;
 
 beforeEach(function () {
     $this->user = User::factory()->create(['name' => 'Dr. Ahmed', 'type' => 'doctor']);
@@ -33,21 +36,21 @@ describe('Patients Search: Functional Logic & Isolation', function () {
 
         $assem = Patient::factory()->create([
             'user_id' => User::factory()->patient()->create(['name' => 'Assem']),
-            'notional_id' => '2990101001'
+            'notional_id' => '2990101001',
         ]);
         $asma = Patient::factory()->create([
             'user_id' => User::factory()->patient()->create(['name' => 'Asma']),
-            'notional_id' => '2990102002'
+            'notional_id' => '2990102002',
         ]);
         $ahmed = Patient::factory()->create([
             'user_id' => User::factory()->patient()->create(['name' => 'Ahmed']),
-            'notional_id' => '2990203003'
+            'notional_id' => '2990203003',
         ]);
         $this->doctor->patients()->attach([$assem->id, $asma->id, $ahmed->id]);
 
         $amina = Patient::factory()->create([
             'user_id' => User::factory()->patient()->create(['name' => 'Amina']),
-            'notional_id' => '3000101001'
+            'notional_id' => '3000101001',
         ]);
         $saraDoctor->patients()->attach($amina->id);
     });
@@ -91,7 +94,7 @@ describe('Patients Search: Functional Logic & Isolation', function () {
 describe('Patients Search: Pagination', function () {
     it('returns correct pagination metadata and limits per page', function () {
         Patient::factory()->count(15)->create()->each(function ($p) {
-            $p->user->update(['name' => 'Z-Patient ' . fake()->uuid()]);
+            $p->user->update(['name' => 'Z-Patient '.fake()->uuid()]);
             $this->doctor->patients()->attach($p->id);
         });
 
