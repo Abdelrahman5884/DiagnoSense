@@ -4,7 +4,6 @@ use App\Events\UserRegistered;
 use App\Models\User;
 use Illuminate\Support\Facades\Event;
 
-
 beforeEach(function () {
     $this->validData = [
         'name' => 'Test User',
@@ -14,7 +13,7 @@ beforeEach(function () {
     ];
 });
 
-it('allow user to register', function(string $contact) {
+it('allow user to register', function (string $contact) {
     Event::fake();
     $response = $this->postJson(
         route('register'),
@@ -36,7 +35,7 @@ it('allow user to register', function(string $contact) {
                 'updated_at',
             ],
             'token',
-        ]
+        ],
     ]);
     $this->assertDatabaseHas('users', [
         'contact' => $response->json('data.user.contact'),
@@ -64,7 +63,7 @@ it('fails registration if contact is already taken', function () {
         'message' => 'Validation Errors',
         'data' => [
             'contact' => ['The contact has already been taken.'],
-        ]
+        ],
     ]);
 });
 

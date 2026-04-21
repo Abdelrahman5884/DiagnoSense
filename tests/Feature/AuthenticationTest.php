@@ -15,7 +15,7 @@ beforeEach(function () {
             'phone' => [
                 'contact' => $doctorWithPhone->contact,
                 'password' => 'password',
-            ]
+            ],
         ],
         'patient' => [
             'email' => [
@@ -25,8 +25,8 @@ beforeEach(function () {
             'phone' => [
                 'contact' => $patientWithPhone->contact,
                 'password' => 'password',
-            ]
-        ]
+            ],
+        ],
     ];
 });
 
@@ -39,7 +39,7 @@ dataset('invalid_credentials', [
 ]);
 
 dataset('invalid_data', [
-    'empty contact' => [['contact' => null] , ['contact' => ['The contact field is required.']]],
+    'empty contact' => [['contact' => null], ['contact' => ['The contact field is required.']]],
     'empty password' => [['password' => null], ['password' => ['The password field is required.']]],
 ]);
 
@@ -55,7 +55,7 @@ it('allow user to login', function (string $userType) {
             'data' => [
                 'user',
                 'token',
-            ]
+            ],
         ]);
     }
 })->with('user_types');

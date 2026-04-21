@@ -3,8 +3,6 @@
 use App\Http\Controllers\V1\Auth\AuthenticatedController;
 use App\Http\Controllers\V1\Auth\EmailVerificationController;
 use App\Http\Controllers\V1\Auth\ForgetPasswordController;
-use App\Http\Controllers\V1\Auth\LoginController;
-use App\Http\Controllers\V1\Auth\LogoutController;
 use App\Http\Controllers\V1\Auth\RegisterController;
 use App\Http\Controllers\V1\Auth\ResetPasswordController;
 use App\Http\Controllers\V1\Auth\SocialAuthController;

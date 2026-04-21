@@ -13,7 +13,7 @@ use Illuminate\Notifications\Notifiable;
 
 class Doctor extends Model
 {
-    use LogsActivity , Notifiable, HasFactory;
+    use HasFactory , LogsActivity, Notifiable;
 
     protected $fillable = [
         'user_id',

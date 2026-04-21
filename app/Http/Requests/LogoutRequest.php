@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class LogoutRequest extends FormRequest
@@ -12,7 +11,6 @@ class LogoutRequest extends FormRequest
      */
     public function authorize(): bool
     {
-       return $this->user()->type === $this->route('type');
+        return $this->user()->type === $this->route('type');
     }
-
 }

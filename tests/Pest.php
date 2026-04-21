@@ -42,7 +42,7 @@ pest()->extend(Tests\TestCase::class)
 |
 */
 
-function createUserWithType(string $type, string $contact) :User
+function createUserWithType(string $type, string $contact): User
 {
     $user = User::factory()->create([
         'type' => $type,
@@ -50,18 +50,18 @@ function createUserWithType(string $type, string $contact) :User
     ]);
 
     if ($type === 'doctor') {
-      Doctor::factory()->create([
-          'user_id' => $user->id
-      ]);
+        Doctor::factory()->create([
+            'user_id' => $user->id,
+        ]);
     } else {
         Patient::factory()->create([
-            'user_id' => $user->id
+            'user_id' => $user->id,
         ]);
     }
 
     return $user;
 }
-function getDataSets(string $userType, $test) : array
+function getDataSets(string $userType, $test): array
 {
     return array_values($test->validData[$userType]);
 }
