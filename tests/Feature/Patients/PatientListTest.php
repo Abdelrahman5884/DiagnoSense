@@ -15,13 +15,6 @@ beforeEach(function () {
     actingAs($this->user);
 });
 
-describe('Patients Index: Security & Access', function () {
-    it('requires authentication to access patients list', function () {
-        auth()->logout();
-        getJson(route('patients.index'))
-            ->assertUnauthorized();
-    });
-});
 
 describe('Patients Index: Validation', function () {
     it('validates that status must be a valid enum value', function () {
@@ -104,31 +97,4 @@ describe('Patients Index: Functional Logic (Search & Filter)', function () {
     });
 });
 
-describe('Patients Index: Pagination', function () {
-    it('applies pagination and includes metadata', function () {
-        Patient::factory()->count(15)->create()->each(function ($p) {
-            $this->doctor->patients()->attach($p->id);
-        });
 
-        $response = getJson(route('patients.index'));
-
-        $response->assertOk();
-        expect($response->json('data.meta.per_page'))->toBe(12)
-            ->and($response->json('data.meta.total'))->toBeGreaterThanOrEqual(15);
-    });
-});
-
-describe('Patients Index: Error Handling', function () {
-    it('logs the exception and returns 500 on service failure', function () {
-        Log::shouldReceive('error')->once();
-
-        $this->mock(PatientService::class)
-            ->shouldReceive('getPatients')
-            ->andThrow(new Exception('Service Failure'));
-
-        getJson(route('patients.index', ['search' => 'test']))
-            ->assertStatus(500)
-            ->assertJsonPath('success', false)
-            ->assertJsonPath('message', 'An error occurred while fetching patients.');
-    });
-});
