@@ -14,7 +14,6 @@ use App\Http\Controllers\V1\KeyPointController;
 use App\Http\Controllers\V1\MedicalFileController;
 use App\Http\Controllers\V1\NotificationController;
 use App\Http\Controllers\V1\PatientController;
-use App\Http\Controllers\V1\SearchController;
 use App\Http\Controllers\V1\StripeWebhookController;
 use App\Http\Controllers\V1\SubscriptionController;
 use App\Http\Controllers\V1\SupportController;
@@ -95,29 +94,28 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/patients/{patientId}/comparative-analysis', [PatientController::class, 'getComparativeAnalysis']);
 });
 
-    Route::middleware('auth:sanctum')->group(function () {
-        Route::get('/patient/tasks', [TaskController::class, 'index']);
-        Route::get('/patient/tasks/{task}', [TaskController::class, 'show']);
-        Route::patch('/patient/tasks/{task}/complete', [TaskController::class, 'complete']);
-    });
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/patient/tasks', [TaskController::class, 'index']);
+    Route::get('/patient/tasks/{task}', [TaskController::class, 'show']);
+    Route::patch('/patient/tasks/{task}/complete', [TaskController::class, 'complete']);
+});
 
-    Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);
-    Route::get('/payment-success', function () {
-        return response()->json(['message' => 'Payment successful! You can close this tab.']);
-    })->name('payment.success');
-    Route::get('/payment-cancel', function () {
-        return response()->json(['message' => 'Payment cancelled.']);
-    })->name('payment.cancel');
+Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);
+Route::get('/payment-success', function () {
+    return response()->json(['message' => 'Payment successful! You can close this tab.']);
+})->name('payment.success');
+Route::get('/payment-cancel', function () {
+    return response()->json(['message' => 'Payment cancelled.']);
+})->name('payment.cancel');
 
-    Route::middleware('auth:sanctum')->group(function () {
-        Route::get('/patient/medical-history', [MedicalFileController::class, 'medicalHistoryFiles']);
-        Route::get('/patient/lab-reports', [MedicalFileController::class, 'labReports']);
-        Route::get('/patient/radiology-reports', [MedicalFileController::class, 'radiologyReports']);
-        Route::get('/patient/medications', [MedicalFileController::class, 'medications']);
-        Route::get('/patient/timeline', [MedicalFileController::class, 'timeline']);
-        Route::get('/patient/notifications', [FlutterNotificationController::class, 'index']);
-        Route::put('/patient/profile', [MedicalFileController::class, 'update']);
-    });
-
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/patient/medical-history', [MedicalFileController::class, 'medicalHistoryFiles']);
+    Route::get('/patient/lab-reports', [MedicalFileController::class, 'labReports']);
+    Route::get('/patient/radiology-reports', [MedicalFileController::class, 'radiologyReports']);
+    Route::get('/patient/medications', [MedicalFileController::class, 'medications']);
+    Route::get('/patient/timeline', [MedicalFileController::class, 'timeline']);
+    Route::get('/patient/notifications', [FlutterNotificationController::class, 'index']);
+    Route::put('/patient/profile', [MedicalFileController::class, 'update']);
+});
 
 Broadcast::routes(['middleware' => ['auth:sanctum']]);
