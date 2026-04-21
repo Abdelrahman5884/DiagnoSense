@@ -1,5 +1,9 @@
 <?php
 
+use App\Models\Doctor;
+use App\Models\Patient;
+use App\Models\User;
+
 /*
 |--------------------------------------------------------------------------
 | Test Case
@@ -12,7 +16,7 @@
 */
 
 pest()->extend(Tests\TestCase::class)
- // ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
+    ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
     ->in('Feature');
 
 /*
@@ -26,10 +30,6 @@ pest()->extend(Tests\TestCase::class)
 |
 */
 
-expect()->extend('toBeOne', function () {
-    return $this->toBe(1);
-});
-
 /*
 |--------------------------------------------------------------------------
 | Functions
@@ -41,7 +41,26 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+function createUserWithType(string $type, string $contact): User
 {
-    // ..
+    $user = User::factory()->create([
+        'type' => $type,
+        'contact' => $contact,
+    ]);
+
+    if ($type === 'doctor') {
+        Doctor::factory()->create([
+            'user_id' => $user->id,
+        ]);
+    } else {
+        Patient::factory()->create([
+            'user_id' => $user->id,
+        ]);
+    }
+
+    return $user;
+}
+function getDataSets(string $userType, $test): array
+{
+    return array_values($test->validData[$userType]);
 }
