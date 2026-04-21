@@ -57,7 +57,7 @@ return [
     ],
     'frontend' => [
         'url' => env('FRONTEND_URL'),
-
+    ],
     'brevo' => [
         'dsn' => env('MAILER_DSN'),
     ],

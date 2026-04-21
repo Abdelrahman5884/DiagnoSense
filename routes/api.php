@@ -28,6 +28,10 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('v1')->group(function () {
     Route::prefix('auth')->group(function () {
         Route::post('register', RegisterController::class)->name('register');
+        Route::controller(SocialAuthController::class)->group(function () {
+            Route::get('/google/redirect', 'redirectToGoogle')->name('google.redirect');
+            Route::get('/google/callback', 'handleGoogleCallback')->name('google.callback');
+        });
         Route::middleware('check-user-type')->group(function () {
             Route::post('/login/{type}', [AuthenticatedController::class, 'login'])->middleware('throttle:login')->name('login');
             Route::post('/forget-password/{type}', [ForgetPasswordController::class, 'forgetPassword']);
@@ -43,14 +47,7 @@ Route::prefix('v1')->group(function () {
     });
 
 });
-Route::prefix('v1')->group(function () {
-    Route::prefix('auth')->group(function () {
-        Route::controller(SocialAuthController::class)->group(function () {
-            Route::get('/google/redirect', 'redirectToGoogle')->name('google.redirect');
-            Route::get('/google/callback', 'handleGoogleCallback')->name('google.callback');
-        });
-    });
-});
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/patients', [PatientController::class, 'index']);
     Route::post('/patients', [PatientController::class, 'store'])->middleware('check-ai-access');
@@ -100,24 +97,20 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
     Route::middleware('auth:sanctum')->group(function () {
-
         Route::get('/patient/tasks', [TaskController::class, 'index']);
         Route::get('/patient/tasks/{task}', [TaskController::class, 'show']);
         Route::patch('/patient/tasks/{task}/complete', [TaskController::class, 'complete']);
     });
 
     Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);
-
     Route::get('/payment-success', function () {
         return response()->json(['message' => 'Payment successful! You can close this tab.']);
     })->name('payment.success');
-
     Route::get('/payment-cancel', function () {
         return response()->json(['message' => 'Payment cancelled.']);
     })->name('payment.cancel');
 
     Route::middleware('auth:sanctum')->group(function () {
-
         Route::get('/patient/medical-history', [MedicalFileController::class, 'medicalHistoryFiles']);
         Route::get('/patient/lab-reports', [MedicalFileController::class, 'labReports']);
         Route::get('/patient/radiology-reports', [MedicalFileController::class, 'radiologyReports']);
@@ -126,7 +119,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/patient/notifications', [FlutterNotificationController::class, 'index']);
         Route::put('/patient/profile', [MedicalFileController::class, 'update']);
     });
-});
 
-Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);
+
 Broadcast::routes(['middleware' => ['auth:sanctum']]);
