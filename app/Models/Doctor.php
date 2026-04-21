@@ -21,7 +21,7 @@ class Doctor extends Model
         'specialization',
     ];
 
-    public function user() : BelongsTo
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
@@ -31,6 +31,7 @@ class Doctor extends Model
         return $this->belongsToMany(Patient::class, 'doctor_patient', 'doctor_id', 'patient_id')
             ->withTimestamps();
     }
+
     public function visits(): HasMany
     {
         return $this->hasMany(Visit::class);

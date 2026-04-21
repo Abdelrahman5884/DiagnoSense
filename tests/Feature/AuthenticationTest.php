@@ -44,21 +44,21 @@ dataset('invalid_data', [
 ]);
 
 describe('login', function () {
-it('allow user to login', function (string $userType) {
-    $dataSet = getDataSets($userType, $this);
-    foreach ($dataSet as $data) {
-        $response = $this->postJson(route('login',$userType ), $data);
-        $response->assertStatus(200);
-        $response->assertJsonStructure([
-            'success',
-            'message',
-            'data' => [
-                'user',
-                'token',
-            ],
-        ]);
-    }
-})->with('user_types');
+    it('allow user to login', function (string $userType) {
+        $dataSet = getDataSets($userType, $this);
+        foreach ($dataSet as $data) {
+            $response = $this->postJson(route('login', $userType), $data);
+            $response->assertStatus(200);
+            $response->assertJsonStructure([
+                'success',
+                'message',
+                'data' => [
+                    'user',
+                    'token',
+                ],
+            ]);
+        }
+    })->with('user_types');
 });
 
 describe('login validation', function () {
@@ -69,7 +69,7 @@ describe('login validation', function () {
             $response->assertStatus(401);
             $response->assertJson([
                 'success' => false,
-                'message' => 'Invalid credentials'
+                'message' => 'Invalid credentials',
             ]);
         }
     })->with('user_types', 'invalid_credentials');
@@ -82,7 +82,7 @@ describe('login validation', function () {
             $response->assertJson([
                 'success' => false,
                 'message' => 'Validation Errors',
-                'data' => $expectedErrors
+                'data' => $expectedErrors,
             ]);
         }
     })->with('user_types', 'invalid_data');
@@ -106,4 +106,3 @@ describe('logout', function () {
         }
     })->with('user_types');
 });
-

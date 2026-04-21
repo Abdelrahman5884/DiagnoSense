@@ -35,11 +35,11 @@ Route::prefix('v1')->group(function () {
         Route::post('/verify-otp/{type}', [ResetPasswordController::class, 'verifyOtp']);
         Route::post('/reset-password/{type}', [ResetPasswordController::class, 'resetPassword']);
 
-          Route::middleware('auth:sanctum')->group(function () {
-              Route::post('/logout/{type}', [AuthenticatedController::class, 'logout'])->name('logout');
-              Route::post('/verify-email/{type}', [EmailVerificationController::class, 'verifyEmail']);
-              Route::get('/resend-otp/{type}', [EmailVerificationController::class, 'resendOtp']);
-          });
+        Route::middleware('auth:sanctum')->group(function () {
+            Route::post('/logout/{type}', [AuthenticatedController::class, 'logout'])->name('logout');
+            Route::post('/verify-email/{type}', [EmailVerificationController::class, 'verifyEmail']);
+            Route::get('/resend-otp/{type}', [EmailVerificationController::class, 'resendOtp']);
+        });
     });
 });
 

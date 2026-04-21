@@ -3,7 +3,6 @@
 use App\Models\Doctor;
 use App\Models\Patient;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
 
 /*
 |--------------------------------------------------------------------------

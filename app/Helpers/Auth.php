@@ -7,8 +7,7 @@ use Ichtrojan\Otp\Otp;
 
 class Auth
 {
-
-    public static  function getToken(User $user): string
+    public static function getToken(User $user): string
     {
         return $user->createToken('auth_token.'.$user->name)->plainTextToken;
     }
@@ -17,5 +16,4 @@ class Auth
     {
         return $otp->generate($contact, 'numeric', 6, 10)->token;
     }
-
 }
