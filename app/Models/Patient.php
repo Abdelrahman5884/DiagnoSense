@@ -26,7 +26,7 @@ class Patient extends Model
         'phone',
         'age',
         'gender',
-        'national_id',
+        'notional_id',
         'status',
         'last_visit_date',
         'next_visit_date',
