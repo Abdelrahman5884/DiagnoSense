@@ -85,7 +85,7 @@ describe('Google Callback', function () {
         ]);
 
         Event::assertDispatched(UserRegistered::class, function ($event) use ($user) {
-            return $event->user->id === $user->id;
+            return $event->user->id === $user->id && !empty($event->otpCode);
         });
 
         expect(User::count())->toBe(1);
