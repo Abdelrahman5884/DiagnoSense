@@ -55,6 +55,8 @@ return [
         'secret' => env('STRIPE_SECRET'),
         'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
     ],
+    'frontend' => [
+        'url' => env('FRONTEND_URL'),
 
     'brevo' => [
         'dsn' => env('MAILER_DSN'),

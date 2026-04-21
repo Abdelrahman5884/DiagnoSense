@@ -42,58 +42,62 @@ Route::prefix('v1')->group(function () {
         });
     });
 
-    Route::controller(SocialAuthController::class)->group(function () {
-        Route::get('/google/redirect', 'redirectToGoogle');
-        Route::get('/google/callback', 'handleGoogleCallback');
+});
+Route::prefix('v1')->group(function () {
+    Route::prefix('auth')->group(function () {
+        Route::controller(SocialAuthController::class)->group(function () {
+            Route::get('/google/redirect', 'redirectToGoogle')->name('google.redirect');
+            Route::get('/google/callback', 'handleGoogleCallback')->name('google.callback');
+        });
     });
-
-    Route::middleware('auth:sanctum')->group(function () {
-        Route::get('/patients', [PatientController::class, 'index']);
-        Route::post('/patients', [PatientController::class, 'store'])->middleware('check-ai-access');
-        Route::get('/patients/{patientId}/key-info', [PatientController::class, 'getKeyInfo']);
-        Route::post('/visits', [VisitController::class, 'store']);
-        Route::post('/visits/{visit}/items', [VisitItemController::class, 'store']);
-        Route::get('/patients/{patient}/items', [VisitItemController::class, 'index']);
-        Route::delete('/patients/{patient}/medications/{medication}', [VisitItemController::class, 'destroyMedication']);
-        Route::delete('/patients/{patient}/tasks/{task}', [VisitItemController::class, 'destroyTask']);
-        Route::get('/patients/{patientId}/overview', [PatientController::class, 'overview']);
-        Route::patch('/patients/{patient}/status', [PatientController::class, 'updateStatus']);
-        Route::get('/patients/status/{type}', [PatientController::class, 'statusByType']);
-        Route::get('/search', SearchController::class);
-        Route::delete('/key-points/{keyPointId}', [KeyPointController::class, 'destroy']);
-        Route::get('/patients/{patient}/activities', [PatientController::class, 'activityHistory']);
-        Route::patch('/key-points/{keyPointId}', [KeyPointController::class, 'update']);
-        Route::post('/patients/{patientId}/key-info', [KeyPointController::class, 'store']);
-        Route::get('/patients/{patientId}/decision-support', [PatientController::class, 'getDecisionSupport']);
-        Route::delete('/patients/{patientId}', [PatientController::class, 'destroy']);
-        Route::post('/wallet/charge', [WalletController::class, 'store']);
-        Route::get('/transactions', [WalletController::class, 'index']);
-        Route::post('/subscription/subscribe', [SubscriptionController::class, 'subscribe']);
-        Route::post('/subscription/pay-per-use', [SubscriptionController::class, 'switchToPayPerUse']);
-        Route::get('/subscription/plans', [SubscriptionController::class, 'index']);
-        Route::get('/subscription/current', [SubscriptionController::class, 'current']);
-        Route::post('/subscription/cancel', [SubscriptionController::class, 'cancel']);
-        Route::get('/patient/next-visit', [PatientController::class, 'nextVisit']);
-        Route::get('/notifications', [NotificationController::class, 'index']);
-        Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
-        Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
-        Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead']);
-        Route::delete('/notifications/clear-all', [NotificationController::class, 'clearAll']);
-        Route::post('/chatbot/{patientId}', [ChatbotController::class, 'store'])->middleware('check-ai-access');
-        Route::get('/dashboard/summary', [DashboardController::class, 'summary']);
-        Route::get('/dashboard/status-distribution', [DashboardController::class, 'statusDistribution']);
-        Route::get('/dashboard/top-diseases', [DashboardController::class, 'topDiseases']);
-        Route::get('/dashboard/today-visits', [DashboardController::class, 'todayVisits']);
-        Route::patch('/dashboard/{patientId}/attend', [DashboardController::class, 'markAttended']);
-        Route::get('/patients/{patientId}', [PatientController::class, 'edit']);
-        Route::put('/patients/{patientId}', [PatientController::class, 'update']);
-        Route::post('/support', [SupportController::class, 'store']);
-        Route::get('/doctors/{doctorId}', [DoctorController::class, 'edit']);
-        Route::put('/doctors/{doctorId}', [DoctorController::class, 'update']);
-        Route::delete('/doctors/{doctorId}', [DoctorController::class, 'destroy']);
-        Route::patch('/change-password', [DoctorController::class, 'changePassword']);
-        Route::get('/patients/{patientId}/comparative-analysis', [PatientController::class, 'getComparativeAnalysis']);
-    });
+});
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/patients', [PatientController::class, 'index']);
+    Route::post('/patients', [PatientController::class, 'store'])->middleware('check-ai-access');
+    Route::get('/patients/{patientId}/key-info', [PatientController::class, 'getKeyInfo']);
+    Route::post('/visits', [VisitController::class, 'store']);
+    Route::post('/visits/{visit}/items', [VisitItemController::class, 'store']);
+    Route::get('/patients/{patient}/items', [VisitItemController::class, 'index']);
+    Route::delete('/patients/{patient}/medications/{medication}', [VisitItemController::class, 'destroyMedication']);
+    Route::delete('/patients/{patient}/tasks/{task}', [VisitItemController::class, 'destroyTask']);
+    Route::get('/patients/{patientId}/overview', [PatientController::class, 'overview']);
+    Route::patch('/patients/{patient}/status', [PatientController::class, 'updateStatus']);
+    Route::get('/patients/status/{type}', [PatientController::class, 'statusByType']);
+    Route::get('/search', SearchController::class);
+    Route::delete('/key-points/{keyPointId}', [KeyPointController::class, 'destroy']);
+    Route::get('/patients/{patient}/activities', [PatientController::class, 'activityHistory']);
+    Route::patch('/key-points/{keyPointId}', [KeyPointController::class, 'update']);
+    Route::post('/patients/{patientId}/key-info', [KeyPointController::class, 'store']);
+    Route::get('/patients/{patientId}/decision-support', [PatientController::class, 'getDecisionSupport']);
+    Route::delete('/patients/{patientId}', [PatientController::class, 'destroy']);
+    Route::post('/wallet/charge', [WalletController::class, 'store']);
+    Route::get('/transactions', [WalletController::class, 'index']);
+    Route::post('/subscription/subscribe', [SubscriptionController::class, 'subscribe']);
+    Route::post('/subscription/pay-per-use', [SubscriptionController::class, 'switchToPayPerUse']);
+    Route::get('/subscription/plans', [SubscriptionController::class, 'index']);
+    Route::get('/subscription/current', [SubscriptionController::class, 'current']);
+    Route::post('/subscription/cancel', [SubscriptionController::class, 'cancel']);
+    Route::get('/patient/next-visit', [PatientController::class, 'nextVisit']);
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
+    Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead']);
+    Route::delete('/notifications/clear-all', [NotificationController::class, 'clearAll']);
+    Route::post('/chatbot/{patientId}', [ChatbotController::class, 'store'])->middleware('check-ai-access');
+    Route::get('/dashboard/summary', [DashboardController::class, 'summary']);
+    Route::get('/dashboard/status-distribution', [DashboardController::class, 'statusDistribution']);
+    Route::get('/dashboard/top-diseases', [DashboardController::class, 'topDiseases']);
+    Route::get('/dashboard/today-visits', [DashboardController::class, 'todayVisits']);
+    Route::patch('/dashboard/{patientId}/attend', [DashboardController::class, 'markAttended']);
+    Route::get('/patients/{patientId}', [PatientController::class, 'edit']);
+    Route::put('/patients/{patientId}', [PatientController::class, 'update']);
+    Route::post('/support', [SupportController::class, 'store']);
+    Route::get('/doctors/{doctorId}', [DoctorController::class, 'edit']);
+    Route::put('/doctors/{doctorId}', [DoctorController::class, 'update']);
+    Route::delete('/doctors/{doctorId}', [DoctorController::class, 'destroy']);
+    Route::patch('/change-password', [DoctorController::class, 'changePassword']);
+    Route::get('/patients/{patientId}/comparative-analysis', [PatientController::class, 'getComparativeAnalysis']);
+});
 
     Route::middleware('auth:sanctum')->group(function () {
 

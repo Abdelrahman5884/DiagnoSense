@@ -67,6 +67,11 @@ class User extends Authenticatable
         return $this->hasOne(Doctor::class);
     }
 
+    public function socialAccounts()
+    {
+        return $this->hasMany(UserSocialAccount::class);
+    }
+
     public function patient(): HasOne
     {
         return $this->hasOne(Patient::class);
