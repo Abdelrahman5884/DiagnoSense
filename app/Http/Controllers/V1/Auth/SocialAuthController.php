@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\V1\Auth;
 
-use App\Http\Controllers\Controller;
-use App\Http\Responses\ApiResponse;
+use App\Http\Controllers\V1\Controller;
+use App\Helpers\ApiResponse;
 use App\Services\Auth\SocialAuthService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -19,11 +19,11 @@ class SocialAuthController extends Controller
         try {
             $url = $this->socialAuthService->getRedirectUrl('google');
 
-            return ApiResponse::success('Redirect URL generated', ['url' => $url], 200);
+            return ApiResponse::success(message:'Redirect URL generated',data: ['url' => $url]);
         } catch (\Exception $e) {
             \Log::error('Google Redirect Error: '.$e->getMessage());
 
-            return ApiResponse::error('Unable to connect to Google at the moment', null, 500);
+            return ApiResponse::error(message:'Unable to connect to Google at the moment', status: 500);
         }
     }
 

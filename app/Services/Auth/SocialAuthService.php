@@ -10,9 +10,14 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Contracts\User as SocialiteUser;
 use Laravel\Socialite\Socialite;
+use App\Helpers\Auth;
+use Ichtrojan\Otp\Otp;
 
 class SocialAuthService
 {
+    public function __construct(
+        protected Otp $otp
+    ) {}
     public function getRedirectUrl(string $provider): string
     {
         return Socialite::driver($provider)
@@ -60,8 +65,8 @@ class SocialAuthService
             'is_active' => true,
         ]);
         $user->doctor()->create();
-        event(new UserRegistered($user));
-
+        $otpCode = Auth::generateOtp($user->contact, $this->otp);
+        UserRegistered::dispatch($user, $otpCode);
         return $user;
     }
 
