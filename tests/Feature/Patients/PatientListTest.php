@@ -3,8 +3,6 @@
 use App\Models\Doctor;
 use App\Models\Patient;
 use App\Models\User;
-use App\Services\PatientService;
-use Illuminate\Support\Facades\Log;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\getJson;
@@ -14,7 +12,6 @@ beforeEach(function () {
     $this->doctor = Doctor::factory()->create(['user_id' => $this->user->id]);
     actingAs($this->user);
 });
-
 
 describe('Patients Index: Validation', function () {
     it('validates that status must be a valid enum value', function () {
@@ -96,5 +93,3 @@ describe('Patients Index: Functional Logic (Search & Filter)', function () {
             ->assertJsonCount(2, 'data.data');
     });
 });
-
-
