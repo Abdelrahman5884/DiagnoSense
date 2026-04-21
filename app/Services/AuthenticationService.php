@@ -7,8 +7,9 @@ use App\Models\User;
 use Ichtrojan\Otp\Otp;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use App\Notifications\EmailVerificationNotification;
 use App\Notifications\EmailVerificationSMSNotification;
+use App\Mail\EmailVerificationMail;
+use Illuminate\Support\Facades\Mail;
 
 class AuthenticationService
 {
@@ -77,65 +78,52 @@ class AuthenticationService
         return $user;
     }
 
-    private function isAuthorizedUser(User $user, string $type): bool
-    {
-        return $user->type === $type;
-    }
     private function sendOtp(User $user, string $otp): void
     {
-        try {
-             if (filter_var($user->contact, FILTER_VALIDATE_EMAIL)) {
-               $user->notify(new EmailVerificationNotification($otp));
-            } else {
-               $user->notify(new EmailVerificationSMSNotification($otp));
-            }
-        } catch (\Throwable $e) {
-             logger()->error('OTP sending failed', [
-             'user_id' => $user->id,
-             'error' => $e->getMessage()
-          ]);
-        }
+        if (filter_var($user->contact, FILTER_VALIDATE_EMAIL)) {
+
+            Mail::to($user->contact)->send(
+                new EmailVerificationMail($user, $otp)
+            );
+        } else {
+            $user->notify(new EmailVerificationSMSNotification($otp));
+         }
+    }
+     private function validateOtp(string $contact, string $otp): bool
+    {
+    return $this->otp->validate($contact, $otp)->status;
     }
 
-    public function verifyEmail(array $data, string $type): bool
+     public function verifyEmail(array $data): bool
     {
-        return DB::transaction(function () use ($data, $type) {
-        $user = auth()->user();
-        if (! $this->isAuthorizedUser($user, $type)) {
+         return DB::transaction(function () use ($data) {
+
+            $user = auth()->user();
+ 
+            if (! $this->validateOtp($user->contact, $data['otp'])) {
                 return false;
             }
 
-        if ($user->contact_verified_at) {
-            return false; 
-        }
+             $user->update([
+               'contact_verified_at' => now(),
+            ]);
 
-        $result = $this->otp->validate($user->contact, $data['otp']);
-        if (! $result->status) {
-            return false;
-        }
-
-        $user->update([
-            'contact_verified_at' => now(),
-        ]);
-        return true;
-       });
-   }
-
-    public function resendOtp(User $user, string $type): string|bool
+         return true;
+        });
+    }
+    public function resendOtp(User $user): bool
     {
-        if (! $this->isAuthorizedUser($user, $type)) {
+        if ($user->contact_verified_at) {
             return false;
         }
-        if ($user->contact_verified_at) {
-            return 'already_verified';
-       }  
 
-       $otpCode = $this->generateOtp($user->contact);
+        $otpCode = $this->generateOtp($user->contact);
 
-       $this->sendOtp($user, $otpCode);
+        $this->sendOtp($user, $otpCode);
 
-      return true;
-   }
+        return true;
+    }
+       
     public function verifyOtp(array $data): string|false
     {
         

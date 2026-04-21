@@ -14,45 +14,55 @@ class EmailVerificationController extends Controller
         protected AuthenticationService $authenticationService
     ) {}
 
-    public function verifyEmail(EmailVerificationRequest $request, string $type): JsonResponse
+    public function verifyEmail(EmailVerificationRequest $request): JsonResponse
     {
-        $data = $request->validated();
+        try {
+            $data = $request->validated();
 
-        $result = $this->authenticationService->verifyEmail($data, $type);
+            $result = $this->authenticationService->verifyEmail($data);
 
-        if (! $result) {
+            if (! $result) {
+                return ApiResponse::error(
+                    message: 'Invalid or expired OTP.',
+                    status: 401
+                );
+            }
+
+            return ApiResponse::success(
+                message: 'User verified successfully.'
+            );
+
+        } catch (\Exception $e) {
             return ApiResponse::error(
-                message: 'Invalid or expired OTP.',
-                status: 401
+                message: 'Failed to verify email, please try again later.',
+                status: 500
             );
         }
-
-        return ApiResponse::success(
-            message: 'User verified successfully.'
-        );
     }
 
-    public function resendOtp(string $type): JsonResponse
+    public function resendOtp(): JsonResponse
     {
-        $user = auth()->user();
+        try {
+            $user = auth()->user();
 
-        $result = $this->authenticationService->resendOtp($user, $type);
+            $result = $this->authenticationService->resendOtp($user);
 
-        if ($result === 'already_verified') {
+            if (! $result) {
+                return ApiResponse::error(
+                    message: 'User already verified.',
+                    status: 400
+                );
+            }
+
+            return ApiResponse::success(
+                message: 'OTP sent successfully.'
+            );
+
+        } catch (\Exception $e) {
             return ApiResponse::error(
-                message: 'User already verified.',
-                status: 400
+                message: 'Failed to resend OTP, please try again later.',
+                status: 500
             );
         }
-        if (! $result) {
-            return ApiResponse::error(
-                message: 'Unauthorized action.',
-                status: 403
-            );
-        }
-
-        return ApiResponse::success(
-            message: 'A new OTP has been sent to your contact.'
-        );
     }
 }

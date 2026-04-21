@@ -1,41 +1,30 @@
 <?php
 
-use App\Notifications\EmailVerificationNotification;
 use Ichtrojan\Otp\Otp;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Notification;
+use App\Mail\EmailVerificationMail;
 
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
-    Notification::fake();
     Mail::fake();
 
-    $mock = \Mockery::mock(Otp::class);
-
-    $mock->shouldReceive('validate')
-        ->andReturnUsing(function ($contact, $otp) {
-            return (object) [
-                'status' => $otp === '123456',
-            ];
-        });
-
-    $mock->shouldReceive('generate')
-        ->andReturn((object) [
+    $this->otpMock = \Mockery::mock(Otp::class);
+    $this->otpMock->shouldReceive('generate')
+        ->andReturn((object)[
             'token' => '123456',
         ]);
+    $this->app->instance(Otp::class, $this->otpMock);
 
-    $this->app->instance(Otp::class, $mock);
-
-    $doctor = createUserWithType('doctor', 'doctor@gmail.com');
+    $doctor  = createUserWithType('doctor', 'doctor@gmail.com');
     $patient = createUserWithType('patient', 'patient@gmail.com');
 
     $doctor->update(['contact_verified_at' => null]);
     $patient->update(['contact_verified_at' => null]);
 
     $this->users = [
-        'doctor' => $doctor,
+        'doctor'  => $doctor,
         'patient' => $patient,
     ];
 });
@@ -46,86 +35,97 @@ dataset('invalid_data', [
     'empty otp' => [['otp' => null]],
 ]);
 
-it('allows user to verify email', function (string $userType) {
-    $user = $this->users[$userType];
+/*
+|--------------------------------------------------------------------------
+| VERIFY EMAIL
+|--------------------------------------------------------------------------
+*/
 
-    $token = $user->createToken('test')->plainTextToken;
+it('allows user to verify email', function ($type) {
+    $this->otpMock->shouldReceive('validate')
+        ->withAnyArgs()
+        ->andReturn((object)['status' => true]);
 
-    $response = $this->withHeader('Authorization', 'Bearer '.$token)
-        ->postJson('/api/v1/verify-email/'.$userType, [
-            'otp' => '123456',
+    $user = $this->users[$type];
+
+    $this->actingAs($user, 'sanctum')
+        ->postJson('/api/v1/verify-email', ['otp' => '123456'])
+        ->assertStatus(200)
+        ->assertJson([
+            'success' => true,
+            'message' => 'User verified successfully.',
         ]);
 
-    $response->assertStatus(200);
+    $this->assertNotNull($user->fresh()->contact_verified_at);
 })->with('user_types');
 
-it('fails verification with invalid otp', function (string $userType) {
-    $user = $this->users[$userType];
+it('fails verification with invalid otp', function ($type) {
+    $this->otpMock->shouldReceive('validate')
+        ->withAnyArgs()
+        ->andReturn((object)['status' => false]);
 
-    $token = $user->createToken('test')->plainTextToken;
+    $user = $this->users[$type];
 
-    $response = $this->withHeader('Authorization', 'Bearer '.$token)
-        ->postJson('/api/v1/verify-email/'.$userType, [
-            'otp' => '999999',
+    $this->actingAs($user, 'sanctum')
+        ->postJson('/api/v1/verify-email', ['otp' => '000000'])
+        ->assertStatus(401)
+        ->assertJson([
+            'success' => false,
+            'message' => 'Invalid or expired OTP.',
         ]);
-
-    $response->assertStatus(401);
 })->with('user_types');
 
-it('fails verification with invalid data', function (string $userType, array $invalidData) {
-    $user = $this->users[$userType];
+it('fails verification with invalid data', function ($type, $data) {
+    $user = $this->users[$type];
 
-    $token = $user->createToken('test')->plainTextToken;
-
-    $response = $this->withHeader('Authorization', 'Bearer '.$token)
-        ->postJson('/api/v1/verify-email/'.$userType, $invalidData);
-
-    $response->assertStatus(422);
+    $this->actingAs($user, 'sanctum')
+        ->postJson('/api/v1/verify-email', $data)
+        ->assertStatus(422)
+        ->assertJson([
+            'success' => false,
+            'message' => 'Validation Errors',
+        ]);
 })->with('user_types', 'invalid_data');
 
-it('allows user to resend otp', function (string $userType) {
-    $user = $this->users[$userType];
-
-    $user->update(['contact_verified_at' => null]);
-
-    $token = $user->createToken('test')->plainTextToken;
-
-    $response = $this->withHeader('Authorization', 'Bearer '.$token)
-        ->getJson('/api/v1/resend-otp/'.$userType);
-
-    $response->assertStatus(200);
-
-    Notification::assertSentTo(
-        $user,
-        EmailVerificationNotification::class
-    );
-})->with('user_types');
-
-it('fails resend otp without auth', function (string $userType) {
-    $this->getJson('/api/v1/resend-otp/'.$userType)
+it('fails verification without auth', function ($type) {
+    $this->postJson('/api/v1/verify-email', ['otp' => '123456'])
         ->assertStatus(401);
 })->with('user_types');
 
-it('fails resend otp with wrong user type', function () {
-    $user = $this->users['doctor'];
+/*
+|--------------------------------------------------------------------------
+| RESEND OTP
+|--------------------------------------------------------------------------
+*/
 
-    $token = $user->createToken('test')->plainTextToken;
+it('allows user to resend otp', function ($type) {
+    $user = $this->users[$type];
 
-    $this->withHeader('Authorization', 'Bearer '.$token)
-        ->getJson('/api/v1/resend-otp/patient')
-        ->assertStatus(403);
-});
+    $this->actingAs($user, 'sanctum')
+        ->getJson('/api/v1/resend-otp')
+        ->assertStatus(200)
+        ->assertJson([
+            'success' => true,
+            'message' => 'OTP sent successfully.',
+        ]);
 
-it('fails resend otp if already verified', function (string $userType) {
-    $user = $this->users[$userType];
+    Mail::assertSent(EmailVerificationMail::class);
+})->with('user_types');
 
-    $user->update([
-        'contact_verified_at' => now(),
-    ]);
+it('fails resend otp without auth', function ($type) {
+    $this->getJson('/api/v1/resend-otp')
+        ->assertStatus(401);
+})->with('user_types');
 
-    $token = $user->createToken('test')->plainTextToken;
+it('fails resend otp if already verified', function ($type) {
+    $user = $this->users[$type];
+    $user->update(['contact_verified_at' => now()]);
 
-    $this->withHeader('Authorization', 'Bearer '.$token)
-        ->getJson('/api/v1/resend-otp/'.$userType)
-        ->assertStatus(400);
+    $this->actingAs($user, 'sanctum')
+        ->getJson('/api/v1/resend-otp')
+        ->assertStatus(400)
+        ->assertJson([
+            'success' => false,
+            'message' => 'User already verified.',
+        ]);
 })->with('user_types');
