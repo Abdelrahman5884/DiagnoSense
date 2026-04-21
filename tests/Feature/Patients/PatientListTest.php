@@ -17,7 +17,9 @@ describe('Patients Index: Validation', function () {
     it('validates that status must be a valid enum value', function () {
         getJson(route('patients.index', ['status' => 'invalid_status']))
             ->assertStatus(422)
-            ->assertJsonValidationErrors(['status']);
+            ->assertJsonFragment([
+                'status' => ['The selected status is invalid.']
+            ]);
     });
 
     it('allows empty search and status to return all patients', function () {
