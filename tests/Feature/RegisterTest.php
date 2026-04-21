@@ -17,7 +17,7 @@ beforeEach(function () {
 it('allow user to register', function(string $contact) {
     Event::fake();
     $response = $this->postJson(
-        '/api/v1/register',
+        route('register'),
         array_merge($this->validData, ['contact' => $contact])
     );
     Event::assertDispatched(function (UserRegistered $event) use ($contact) {
@@ -49,11 +49,12 @@ it('allow user to register', function(string $contact) {
     'phone' => [fake()->randomElement(['010', '011', '012', '015']).fake()->numerify('########')],
 ]);
 
+describe('registration validation', function () {
 it('fails registration if contact is already taken', function () {
     Event::fake();
     $user = User::factory()->create();
     $response = $this->postJson(
-        'api/v1/register',
+        route('register'),
         array_merge($this->validData, ['contact' => $user->contact])
     );
     Event::assertNotDispatched(UserRegistered::class);
@@ -70,7 +71,7 @@ it('fails registration if contact is already taken', function () {
 it('fails registration with invalid data', function (array $invalidField, array $expectedErrors) {
     Event::fake();
     $response = $this->postJson(
-        '/api/v1/register',
+        route('register'),
         array_merge($this->validData, ['contact' => fake()->unique()->safeEmail()], $invalidField)
     );
     Event::assertNotDispatched(UserRegistered::class);
@@ -86,3 +87,4 @@ it('fails registration with invalid data', function (array $invalidField, array 
     'contact is not valid' => [['contact' => 'not-an-email-or-phone'], ['contact' => ['The contact must be a valid email address or a valid phone number starting with 010, 011, 012, or 015 followed by 8 digits.']]],
     'password not match' => [['password_confirmation' => 'wrongpassword'], ['password' => ['The password field confirmation does not match.']]],
 ]);
+});

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Events\UserRegistered;
+use App\Helpers\Auth;
 use App\Models\User;
 use Ichtrojan\Otp\Otp;
 use Illuminate\Support\Facades\DB;
@@ -22,9 +23,9 @@ class AuthenticationService
                 'specialization' => $data['specialization'],
             ]);
 
-            $token = $this->getToken($user);
+            $token = Auth::getToken($user);
             $userId = $user->doctor->id;
-            $otpCode = $this->generateOtp($user->contact);
+            $otpCode = Auth::generateOtp($user->contact, $this->otp);
 
             UserRegistered::dispatch($user, $otpCode);
 
@@ -39,7 +40,7 @@ class AuthenticationService
             return null;
         }
 
-        $token = $this->getToken($user);
+        $token = Auth::getToken($user);
         $userId = $type == 'doctor' ? $user->doctor->id : $user->patient->id;
         return compact('user', 'token', 'userId');
     }
@@ -47,16 +48,6 @@ class AuthenticationService
     public function logout(User $user): void
     {
         $user->currentAccessToken()->delete();
-    }
-
-    private function getToken(User $user): string
-    {
-        return $user->createToken('auth_token.'.$user->name)->plainTextToken;
-    }
-
-    private function generateOtp(string $contact): string
-    {
-        return $this->otp->generate($contact, 'numeric', 6, 10)->token;
     }
 
     private function getUser(string $contact): ?User
