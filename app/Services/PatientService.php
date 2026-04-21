@@ -7,7 +7,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class PatientService
 {
-    public function getPatients(int $doctorId, array $params): LengthAwarePaginator
+    public function getPaginatedPatients(int $doctorId, array $params): LengthAwarePaginator
     {
         $query = User::query()
             ->select(['users.id', 'users.name'])

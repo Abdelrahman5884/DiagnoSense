@@ -19,7 +19,7 @@ class PatientController extends Controller
     {
         try {
             $doctorId = auth()->user()->doctor->id;
-            $patients = $this->patientService->getPatients($doctorId, $request->validated());
+            $patients = $this->patientService->getPaginatedPatients($doctorId, $request->validated());
 
             return ApiResponse::success(
                 'Patients list retrieved successfully',
