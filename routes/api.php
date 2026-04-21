@@ -1,43 +1,45 @@
 <?php
 
-use App\Http\Controllers\Auth\EmailVerificationController;
-use App\Http\Controllers\Auth\ForgetPasswordController;
-use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Auth\LogoutController;
-use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\Auth\ResetPasswordController;
-use App\Http\Controllers\ChatbotController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\DoctorController;
-use App\Http\Controllers\FlutterNotificationController;
-use App\Http\Controllers\KeyPointController;
-use App\Http\Controllers\MedicalFileController;
-use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\Patient\PatientController;
-use App\Http\Controllers\SearchController;
-use App\Http\Controllers\StripeWebhookController;
-use App\Http\Controllers\SubscriptionController;
-use App\Http\Controllers\SupportController;
-use App\Http\Controllers\TaskController;
+use App\Http\Controllers\V1\Auth\AuthenticatedController;
+use App\Http\Controllers\V1\Auth\EmailVerificationController;
+use App\Http\Controllers\V1\Auth\ForgetPasswordController;
+use App\Http\Controllers\V1\Auth\RegisterController;
+use App\Http\Controllers\V1\Auth\ResetPasswordController;
 use App\Http\Controllers\V1\Auth\SocialAuthController;
-use App\Http\Controllers\VisitController;
-use App\Http\Controllers\VisitItemController;
-use App\Http\Controllers\WalletController;
+use App\Http\Controllers\V1\ChatbotController;
+use App\Http\Controllers\V1\DashboardController;
+use App\Http\Controllers\V1\DoctorController;
+use App\Http\Controllers\V1\FlutterNotificationController;
+use App\Http\Controllers\V1\KeyPointController;
+use App\Http\Controllers\V1\MedicalFileController;
+use App\Http\Controllers\V1\NotificationController;
+use App\Http\Controllers\V1\Patient\PatientController;
+use App\Http\Controllers\V1\SearchController;
+use App\Http\Controllers\V1\StripeWebhookController;
+use App\Http\Controllers\V1\SubscriptionController;
+use App\Http\Controllers\V1\SupportController;
+use App\Http\Controllers\V1\TaskController;
+use App\Http\Controllers\V1\VisitController;
+use App\Http\Controllers\V1\VisitItemController;
+use App\Http\Controllers\V1\WalletController;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('check-user-type')->group(function () {
-    Route::post('/register/{type}', [RegisterController::class, 'register']);
-    Route::post('/login/{type}', [LoginController::class, 'login']);
+Route::prefix('v1')->group(function () {
+    Route::prefix('auth')->group(function () {
+        Route::post('register', RegisterController::class)->name('register');
+        Route::middleware('check-user-type')->group(function () {
+            Route::post('/login/{type}', [AuthenticatedController::class, 'login'])->middleware('throttle:login')->name('login');
+            Route::post('/forget-password/{type}', [ForgetPasswordController::class, 'forgetPassword']);
+            Route::post('/verify-otp/{type}', [ResetPasswordController::class, 'verifyOtp']);
+            Route::post('/reset-password/{type}', [ResetPasswordController::class, 'resetPassword']);
 
-    Route::post('/forget-password/{type}', [ForgetPasswordController::class, 'forgetPassword']);
-    Route::post('/verify-otp/{type}', [ResetPasswordController::class, 'verifyOtp']);
-    Route::post('/reset-password/{type}', [ResetPasswordController::class, 'resetPassword']);
-
-    Route::middleware('auth:sanctum')->group(function () {
-        Route::post('/logout/{type}', [LogoutController::class, 'logout']);
-        Route::post('/verify-email/{type}', [EmailVerificationController::class, 'verifyEmail']);
-        Route::get('/resend-otp/{type}', [EmailVerificationController::class, 'resendOtp']);
+            Route::middleware('auth:sanctum')->group(function () {
+                Route::post('/logout/{type}', [AuthenticatedController::class, 'logout'])->name('logout');
+                Route::post('/verify-email/{type}', [EmailVerificationController::class, 'verifyEmail']);
+                Route::get('/resend-otp/{type}', [EmailVerificationController::class, 'resendOtp']);
+            });
+        });
     });
 
 });
@@ -97,32 +99,33 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/patients/{patientId}/comparative-analysis', [PatientController::class, 'getComparativeAnalysis']);
 });
 
-Route::middleware('auth:sanctum')->group(function () {
+    Route::middleware('auth:sanctum')->group(function () {
 
-    Route::get('/patient/tasks', [TaskController::class, 'index']);
-    Route::get('/patient/tasks/{task}', [TaskController::class, 'show']);
-    Route::patch('/patient/tasks/{task}/complete', [TaskController::class, 'complete']);
-});
+        Route::get('/patient/tasks', [TaskController::class, 'index']);
+        Route::get('/patient/tasks/{task}', [TaskController::class, 'show']);
+        Route::patch('/patient/tasks/{task}/complete', [TaskController::class, 'complete']);
+    });
 
-Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);
+    Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);
 
-Route::get('/payment-success', function () {
-    return response()->json(['message' => 'Payment successful! You can close this tab.']);
-})->name('payment.success');
+    Route::get('/payment-success', function () {
+        return response()->json(['message' => 'Payment successful! You can close this tab.']);
+    })->name('payment.success');
 
-Route::get('/payment-cancel', function () {
-    return response()->json(['message' => 'Payment cancelled.']);
-})->name('payment.cancel');
+    Route::get('/payment-cancel', function () {
+        return response()->json(['message' => 'Payment cancelled.']);
+    })->name('payment.cancel');
 
-Route::middleware('auth:sanctum')->group(function () {
+    Route::middleware('auth:sanctum')->group(function () {
 
-    Route::get('/patient/medical-history', [MedicalFileController::class, 'medicalHistoryFiles']);
-    Route::get('/patient/lab-reports', [MedicalFileController::class, 'labReports']);
-    Route::get('/patient/radiology-reports', [MedicalFileController::class, 'radiologyReports']);
-    Route::get('/patient/medications', [MedicalFileController::class, 'medications']);
-    Route::get('/patient/timeline', [MedicalFileController::class, 'timeline']);
-    Route::get('/patient/notifications', [FlutterNotificationController::class, 'index']);
-    Route::put('/patient/profile', [MedicalFileController::class, 'update']);
+        Route::get('/patient/medical-history', [MedicalFileController::class, 'medicalHistoryFiles']);
+        Route::get('/patient/lab-reports', [MedicalFileController::class, 'labReports']);
+        Route::get('/patient/radiology-reports', [MedicalFileController::class, 'radiologyReports']);
+        Route::get('/patient/medications', [MedicalFileController::class, 'medications']);
+        Route::get('/patient/timeline', [MedicalFileController::class, 'timeline']);
+        Route::get('/patient/notifications', [FlutterNotificationController::class, 'index']);
+        Route::put('/patient/profile', [MedicalFileController::class, 'update']);
+    });
 });
 
 Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);

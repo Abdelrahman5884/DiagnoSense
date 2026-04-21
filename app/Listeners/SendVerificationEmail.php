@@ -3,13 +3,20 @@
 namespace App\Listeners;
 
 use App\Events\UserRegistered;
-use App\Notifications\EmailVerificationNotification;
+use App\Mail\EmailVerificationMail;
+use App\Notifications\EmailVerificationSMSNotification;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Facades\Mail;
 
 class SendVerificationEmail implements ShouldQueue
 {
     public function handle(UserRegistered $event): void
     {
-        $event->user->notify(new EmailVerificationNotification);
+        if (filter_var($event->user->contact, FILTER_VALIDATE_EMAIL)) {
+            Mail::to($event->user->contact)->send(new EmailVerificationMail($event->user, $event->otpCode));
+        } else {
+            $event->user->notify(new EmailVerificationSMSNotification($event->otpCode));
+        }
+
     }
 }
