@@ -62,12 +62,12 @@ class User extends Authenticatable
         ];
     }
 
-    public function doctor() : HasOne
+    public function doctor(): HasOne
     {
         return $this->hasOne(Doctor::class);
     }
 
-    public function patient() : HasOne
+    public function patient(): HasOne
     {
         return $this->hasOne(Patient::class);
     }

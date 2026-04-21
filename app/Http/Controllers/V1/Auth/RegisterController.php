@@ -32,7 +32,8 @@ class RegisterController extends Controller
             );
         } catch (\Exception $e) {
             \Log::error('Error registering user: '.$e->getMessage(), ['exception' => $e]);
-            return ApiResponse::error(message:'Failed to register user, please try again later.', status: 500);
+
+            return ApiResponse::error(message: 'Failed to register user, please try again later.', status: 500);
         }
     }
 }

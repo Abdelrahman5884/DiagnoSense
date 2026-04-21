@@ -82,7 +82,7 @@ class Patient extends Model
         return $this->hasOne(AiAnalysisResult::class)->latest();
     }
 
-    public function activities():MorphMany
+    public function activities(): MorphMany
     {
         return $this->morphMany(ActivityLog::class, 'model');
     }

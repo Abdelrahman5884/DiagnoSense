@@ -31,8 +31,9 @@ class AuthenticatedController
                     'token' => $result['token'],
                 ],
             );
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
             \Log::error('Error logging in: '.$e->getMessage(), ['exception' => $e]);
+
             return ApiResponse::error(message: 'Failed to login, please try again later.', status: 500);
         }
     }
@@ -44,8 +45,9 @@ class AuthenticatedController
             $this->authenticationService->logout($user);
 
             return ApiResponse::success(message: 'Logout successful');
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             \Log::error('Error logging out: '.$e->getMessage(), ['exception' => $e]);
+
             return ApiResponse::error(message: 'Failed to logout, please try again later.', status: 500);
         }
     }

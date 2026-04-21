@@ -25,7 +25,6 @@ use App\Http\Controllers\V1\WalletController;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
 
-
 Route::prefix('v1/auth')->group(function () {
     Route::post('register', RegisterController::class)->name('register');
     Route::middleware('check-user-type')->group(function () {
@@ -34,11 +33,11 @@ Route::prefix('v1/auth')->group(function () {
         Route::post('/verify-otp/{type}', [ResetPasswordController::class, 'verifyOtp']);
         Route::post('/reset-password/{type}', [ResetPasswordController::class, 'resetPassword']);
 
-          Route::middleware('auth:sanctum')->group(function () {
-              Route::post('/logout/{type}', [AuthenticatedController::class, 'logout'])->name('logout');
-              Route::post('/verify-email/{type}', [EmailVerificationController::class, 'verifyEmail']);
-              Route::get('/resend-otp/{type}', [EmailVerificationController::class, 'resendOtp']);
-          });
+        Route::middleware('auth:sanctum')->group(function () {
+            Route::post('/logout/{type}', [AuthenticatedController::class, 'logout'])->name('logout');
+            Route::post('/verify-email/{type}', [EmailVerificationController::class, 'verifyEmail']);
+            Route::get('/resend-otp/{type}', [EmailVerificationController::class, 'resendOtp']);
+        });
     });
 });
 
