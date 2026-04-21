@@ -82,8 +82,8 @@ trait LogsActivity
         ActivityLog::create([
             'doctor_id' => $doctor?->id,
             'patient_id' => $patientId,
-            'model_type' => class_basename($this),
-            'model_id' => $this->id,
+            'changeable_type' => class_basename($this),
+            'changeable_id' => $this->id,
             'action' => strtolower(class_basename($this)).'_'.$event,
             'description' => $this->generateDescription($event, $formattedChanges),
             'changes' => $formattedChanges ?: null,

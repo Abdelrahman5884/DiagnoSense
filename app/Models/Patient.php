@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Traits\LogsActivity;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -32,9 +33,15 @@ class Patient extends Model
     ];
 
     protected $casts = [
-        'last_visit_date' => 'datetime',
-        'next_visit_date' => 'datetime',
+        'date_of_birth' => 'date',
     ];
+
+    protected function age(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->date_of_birth ? $this->date_of_birth->age : null,
+        );
+    }
 
     public function user(): BelongsTo
     {
@@ -64,7 +71,12 @@ class Patient extends Model
 
     public function visits(): HasMany
     {
-        return $this->hasMany(Visit::class);
+        return $this->hasMany(related: Visit::class);
+    }
+
+    public function latestVisit(): HasOne
+    {
+        return $this->hasOne(related: Visit::class)->latestOfMany();
     }
 
     public function medications(): HasMany

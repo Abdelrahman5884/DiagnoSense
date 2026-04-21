@@ -42,4 +42,11 @@ class UserFactory extends Factory
             'contact_verified_at' => null,
         ]);
     }
+
+    public function patient(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'type' => 'patient',
+        ]);
+    }
 }
