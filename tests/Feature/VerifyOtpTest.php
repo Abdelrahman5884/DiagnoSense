@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 
 uses(RefreshDatabase::class);
 
@@ -58,8 +58,8 @@ function createOtp($contact, $otp = '123456')
     DB::table('otps')->updateOrInsert(
         ['identifier' => $contact],
         [
-            'token'      => $otp,
-            'validity'   => 10,
+            'token' => $otp,
+            'validity' => 10,
             'created_at' => now(),
             'updated_at' => now(),
         ]
@@ -77,9 +77,9 @@ it('allows user to verify otp and returns reset token', function (string $userTy
 
         createOtp($contact, $otp);
 
-        $response = $this->postJson('/api/v1/verify-otp/' . $userType, [
+        $response = $this->postJson('/api/v1/verify-otp/'.$userType, [
             'contact' => $contact,
-            'otp'     => $otp,
+            'otp' => $otp,
         ]);
 
         $response->assertStatus(200);
@@ -109,9 +109,9 @@ it('fails when otp is invalid or expired', function (string $userType) {
     ];
 
     foreach ($contacts as $contact) {
-        $response = $this->postJson('/api/v1/verify-otp/' . $userType, [
+        $response = $this->postJson('/api/v1/verify-otp/'.$userType, [
             'contact' => $contact,
-            'otp'     => '000000',
+            'otp' => '000000',
         ]);
 
         $response->assertStatus(400);
@@ -132,11 +132,11 @@ it('fails verify otp with invalid data', function (string $userType, array $inva
     foreach ($contacts as $contact) {
         $validData = [
             'contact' => $contact,
-            'otp'     => '123456',
+            'otp' => '123456',
         ];
 
         $response = $this->postJson(
-            '/api/v1/verify-otp/' . $userType,
+            '/api/v1/verify-otp/'.$userType,
             array_merge($validData, $invalidData)
         );
 
@@ -145,7 +145,7 @@ it('fails verify otp with invalid data', function (string $userType, array $inva
         $response->assertJson([
             'success' => false,
             'message' => 'Validation Errors',
-            'data'    => $expectedErrors,
+            'data' => $expectedErrors,
         ]);
     }
 })->with('user_types', 'invalid_otp_data');

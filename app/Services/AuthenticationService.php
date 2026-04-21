@@ -126,21 +126,21 @@ class AuthenticationService
        
     public function verifyOtp(array $data): string|false
     {
-        
+
         $result = $this->otp->validate($data['contact'], $data['otp']);
 
         if (! $result->status) {
-           return false;
+            return false;
         }
 
         $token = \Str::random(64);
 
         DB::table('password_reset_tokens')->updateOrInsert(
             ['email' => $data['contact']],
-             [
-               'token'      => hash('sha256', $token),
-               'created_at' => now(),
-             ]
+            [
+                'token' => hash('sha256', $token),
+                'created_at' => now(),
+            ]
         );
 
         return $token;
