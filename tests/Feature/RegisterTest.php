@@ -5,7 +5,6 @@ use App\Models\User;
 use Illuminate\Support\Facades\Event;
 
 beforeEach(function () {
-    Event::fake();
     $this->validData = [
         'name' => 'Test User',
         'password' => 'password',
@@ -15,6 +14,7 @@ beforeEach(function () {
 });
 
 it('allow user to register', function (string $contact) {
+    Event::fake();
     $response = $this->postJson(
         route('register'),
         array_merge($this->validData, ['contact' => $contact])
@@ -50,6 +50,7 @@ it('allow user to register', function (string $contact) {
 
 describe('registration validation', function () {
     it('fails registration if contact is already taken', function () {
+        Event::fake();
         $user = User::factory()->create();
         $response = $this->postJson(
             route('register'),
@@ -67,6 +68,7 @@ describe('registration validation', function () {
     });
 
     it('fails registration with invalid data', function (array $invalidField, array $expectedErrors) {
+        Event::fake();
         $response = $this->postJson(
             route('register'),
             array_merge($this->validData, ['contact' => fake()->unique()->safeEmail()], $invalidField)
