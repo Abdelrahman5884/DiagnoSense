@@ -82,7 +82,7 @@ class SocialAuthService
     {
         return [
             'user' => $user,
-            'token' => $user->createToken('auth_token')->plainTextToken,
+            'token' => Auth::getToken($user),
         ];
     }
 }
