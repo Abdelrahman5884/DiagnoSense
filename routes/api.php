@@ -27,20 +27,21 @@ use App\Http\Controllers\V1\WalletController;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
 
-Route::post('/v1/register', RegisterController::class);
-Route::prefix('v1')->middleware('check-user-type')->group(function () {
-    Route::post('/login/{type}', [AuthenticatedController::class, 'login'])->middleware('throttle:login');
 
-    Route::post('/forget-password/{type}', [ForgetPasswordController::class, 'forgetPassword']);
-    Route::post('/verify-otp/{type}', [ResetPasswordController::class, 'verifyOtp']);
-    Route::post('/reset-password/{type}', [ResetPasswordController::class, 'resetPassword']);
+Route::prefix('v1/auth')->group(function () {
+    Route::post('register', RegisterController::class)->name('register');
+    Route::middleware('check-user-type')->group(function () {
+        Route::post('/login/{type}', [AuthenticatedController::class, 'login'])->middleware('throttle:login')->name('login');
+        Route::post('/forget-password/{type}', [ForgetPasswordController::class, 'forgetPassword']);
+        Route::post('/verify-otp/{type}', [ResetPasswordController::class, 'verifyOtp']);
+        Route::post('/reset-password/{type}', [ResetPasswordController::class, 'resetPassword']);
 
-    Route::middleware('auth:sanctum')->group(function () {
-        Route::post('/logout/{type}', [AuthenticatedController::class, 'logout']);
-        Route::post('/verify-email/{type}', [EmailVerificationController::class, 'verifyEmail']);
-        Route::get('/resend-otp/{type}', [EmailVerificationController::class, 'resendOtp']);
+          Route::middleware('auth:sanctum')->group(function () {
+              Route::post('/logout/{type}', [AuthenticatedController::class, 'logout'])->name('logout');
+              Route::post('/verify-email/{type}', [EmailVerificationController::class, 'verifyEmail']);
+              Route::get('/resend-otp/{type}', [EmailVerificationController::class, 'resendOtp']);
+          });
     });
-
 });
 
 Route::controller(SocialAuthController::class)->group(function () {
