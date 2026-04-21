@@ -1,9 +1,9 @@
 <?php
 
+use App\Mail\EmailVerificationMail;
 use Ichtrojan\Otp\Otp;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\EmailVerificationMail;
 
 uses(RefreshDatabase::class);
 
@@ -12,19 +12,19 @@ beforeEach(function () {
 
     $this->otpMock = \Mockery::mock(Otp::class);
     $this->otpMock->shouldReceive('generate')
-        ->andReturn((object)[
+        ->andReturn((object) [
             'token' => '123456',
         ]);
     $this->app->instance(Otp::class, $this->otpMock);
 
-    $doctor  = createUserWithType('doctor', 'doctor@gmail.com');
+    $doctor = createUserWithType('doctor', 'doctor@gmail.com');
     $patient = createUserWithType('patient', 'patient@gmail.com');
 
     $doctor->update(['contact_verified_at' => null]);
     $patient->update(['contact_verified_at' => null]);
 
     $this->users = [
-        'doctor'  => $doctor,
+        'doctor' => $doctor,
         'patient' => $patient,
     ];
 });
@@ -44,7 +44,7 @@ dataset('invalid_data', [
 it('allows user to verify email', function ($type) {
     $this->otpMock->shouldReceive('validate')
         ->withAnyArgs()
-        ->andReturn((object)['status' => true]);
+        ->andReturn((object) ['status' => true]);
 
     $user = $this->users[$type];
 
@@ -62,7 +62,7 @@ it('allows user to verify email', function ($type) {
 it('fails verification with invalid otp', function ($type) {
     $this->otpMock->shouldReceive('validate')
         ->withAnyArgs()
-        ->andReturn((object)['status' => false]);
+        ->andReturn((object) ['status' => false]);
 
     $user = $this->users[$type];
 

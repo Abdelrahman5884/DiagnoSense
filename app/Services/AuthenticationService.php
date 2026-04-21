@@ -3,12 +3,12 @@
 namespace App\Services;
 
 use App\Events\UserRegistered;
+use App\Mail\EmailVerificationMail;
 use App\Models\User;
+use App\Notifications\EmailVerificationSMSNotification;
 use Ichtrojan\Otp\Otp;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use App\Notifications\EmailVerificationSMSNotification;
-use App\Mail\EmailVerificationMail;
 use Illuminate\Support\Facades\Mail;
 
 class AuthenticationService
@@ -87,30 +87,32 @@ class AuthenticationService
             );
         } else {
             $user->notify(new EmailVerificationSMSNotification($otp));
-         }
-    }
-     private function validateOtp(string $contact, string $otp): bool
-    {
-    return $this->otp->validate($contact, $otp)->status;
+        }
     }
 
-     public function verifyEmail(array $data): bool
+    private function validateOtp(string $contact, string $otp): bool
     {
-         return DB::transaction(function () use ($data) {
+        return $this->otp->validate($contact, $otp)->status;
+    }
+
+    public function verifyEmail(array $data): bool
+    {
+        return DB::transaction(function () use ($data) {
 
             $user = auth()->user();
- 
+
             if (! $this->validateOtp($user->contact, $data['otp'])) {
                 return false;
             }
 
-             $user->update([
-               'contact_verified_at' => now(),
+            $user->update([
+                'contact_verified_at' => now(),
             ]);
 
-         return true;
+            return true;
         });
     }
+
     public function resendOtp(User $user): bool
     {
         if ($user->contact_verified_at) {
@@ -123,7 +125,7 @@ class AuthenticationService
 
         return true;
     }
-       
+
     public function verifyOtp(array $data): string|false
     {
 
