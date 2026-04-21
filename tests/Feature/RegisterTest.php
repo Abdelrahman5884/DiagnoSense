@@ -19,7 +19,7 @@ it('allow user to register', function (string $contact) {
         route('register'),
         array_merge($this->validData, ['contact' => $contact])
     );
-    Event::assertDispatched(function (UserRegistered $event) use ($contact) {
+    Event::assertDispatched(UserRegistered::class, function ($event) use ($contact) {
         return $event->user->contact === $contact;
     });
     $response->assertStatus(201);
