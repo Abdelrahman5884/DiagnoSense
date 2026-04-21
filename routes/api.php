@@ -26,7 +26,8 @@ use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
 
 
-Route::prefix('v1/auth')->group(function () {
+Route::prefix('v1')->group(function () {
+    Route::prefix('auth')->group(function () {
     Route::post('register', RegisterController::class)->name('register');
     Route::middleware('check-user-type')->group(function () {
         Route::post('/login/{type}', [AuthenticatedController::class, 'login'])->middleware('throttle:login')->name('login');
@@ -41,6 +42,7 @@ Route::prefix('v1/auth')->group(function () {
           });
     });
 });
+
 
 Route::controller(SocialAuthController::class)->group(function () {
     Route::get('/google/redirect', 'redirectToGoogle');
@@ -121,6 +123,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/patient/timeline', [MedicalFileController::class, 'timeline']);
     Route::get('/patient/notifications', [FlutterNotificationController::class, 'index']);
     Route::put('/patient/profile', [MedicalFileController::class, 'update']);
+});
 });
 
 Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);
