@@ -75,9 +75,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(Patient::class);
     }
-
-    public function routeNotificationForVonage($notification)
+// add type of notification
+    public function routeNotificationForVonage($notification): string
     {
-        return '20'.ltrim($this->phone, '0');
+        return '20'.ltrim($this->contact, '0');
     }
 }

@@ -19,9 +19,7 @@ class AuthenticationService
     {
         return DB::transaction(function () use ($data) {
             $user = User::create($data);
-            $user->doctor()->create([
-                'specialization' => $data['specialization'],
-            ]);
+            $user->doctor()->create();
 
             $token = Auth::getToken($user);
             $userId = $user->doctor->id;
