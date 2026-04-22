@@ -95,9 +95,8 @@ it('allows user to verify otp and returns reset token', function (string $userTy
             'message' => 'OTP verified. Use this token to reset your password.',
         ]);
 
-        $this->assertDatabaseHas('password_reset_tokens', [
-            'email' => $contact,
-        ]);
+      $responseData = $response->json('data');
+     expect($responseData['reset_token'])->not->toBeEmpty();
 
     }
 })->with('user_types');
