@@ -25,12 +25,12 @@ class DoctorService
             return $doctor->load('user');
         });
     }
+
     public function changePassword(User $user, string $newPassword): void
     {
         $user->update([
-            'password' => Hash::make($newPassword)
+            'password' => Hash::make($newPassword),
         ]);
         $user->tokens()->delete();
     }
-
 }

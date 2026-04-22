@@ -44,7 +44,7 @@ describe('Profile Update: Authorization', function () {
         $otherUser = createUserWithType('doctor', 'hacker@diagno.com');
         $otherDoctor = $otherUser->doctor;
         $response = putJson(route('doctor.profile.update', $otherDoctor->id), [
-            'name' => 'Hacked Name'
+            'name' => 'Hacked Name',
         ]);
         $response->assertStatus(403);
         $this->assertDatabaseMissing('users', ['name' => 'Hacked Name']);
@@ -54,7 +54,7 @@ describe('Profile Update: Authorization', function () {
 describe('Profile Update Input Flexibility', function () {
     it('allows updating only name without specialization', function () {
         $response = putJson(route('doctor.profile.update', $this->doctor->id), [
-            'name' => 'Only Name Update'
+            'name' => 'Only Name Update',
         ]);
 
         $response->assertOk();

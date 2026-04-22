@@ -13,6 +13,7 @@ class PasswordController extends Controller
     public function __construct(
         protected DoctorService $doctorService
     ) {}
+
     public function __invoke(ChangeDoctorPasswordRequest $request): JsonResponse
     {
         try {
@@ -21,9 +22,11 @@ class PasswordController extends Controller
                 user: auth()->user(),
                 newPassword: $validated['new_password']
             );
+
             return ApiResponse::success(message: 'Password changed successfully');
         } catch (\Exception $e) {
-            \Log::error('Error changing password: ' . $e->getMessage());
+            \Log::error('Error changing password: '.$e->getMessage());
+
             return ApiResponse::error(message: 'Failed to change password', status: 500);
         }
     }

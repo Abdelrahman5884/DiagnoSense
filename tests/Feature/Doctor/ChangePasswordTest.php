@@ -1,12 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\Hash;
-use function Pest\Laravel\{actingAs, patchJson};
+
+use function Pest\Laravel\actingAs;
+use function Pest\Laravel\patchJson;
 
 beforeEach(function () {
     $this->user = createUserWithType('doctor', 'menna@diagno.com');
     $this->user->update([
-        'password' => Hash::make('Old_Password_123')
+        'password' => Hash::make('Old_Password_123'),
     ]);
 
     $this->doctor = $this->user->doctor;
@@ -22,10 +24,10 @@ describe('Doctor Change Password', function () {
         ]);
 
         $response->assertOk()
-                ->assertJson([
-                    'success' => true,
-                    'message' => 'Password changed successfully'
-                ]);
+            ->assertJson([
+                'success' => true,
+                'message' => 'Password changed successfully',
+            ]);
 
         expect(Hash::check('New_Strong_Pass_456', $this->user->refresh()->password))->toBeTrue();
 
@@ -39,27 +41,26 @@ describe('Validation Errors', function () {
         $response = patchJson(route('doctor.password.update'), $payload);
 
         $response->assertStatus(422)
-                ->assertJson([
-                    'success' => false,
-                    'message' => 'Validation Errors',
-                    'data' => $expectedErrors,
-                ]);
+            ->assertJson([
+                'success' => false,
+                'message' => 'Validation Errors',
+                'data' => $expectedErrors,
+            ]);
 
         expect(Hash::check('Old_Password_123', $this->user->refresh()->password))->toBeTrue();
 
     })->with([
         'incorrect current password' => [
             ['current_password' => 'Wrong_Pass', 'new_password' => 'NewPass123', 'new_password_confirmation' => 'NewPass123'],
-            ['current_password' => ['The current password is incorrect.']]
+            ['current_password' => ['The current password is incorrect.']],
         ],
         'password confirmation mismatch' => [
             ['current_password' => 'Old_Password_123', 'new_password' => 'NewPass123', 'new_password_confirmation' => 'DifferentPass'],
-            ['new_password' => ['The new password field confirmation does not match.']]
+            ['new_password' => ['The new password field confirmation does not match.']],
         ],
         'password too short' => [
             ['current_password' => 'Old_Password_123', 'new_password' => 'short', 'new_password_confirmation' => 'short'],
-            ['new_password' => ['The new password field must be at least 8 characters.']]
+            ['new_password' => ['The new password field must be at least 8 characters.']],
         ],
     ]);
 });
-
