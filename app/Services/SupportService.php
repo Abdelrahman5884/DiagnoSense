@@ -19,7 +19,7 @@ class SupportService
         if (isset($data['attachment'])) {
             $file = $data['attachment'];
 
-            $uniqueName = Str::uuid() . '.' . $file->getClientOriginalExtension();
+            $uniqueName = Str::uuid().'.'.$file->getClientOriginalExtension();
 
             try {
                 $attachmentPath = Storage::disk('azure')
