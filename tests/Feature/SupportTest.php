@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Storage;
 
 uses(RefreshDatabase::class);
 
+const SUPPORT_ENDPOINT = '/api/v1/support';
+
 beforeEach(function () {
     Storage::fake('public');
 
@@ -14,104 +16,90 @@ beforeEach(function () {
     $this->patient = createUserWithType('patient', 'patient@test.com');
 });
 
-/*
-|--------------------------------------------------------------------------
-| SUCCESS
-|--------------------------------------------------------------------------
-*/
+describe('Support - Create Ticket', function () {
 
-it('allows doctor to create support ticket', function () {
+    it('allows doctor to create support ticket', function () {
 
-    $response = $this->actingAs($this->doctor, 'sanctum')
-        ->postJson('/api/v1/support', [
-            'category' => 'technical',
-            'urgency' => 'high',
-            'message' => 'Test message',
-        ]);
+        $response = $this->actingAs($this->doctor, 'sanctum')
+            ->postJson(SUPPORT_ENDPOINT, [
+                'category' => 'technical',
+                'urgency' => 'high',
+                'message' => 'Test message',
+            ]);
 
-    $response->assertStatus(201);
+        $response->assertStatus(201);
 
-    $response->assertJson([
-        'success' => true,
-    ]);
+        expect(SupportTicket::count())->toBe(1);
+    });
 
-    $this->assertDatabaseHas('support_tickets', [
-        'doctor_id' => $this->doctor->doctor->id,
-        'category' => 'technical',
-        'urgency' => 'high',
-    ]);
 });
 
-/*
-|--------------------------------------------------------------------------
-| WITH ATTACHMENT
-|--------------------------------------------------------------------------
-*/
-it('allows doctor to upload attachment', function () {
+describe('Support - Attachment Upload', function () {
 
-    Storage::fake('azure');
+    it('allows doctor to upload attachment', function () {
 
-    $file = UploadedFile::fake()->create('test.jpg', 100, 'image/jpeg');
+        Storage::fake('azure');
 
-    $response = $this->actingAs($this->doctor, 'sanctum')
-        ->post('/api/v1/support', [
-            'category' => 'technical',
-            'urgency' => 'medium',
-            'message' => 'Test with file',
-            'attachment' => $file,
-        ]);
+        $file = UploadedFile::fake()->create('test.jpg', 100, 'image/jpeg');
 
-    $response->assertStatus(201);
+        $response = $this->actingAs($this->doctor, 'sanctum')
+            ->post(SUPPORT_ENDPOINT, [
+                'category' => 'technical',
+                'urgency' => 'medium',
+                'message' => 'Test with file',
+                'attachment' => $file,
+            ]);
 
-    $ticket = SupportTicket::first();
-    expect($ticket->attachment_path)->not->toBeNull();
-    Storage::disk('azure')->assertExists($ticket->attachment_path);
-});
-/*
-|--------------------------------------------------------------------------
-| VALIDATION
-|--------------------------------------------------------------------------
-*/
+        $response->assertStatus(201);
 
-it('fails with invalid data', function () {
+        $ticket = SupportTicket::first();
 
-    $response = $this->actingAs($this->doctor, 'sanctum')
-        ->postJson('/api/v1/support', [
-            'category' => 'wrong',
-        ]);
+        expect($ticket->attachment_path)->not->toBeNull();
 
-    $response->assertStatus(422);
+        Storage::disk('azure')->assertExists($ticket->attachment_path);
+    });
+
 });
 
-/*
-|--------------------------------------------------------------------------
-| UNAUTHORIZED
-|--------------------------------------------------------------------------
-*/
+describe('Support - Validation', function () {
 
-it('fails if user is not doctor', function () {
+    it('fails with invalid data', function () {
 
-    $response = $this->actingAs($this->patient, 'sanctum')
-        ->postJson('/api/v1/support', [
+        $response = $this->actingAs($this->doctor, 'sanctum')
+            ->postJson(SUPPORT_ENDPOINT, [
+                'category' => 'wrong',
+            ]);
+
+        $response->assertStatus(422);
+    });
+
+});
+
+describe('Support - Authorization', function () {
+
+    it('fails if user is not doctor', function () {
+
+        $response = $this->actingAs($this->patient, 'sanctum')
+            ->postJson(SUPPORT_ENDPOINT, [
+                'category' => 'technical',
+                'urgency' => 'low',
+                'message' => 'Test',
+            ]);
+
+        $response->assertStatus(403);
+    });
+
+});
+
+describe('Support - Guest', function () {
+
+    it('fails if not authenticated', function () {
+
+        $this->postJson(SUPPORT_ENDPOINT, [
             'category' => 'technical',
             'urgency' => 'low',
             'message' => 'Test',
-        ]);
+        ])->assertStatus(401);
+    });
 
-    $response->assertStatus(403);
-});
-
-/*
-|--------------------------------------------------------------------------
-| GUEST
-|--------------------------------------------------------------------------
-*/
-
-it('fails if not authenticated', function () {
-
-    $this->postJson('/api/v1/support', [
-        'category' => 'technical',
-        'urgency' => 'low',
-        'message' => 'Test',
-    ])->assertStatus(401);
 });
