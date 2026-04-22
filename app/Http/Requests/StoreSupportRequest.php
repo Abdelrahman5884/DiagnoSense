@@ -11,12 +11,8 @@ class StoreSupportRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        $currentDoctor = auth()->user()->doctor;
-        if (! $currentDoctor) {
-            return false;
-        }
+            return auth()->check() && auth()->user()->type === 'doctor';
 
-        return true;
     }
 
     /**
