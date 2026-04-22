@@ -2,10 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
-use App\Helpers\ApiResponse;
-use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\Exceptions\HttpResponseException;
 
 class EmailVerificationRequest extends FormRequest
 {
@@ -14,7 +11,8 @@ class EmailVerificationRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return auth()->check();
+
     }
 
     /**
@@ -25,25 +23,7 @@ class EmailVerificationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'identity' => 'required|string',
-            'otp' => 'required|max:6',
+            'otp' => ['required', 'string', 'size:6'],
         ];
-    }
-
-    public function messages(): array
-    {
-        return [
-            'identity.required' => 'Email or phone number is required.',
-            'otp.required' => 'OTP is required.',
-            'otp.max' => 'OTP must not exceed 6 characters.',
-        ];
-    }
-
-    public function failedValidation(Validator $validator)
-    {
-        throw new HttpResponseException(
-            ApiResponse::error('This action could not be completed due to validation errors.',
-                $validator->errors(),
-                422));
     }
 }
