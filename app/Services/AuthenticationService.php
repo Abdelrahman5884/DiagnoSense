@@ -142,6 +142,7 @@ class AuthenticationService
 
         $token = $user->createToken('password_reset_'.$user->id, ['reset-password'],
             now()->addMinutes(15))->plainTextToken;
+
         return $token;
     }
 }
