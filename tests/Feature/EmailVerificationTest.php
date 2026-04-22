@@ -49,7 +49,7 @@ it('allows user to verify email', function ($type) {
     $user = $this->users[$type];
 
     $this->actingAs($user, 'sanctum')
-        ->postJson('/api/v1/verify-email', ['otp' => '123456'])
+        ->postJson('/api/v1/auth/verify-email', ['otp' => '123456'])
         ->assertStatus(200)
         ->assertJson([
             'success' => true,
@@ -67,7 +67,7 @@ it('fails verification with invalid otp', function ($type) {
     $user = $this->users[$type];
 
     $this->actingAs($user, 'sanctum')
-        ->postJson('/api/v1/verify-email', ['otp' => '000000'])
+        ->postJson('/api/v1/auth/verify-email', ['otp' => '000000'])
         ->assertStatus(401)
         ->assertJson([
             'success' => false,
@@ -79,7 +79,7 @@ it('fails verification with invalid data', function ($type, $data) {
     $user = $this->users[$type];
 
     $this->actingAs($user, 'sanctum')
-        ->postJson('/api/v1/verify-email', $data)
+        ->postJson('/api/v1/auth/verify-email', $data)
         ->assertStatus(422)
         ->assertJson([
             'success' => false,
@@ -88,7 +88,7 @@ it('fails verification with invalid data', function ($type, $data) {
 })->with('user_types', 'invalid_data');
 
 it('fails verification without auth', function ($type) {
-    $this->postJson('/api/v1/verify-email', ['otp' => '123456'])
+    $this->postJson('/api/v1/auth/verify-email', ['otp' => '123456'])
         ->assertStatus(401);
 })->with('user_types');
 
@@ -102,7 +102,7 @@ it('allows user to resend otp', function ($type) {
     $user = $this->users[$type];
 
     $this->actingAs($user, 'sanctum')
-        ->getJson('/api/v1/resend-otp')
+        ->getJson('/api/v1/auth/resend-otp')
         ->assertStatus(200)
         ->assertJson([
             'success' => true,
@@ -113,7 +113,7 @@ it('allows user to resend otp', function ($type) {
 })->with('user_types');
 
 it('fails resend otp without auth', function ($type) {
-    $this->getJson('/api/v1/resend-otp')
+    $this->getJson('/api/v1/auth/resend-otp')
         ->assertStatus(401);
 })->with('user_types');
 
@@ -122,7 +122,7 @@ it('fails resend otp if already verified', function ($type) {
     $user->update(['contact_verified_at' => now()]);
 
     $this->actingAs($user, 'sanctum')
-        ->getJson('/api/v1/resend-otp')
+        ->getJson('/api/v1/auth/resend-otp')
         ->assertStatus(400)
         ->assertJson([
             'success' => false,

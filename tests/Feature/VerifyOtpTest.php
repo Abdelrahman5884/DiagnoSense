@@ -77,7 +77,7 @@ it('allows user to verify otp and returns reset token', function (string $userTy
 
         createOtp($contact, $otp);
 
-        $response = $this->postJson('/api/v1/verify-otp/'.$userType, [
+        $response = $this->postJson('/api/v1/auth/verify-otp/'.$userType, [
             'contact' => $contact,
             'otp' => $otp,
         ]);
@@ -108,7 +108,7 @@ it('fails when otp is invalid or expired', function (string $userType) {
     ];
 
     foreach ($contacts as $contact) {
-        $response = $this->postJson('/api/v1/verify-otp/'.$userType, [
+        $response = $this->postJson('/api/v1/auth/verify-otp/'.$userType, [
             'contact' => $contact,
             'otp' => '000000',
         ]);
@@ -135,7 +135,7 @@ it('fails verify otp with invalid data', function (string $userType, array $inva
         ];
 
         $response = $this->postJson(
-            '/api/v1/verify-otp/'.$userType,
+            '/api/v1/auth/verify-otp/'.$userType,
             array_merge($validData, $invalidData)
         );
 

@@ -39,8 +39,8 @@ Route::prefix('v1')->group(function () {
 
             Route::middleware('auth:sanctum')->group(function () {
                 Route::post('/logout/{type}', [AuthenticatedController::class, 'logout'])->name('logout');
-                Route::post('/verify-email/{type}', [EmailVerificationController::class, 'verifyEmail']);
-                Route::get('/resend-otp/{type}', [EmailVerificationController::class, 'resendOtp']);
+                Route::post('/verify-email', [EmailVerificationController::class, 'verifyEmail']);
+                Route::get('/resend-otp', [EmailVerificationController::class, 'resendOtp']);
             });
         });
     });
