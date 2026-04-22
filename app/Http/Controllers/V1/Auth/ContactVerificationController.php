@@ -4,22 +4,22 @@ namespace App\Http\Controllers\V1\Auth;
 
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\V1\Controller;
-use App\Http\Requests\Auth\EmailVerificationRequest;
+use App\Http\Requests\Auth\ContactVerificationRequest;
 use App\Services\Auth\AuthenticationService;
 use Illuminate\Http\JsonResponse;
 
-class EmailVerificationController extends Controller
+class ContactVerificationController extends Controller
 {
     public function __construct(
         protected AuthenticationService $authenticationService
     ) {}
 
-    public function verifyEmail(EmailVerificationRequest $request): JsonResponse
+    public function verifyContact(ContactVerificationRequest $request): JsonResponse
     {
         try {
             $data = $request->validated();
 
-            $result = $this->authenticationService->verifyEmail($data);
+            $result = $this->authenticationService->verifyContact($data);
 
             if (! $result) {
                 return ApiResponse::error(
@@ -34,7 +34,7 @@ class EmailVerificationController extends Controller
 
         } catch (\Exception $e) {
             return ApiResponse::error(
-                message: 'Failed to verify email, please try again later.',
+                message: 'Failed to verify contact, please try again later.',
                 status: 500
             );
         }

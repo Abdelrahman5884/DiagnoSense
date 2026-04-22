@@ -89,7 +89,7 @@ class AuthenticationService
         return $this->otp->validate($contact, $otp)->status;
     }
 
-    public function verifyEmail(array $data): bool
+    public function verifyContact(array $data): bool
     {
         return DB::transaction(function () use ($data) {
 

@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\V1\Auth\AuthenticatedController;
-use App\Http\Controllers\V1\Auth\EmailVerificationController;
+use App\Http\Controllers\V1\Auth\ContactVerificationController;
 use App\Http\Controllers\V1\Auth\ForgetPasswordController;
 use App\Http\Controllers\V1\Auth\RegisterController;
 use App\Http\Controllers\V1\Auth\ResetPasswordController;
@@ -41,8 +41,8 @@ Route::prefix('v1')->group(function () {
 
         Route::middleware('auth:sanctum')->group(function () {
                 Route::post('/logout/{type}', [AuthenticatedController::class, 'logout'])->name('logout');
-                Route::post('/verify-email', [EmailVerificationController::class, 'verifyEmail']);
-                Route::get('/resend-otp', [EmailVerificationController::class, 'resendOtp']);
+                Route::post('/verify-contact', [ContactVerificationController::class, 'verifyContact']);
+                Route::get('/resend-otp', [ContactVerificationController::class, 'resendOtp']);
         });
 
     });
