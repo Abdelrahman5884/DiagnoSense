@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services;
 
 use App\Models\Doctor;
@@ -10,17 +11,16 @@ class DoctorService
     {
         return DB::transaction(function () use ($doctor, $data) {
             $doctor->user()->update([
-                'name' => $data['name']
+                'name' => $data['name'],
             ]);
 
             if (isset($data['specialization'])) {
                 $doctor->update([
-                    'specialization' => $data['specialization']
+                    'specialization' => $data['specialization'],
                 ]);
             }
 
             return $doctor->load('user');
         });
     }
-
 }

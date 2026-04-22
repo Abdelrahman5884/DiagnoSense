@@ -14,17 +14,20 @@ class ProfileController extends Controller
     public function __construct(
         protected DoctorService $doctorService
     ) {}
-    public function update(UpdateProfileRequest $request , Doctor $doctor): JsonResponse
+
+    public function update(UpdateProfileRequest $request, Doctor $doctor): JsonResponse
     {
         try {
             $doctor = $this->doctorService->updateProfile(
                 doctor: $doctor,
                 data: $request->validated()
             );
-            return ApiResponse::success(message:'Profile updated successfully');
+
+            return ApiResponse::success(message: 'Profile updated successfully');
         } catch (\Exception $e) {
             \Log::error('Error updating profile: '.$e->getMessage(), ['exception' => $e]);
-            return ApiResponse::error(message:'Failed to update profile', status: 500);
+
+            return ApiResponse::error(message: 'Failed to update profile', status: 500);
         }
     }
 }
