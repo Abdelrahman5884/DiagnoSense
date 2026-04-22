@@ -31,18 +31,20 @@ Route::prefix('v1')->group(function () {
             Route::get('/google/redirect', 'redirectToGoogle')->name('google.redirect');
             Route::get('/google/callback', 'handleGoogleCallback')->name('google.callback');
         });
+
         Route::middleware('check-user-type')->group(function () {
             Route::post('/login/{type}', [AuthenticatedController::class, 'login'])->middleware('throttle:login')->name('login');
             Route::post('/forget-password/{type}', [ForgetPasswordController::class, 'forgetPassword']);
             Route::post('/verify-otp/{type}', [ResetPasswordController::class, 'verifyOtp']);
             Route::post('/reset-password/{type}', [ResetPasswordController::class, 'resetPassword']);
+        });
 
-            Route::middleware('auth:sanctum')->group(function () {
+        Route::middleware('auth:sanctum')->group(function () {
                 Route::post('/logout/{type}', [AuthenticatedController::class, 'logout'])->name('logout');
                 Route::post('/verify-email', [EmailVerificationController::class, 'verifyEmail']);
                 Route::get('/resend-otp', [EmailVerificationController::class, 'resendOtp']);
-            });
         });
+
     });
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/patients', [PatientController::class, 'index'])->name('patients.index');

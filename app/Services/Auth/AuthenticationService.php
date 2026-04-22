@@ -52,6 +52,11 @@ class AuthenticationService
         $user->currentAccessToken()->delete();
     }
 
+    private function generateOtp(string $contact): string
+    {
+        return $this->otp->generate($contact, 'numeric', 6, 10)->token;
+    }
+
     private function getUser(string $contact): ?User
     {
         return User::where('contact', $contact)->first();
