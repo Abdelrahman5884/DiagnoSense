@@ -125,23 +125,23 @@ class AuthenticationService
 
         return true;
     }
-       
-   public function verifyOtp(array $data, string $type): string|false
-   {
-         $user = $this->getUser($data['contact']);
 
-         if (! $user || $user->type !== $type) {
-              return false;
-            }     
+    public function verifyOtp(array $data, string $type): string|false
+    {
+        $user = $this->getUser($data['contact']);
 
-         $result = $this->otp->validate($user->contact, $data['otp']);
- 
-         if (! $result->status) {
-             return false;
-            }
+        if (! $user || $user->type !== $type) {
+            return false;
+        }
 
-          $token = $user->createToken( 'password_reset_' . $user->id,
-          abilities: ['reset-password'])->plainTextToken;
+        $result = $this->otp->validate($user->contact, $data['otp']);
+
+        if (! $result->status) {
+            return false;
+        }
+
+        $token = $user->createToken('password_reset_'.$user->id,
+            abilities: ['reset-password'])->plainTextToken;
 
         return $token;
     }
