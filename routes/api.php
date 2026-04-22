@@ -34,13 +34,13 @@ Route::prefix('v1')->middleware('check-user-type')->group(function () {
     Route::post('/reset-password/{type}', [ResetPasswordController::class, 'resetPassword']);
     Route::post('/logout/{type}', [AuthenticatedController::class, 'logout']);
 
-    });
+});
 
 Route::middleware('auth:sanctum')->group(function () {
-        Route::post('/v1/verify-email', [EmailVerificationController::class, 'verifyEmail']);
-        Route::get('/v1/resend-otp', [EmailVerificationController::class, 'resendOtp']);
-        });
-    
+    Route::post('/v1/verify-email', [EmailVerificationController::class, 'verifyEmail']);
+    Route::get('/v1/resend-otp', [EmailVerificationController::class, 'resendOtp']);
+});
+
 Route::controller(SocialAuthController::class)->group(function () {
     Route::get('/google/redirect', 'redirectToGoogle');
     Route::get('/google/callback', 'handleGoogleCallback');
