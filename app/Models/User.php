@@ -5,15 +5,15 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Laravel\Scout\Searchable;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasApiTokens, HasFactory , Notifiable, Searchable;
+    use HasApiTokens, HasFactory , Notifiable;
 
     use LogsActivity;
 
@@ -56,24 +56,29 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
+            'contact_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
 
-    public function doctor()
+    public function doctor(): HasOne
     {
         return $this->hasOne(Doctor::class);
     }
 
-    public function patient()
+    public function socialAccounts()
+    {
+        return $this->hasMany(UserSocialAccount::class);
+    }
+
+    public function patient(): HasOne
     {
         return $this->hasOne(Patient::class);
     }
-
-    public function routeNotificationForVonage($notification)
+// add type of notification
+    public function routeNotificationForVonage($notification): string
     {
-        return '20'.ltrim($this->phone, '0');
+        return '20'.ltrim($this->contact, '0');
     }
 
     public function routeNotificationForMail()

@@ -3,7 +3,6 @@
 use App\Models\Doctor;
 use App\Models\Patient;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,10 +29,6 @@ pest()->extend(Tests\TestCase::class)
 | to assert different things. Of course, you may extend the Expectation API at any time.
 |
 */
-
-expect()->extend('toBeOne', function () {
-    return $this->toBe(1);
-});
 
 /*
 |--------------------------------------------------------------------------
@@ -68,15 +63,4 @@ function createUserWithType(string $type, string $contact): User
 function getDataSets(string $userType, $test): array
 {
     return array_values($test->validData[$userType]);
-}
-function insertOtp(string $email, bool $expired = false)
-{
-    DB::table('otps')->insert([
-        'identifier' => $email,
-        'token' => '123456',
-        'validity' => 15,
-        'valid' => 1,
-        'created_at' => $expired ? now()->subMinutes(30) : now(),
-        'updated_at' => $expired ? now()->subMinutes(30) : now(),
-    ]);
 }

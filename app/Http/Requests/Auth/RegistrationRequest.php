@@ -33,10 +33,6 @@ class RegistrationRequest extends FormRequest
                 'min:8',
                 'confirmed',
             ],
-            'specialization' => [
-                'required',
-                'string',
-            ],
         ];
     }
 

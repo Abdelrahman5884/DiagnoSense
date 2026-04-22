@@ -5,11 +5,15 @@ namespace App\Models;
 use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
 
 class Doctor extends Model
 {
-    use HasFactory , LogsActivity, Notifiable;
+    use HasFactory , LogsActivity , Notifiable;
 
     protected $fillable = [
         'user_id',
@@ -17,47 +21,48 @@ class Doctor extends Model
         'specialization',
     ];
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function patients()
+    public function patients(): BelongsToMany
     {
-        return $this->belongsToMany(Patient::class, 'doctor_patient', 'doctor_id', 'patient_id');
+        return $this->belongsToMany(Patient::class, 'doctor_patient', 'doctor_id', 'patient_id')
+            ->withTimestamps();
     }
 
-    public function visits()
+    public function visits(): HasMany
     {
         return $this->hasMany(Visit::class);
     }
 
-    public function medications()
+    public function medications(): HasMany
     {
         return $this->hasMany(Medication::class);
     }
 
-    public function tasks()
+    public function tasks(): HasMany
     {
         return $this->hasMany(Task::class);
     }
 
-    public function wallet()
+    public function wallet(): HasOne
     {
         return $this->hasOne(Wallet::class);
     }
 
-    public function transactions()
+    public function transactions(): HasMany
     {
         return $this->hasMany(Transactions::class);
     }
 
-    public function subscriptions()
+    public function subscriptions(): HasMany
     {
         return $this->hasMany(Subscriptions::class);
     }
 
-    public function activeSubscription()
+    public function activeSubscription(): HasOne
     {
         return $this->hasOne(Subscriptions::class)
             ->whereIn('status', ['active', 'cancelled'])
@@ -68,7 +73,7 @@ class Doctor extends Model
             ->latest();
     }
 
-    public function latestSubscription()
+    public function latestSubscription(): HasOne
     {
         return $this->hasOne(Subscriptions::class)->latestOfMany();
     }

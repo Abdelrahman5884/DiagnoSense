@@ -6,7 +6,7 @@ use App\Helpers\ApiResponse;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\LogoutRequest;
 use App\Http\Resources\UserResource;
-use App\Services\AuthenticationService;
+use App\Services\Auth\AuthenticationService;
 use Illuminate\Http\JsonResponse;
 
 class AuthenticatedController
@@ -32,6 +32,8 @@ class AuthenticatedController
                 ],
             );
         } catch (\Exception $e) {
+            \Log::error('Error logging in: '.$e->getMessage(), ['exception' => $e]);
+
             return ApiResponse::error(message: 'Failed to login, please try again later.', status: 500);
         }
     }
@@ -44,6 +46,8 @@ class AuthenticatedController
 
             return ApiResponse::success(message: 'Logout successful');
         } catch (\Exception $e) {
+            \Log::error('Error logging out: '.$e->getMessage(), ['exception' => $e]);
+
             return ApiResponse::error(message: 'Failed to logout, please try again later.', status: 500);
         }
     }
