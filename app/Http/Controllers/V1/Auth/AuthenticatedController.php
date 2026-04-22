@@ -6,7 +6,7 @@ use App\Helpers\ApiResponse;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\LogoutRequest;
 use App\Http\Resources\UserResource;
-use App\Services\AuthenticationService;
+use App\Services\Auth\AuthenticationService;
 use Illuminate\Http\JsonResponse;
 
 class AuthenticatedController

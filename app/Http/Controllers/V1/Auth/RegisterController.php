@@ -6,7 +6,7 @@ use App\Helpers\ApiResponse;
 use App\Http\Controllers\V1\Controller;
 use App\Http\Requests\Auth\RegistrationRequest;
 use App\Http\Resources\UserResource;
-use App\Services\AuthenticationService;
+use App\Services\Auth\AuthenticationService;
 use Illuminate\Http\JsonResponse;
 
 class RegisterController extends Controller

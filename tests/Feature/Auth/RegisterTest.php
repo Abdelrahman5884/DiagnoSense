@@ -45,7 +45,7 @@ it('allow user to register', function (string $contact) {
     ]);
 })->with([
     'email' => [fake()->unique()->safeEmail()],
-    'phone' => [fake()->randomElement(['010', '011', '012', '015']).fake()->numerify('########')],
+    'phone' => [RegisterTest.phpfake()->randomElement(['010', '011', '012', '015']).fake()->numerify('########')],
 ]);
 
 describe('registration validation', function () {
