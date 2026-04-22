@@ -17,7 +17,7 @@ describe('Profile Update: Success Scenarios', function () {
             'specialization' => 'Software & AI in Medicine'
         ];
 
-        $response = putJson(route('doctor.update', $this->doctor->id), $newData);
+        $response = putJson(route('doctor.profile.update', $this->doctor->id), $newData);
 
         $response->assertOk()
                 ->assertJson([
@@ -42,7 +42,7 @@ describe('Profile Update: Authorization', function () {
     it('forbids a doctor from updating another doctor\'s profile', function () {
         $otherUser = createUserWithType('doctor', 'hacker@diagno.com');
         $otherDoctor = $otherUser->doctor;
-        $response = putJson(route('doctor.update', $otherDoctor->id), [
+        $response = putJson(route('doctor.profile.update', $otherDoctor->id), [
             'name' => 'Hacked Name'
         ]);
         $response->assertStatus(403);
@@ -52,7 +52,7 @@ describe('Profile Update: Authorization', function () {
 
 describe('Profile Update Input Flexibility', function () {
     it('allows updating only name without specialization', function () {
-        $response = putJson(route('doctor.update', $this->doctor->id), [
+        $response = putJson(route('doctor.profile.update', $this->doctor->id), [
             'name' => 'Only Name Update'
         ]);
 

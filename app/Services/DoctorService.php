@@ -2,7 +2,9 @@
 namespace App\Services;
 
 use App\Models\Doctor;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class DoctorService
 {
@@ -21,6 +23,13 @@ class DoctorService
 
             return $doctor->load('user');
         });
+    }
+    public function changePassword(User $user, string $newPassword): void
+    {
+        $user->update([
+            'password' => Hash::make($newPassword)
+        ]);
+        $user->tokens()->delete();
     }
 
 }
