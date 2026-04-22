@@ -1,6 +1,7 @@
 <?php
 
-use function Pest\Laravel\{actingAs, putJson};
+use function Pest\Laravel\actingAs;
+use function Pest\Laravel\putJson;
 
 beforeEach(function () {
     $this->user = createUserWithType('doctor', 'menna@diagno.com');
@@ -14,26 +15,26 @@ describe('Profile Update: Success Scenarios', function () {
     it('allows a doctor to update their own profile successfully', function () {
         $newData = [
             'name' => 'Dr. Menna Baligh',
-            'specialization' => 'Software & AI in Medicine'
+            'specialization' => 'Software & AI in Medicine',
         ];
 
         $response = putJson(route('doctor.profile.update', $this->doctor->id), $newData);
 
         $response->assertOk()
-                ->assertJson([
-                    'success' => true,
-                    'message' => 'Profile updated successfully',
-                    'data' => null
-                ]);
+            ->assertJson([
+                'success' => true,
+                'message' => 'Profile updated successfully',
+                'data' => null,
+            ]);
 
         $this->assertDatabaseHas('users', [
             'id' => $this->user->id,
-            'name' => 'Dr. Menna Baligh'
+            'name' => 'Dr. Menna Baligh',
         ]);
 
         $this->assertDatabaseHas('doctors', [
             'id' => $this->doctor->id,
-            'specialization' => 'Software & AI in Medicine'
+            'specialization' => 'Software & AI in Medicine',
         ]);
     });
 });
