@@ -11,7 +11,7 @@ class StoreSupportRequest extends FormRequest
      */
     public function authorize(): bool
     {
-            return auth()->check() && auth()->user()->type === 'doctor';
+        return auth()->check() && auth()->user()->type === 'doctor';
 
     }
 
