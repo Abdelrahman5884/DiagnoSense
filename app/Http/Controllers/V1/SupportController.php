@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\V1;
 
 use App\Helpers\ApiResponse;
-use App\Http\Controllers\V1\Controller;
 use App\Http\Requests\StoreSupportRequest;
 use App\Services\SupportService;
 use Illuminate\Http\JsonResponse;
