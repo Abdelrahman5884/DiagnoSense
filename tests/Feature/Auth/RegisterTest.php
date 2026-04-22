@@ -10,7 +10,6 @@ beforeEach(function () {
         'name' => 'Test User',
         'password' => 'password',
         'password_confirmation' => 'password',
-        'specialization' => 'Cardiologist',
     ];
 });
 
@@ -41,11 +40,11 @@ it('allow user to register', function (string $contact) {
         'contact' => $response->json('data.user.contact'),
     ]);
     $this->assertDatabaseHas('doctors', [
-        'specialization' => $this->validData['specialization'],
+        'id' => $response->json('data.user.id'),
     ]);
 })->with([
     'email' => [fake()->unique()->safeEmail()],
-    'phone' => [RegisterTest.phpfake()->randomElement(['010', '011', '012', '015']).fake()->numerify('########')],
+    'phone' => [fake()->randomElement(['010', '011', '012', '015']).fake()->numerify('########')],
 ]);
 
 describe('registration validation', function () {

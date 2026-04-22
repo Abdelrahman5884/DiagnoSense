@@ -19,7 +19,6 @@ class DoctorFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
-            'specialization' => 'Cardiologist',
         ];
     }
 }
