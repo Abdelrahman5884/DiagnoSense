@@ -5,8 +5,10 @@ namespace App\Services\Auth;
 use App\Events\UserRegistered;
 use App\Helpers\Auth;
 use App\Mail\EmailVerificationMail;
+use App\Mail\ResetPasswordMail;
 use App\Models\User;
 use App\Notifications\EmailVerificationSMSNotification;
+use App\Notifications\ResetPasswordSMSNotification;
 use Ichtrojan\Otp\Otp;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -72,15 +74,22 @@ class AuthenticationService
         return $user;
     }
 
-    private function sendOtp(User $user, string $otp): void
+    private function sendOtp(User $user, string $otp, bool $isReset = false): void
     {
-        if (filter_var($user->contact, FILTER_VALIDATE_EMAIL)) {
+        $isEmail = filter_var($user->contact, FILTER_VALIDATE_EMAIL);
 
-            Mail::to($user->contact)->send(
-                new EmailVerificationMail($user, $otp)
-            );
+        if ($isEmail) {
+            $mailable = $isReset
+                ? new ResetPasswordMail($user, $otp)
+                : new EmailVerificationMail($user, $otp);
+
+            Mail::to($user->contact)->send($mailable);
         } else {
-            $user->notify(new EmailVerificationSMSNotification($otp));
+            $notification = $isReset
+                ? new ResetPasswordSMSNotification($otp)
+                : new EmailVerificationSMSNotification($otp);
+
+            $user->notify($notification);
         }
     }
 
@@ -120,6 +129,21 @@ class AuthenticationService
         return true;
     }
 
+    public function forgotPassword(array $data, string $type): bool
+    {
+        $user = User::where('contact', $data['contact'])
+                    ->where('type', $type)
+                    ->first();
+
+        if (!$user) return false;
+
+        $otpCode = Auth::generateOtp($user->contact, $this->otp);
+
+        $this->sendOtp($user, $otpCode, isReset: true);
+
+        return true;
+    }
+
     public function verifyOtp(array $data, string $type): string|false
     {
         $user = $this->getUser($data['contact']);
@@ -138,5 +162,16 @@ class AuthenticationService
             now()->addMinutes(15))->plainTextToken;
 
         return $token;
+    }
+
+    public function resetPassword(User $user, string $newPassword): void
+    {
+        DB::transaction(function () use ($user, $newPassword) {
+            $user->update([
+                'password' => Hash::make($newPassword)
+            ]);
+
+            $user->tokens()->delete();
+        });
     }
 }
