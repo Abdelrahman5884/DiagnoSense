@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services\Notifications;
 
 use App\Models\Doctor;
@@ -10,7 +11,6 @@ class WebNotificationService
     {
         return $doctor->notifications()->cursorPaginate($perPage);
     }
-
 
     public function getUnreadCount(Doctor $doctor): int
     {

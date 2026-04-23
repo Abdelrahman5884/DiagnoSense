@@ -13,6 +13,7 @@ class NotificationController extends Controller
     public function __construct(
         protected WebNotificationService $notificationService
     ) {}
+
     public function index(Request $request): JsonResponse
     {
         try {
@@ -23,8 +24,9 @@ class NotificationController extends Controller
                 data: NotificationResource::collection($notifications)->response()->getData(true)
             );
         } catch (\Exception $e) {
-            \Log::error("Failed to fetch notifications: " . $e->getMessage());
-            return ApiResponse::error(message:'Could not load notifications at the moment.',status: 500);
+            \Log::error('Failed to fetch notifications: '.$e->getMessage());
+
+            return ApiResponse::error(message: 'Could not load notifications at the moment.', status: 500);
         }
     }
 
@@ -38,8 +40,9 @@ class NotificationController extends Controller
                 data: ['unread_count' => $count]
             );
         } catch (\Exception $e) {
-            \Log::error("Failed to count notifications: " . $e->getMessage());
-            return ApiResponse::error(message:'Could not retrieve unread count.',status: 500);
+            \Log::error('Failed to count notifications: '.$e->getMessage());
+
+            return ApiResponse::error(message: 'Could not retrieve unread count.', status: 500);
         }
     }
 
