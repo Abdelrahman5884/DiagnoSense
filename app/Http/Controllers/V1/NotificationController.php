@@ -4,24 +4,43 @@ namespace App\Http\Controllers\V1;
 
 use App\Helpers\ApiResponse;
 use App\Http\Resources\NotificationResource;
+use App\Services\Notifications\WebNotificationService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class NotificationController extends Controller
 {
-    public function index(Request $request)
+    public function __construct(
+        protected WebNotificationService $notificationService
+    ) {}
+    public function index(Request $request): JsonResponse
     {
-        $notifications = $request->user()->doctor
-            ->notifications()
-            ->cursorPaginate(10);
+        try {
+            $notifications = $this->notificationService->getPaginatedUserNotifications($request->user()->doctor);
 
-        return NotificationResource::collection($notifications);
+            return ApiResponse::success(
+                message: 'Notifications retrieved successfully.',
+                data: NotificationResource::collection($notifications)->response()->getData(true)
+            );
+        } catch (\Exception $e) {
+            \Log::error("Failed to fetch notifications: " . $e->getMessage());
+            return ApiResponse::error(message:'Could not load notifications at the moment.',status: 500);
+        }
     }
 
-    public function unreadCount(Request $request)
+    public function unreadCount(Request $request): JsonResponse
     {
-        return ApiResponse::success('Unread notifications count retrieved successfully', [
-            'unread_count' => $request->user()->doctor->unreadNotifications()->count(),
-        ], 200);
+        try {
+            $count = $this->notificationService->getUnreadCount($request->user()->doctor);
+
+            return ApiResponse::success(
+                message: 'Unread notifications count retrieved successfully.',
+                data: ['unread_count' => $count]
+            );
+        } catch (\Exception $e) {
+            \Log::error("Failed to count notifications: " . $e->getMessage());
+            return ApiResponse::error(message:'Could not retrieve unread count.',status: 500);
+        }
     }
 
     public function markAsRead(Request $request, $id)
