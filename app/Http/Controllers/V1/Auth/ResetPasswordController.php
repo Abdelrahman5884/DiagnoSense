@@ -10,7 +10,6 @@ use App\Http\Requests\Auth\VerifyOtpRequest;
 use App\Services\Auth\AuthenticationService;
 use Illuminate\Http\JsonResponse;
 
-
 class ResetPasswordController extends Controller
 {
     public function __construct(
@@ -23,14 +22,15 @@ class ResetPasswordController extends Controller
             $data = $request->validated();
             $status = $this->authenticationService->forgotPassword($data, $type);
 
-            if (!$status) {
-                return ApiResponse::error(message:'User not found with these credentials.',status: 404);
+            if (! $status) {
+                return ApiResponse::error(message: 'User not found with these credentials.', status: 404);
             }
 
-            return ApiResponse::success(message:'OTP has been sent to your registered contact.');
+            return ApiResponse::success(message: 'OTP has been sent to your registered contact.');
         } catch (\Exception $e) {
-            \Log::error("Forget Password Error: " . $e->getMessage());
-            return ApiResponse::error(message:'Failed to process request.',status: 500);
+            \Log::error('Forget Password Error: '.$e->getMessage());
+
+            return ApiResponse::error(message: 'Failed to process request.', status: 500);
         }
     }
 
@@ -66,13 +66,14 @@ class ResetPasswordController extends Controller
         try {
             $user = auth()->user();
             $data = $request->validated();
-            
+
             $this->authenticationService->resetPassword($user, $data['password']);
 
-            return ApiResponse::success(message:'Password has been reset successfully.');
+            return ApiResponse::success(message: 'Password has been reset successfully.');
         } catch (\Exception $e) {
-            \Log::error("Password Reset Error: " . $e->getMessage());
-            return ApiResponse::error(message:'Failed to reset password.',status: 500);
+            \Log::error('Password Reset Error: '.$e->getMessage());
+
+            return ApiResponse::error(message: 'Failed to reset password.', status: 500);
         }
     }
 }

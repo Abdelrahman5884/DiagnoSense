@@ -45,5 +45,4 @@ class ResetPasswordMail extends Mailable implements ShouldQueue
             ]
         );
     }
-
 }

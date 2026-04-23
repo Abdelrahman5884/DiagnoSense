@@ -132,10 +132,12 @@ class AuthenticationService
     public function forgotPassword(array $data, string $type): bool
     {
         $user = User::where('contact', $data['contact'])
-                    ->where('type', $type)
-                    ->first();
+            ->where('type', $type)
+            ->first();
 
-        if (!$user) return false;
+        if (! $user) {
+            return false;
+        }
 
         $otpCode = Auth::generateOtp($user->contact, $this->otp);
 
@@ -168,7 +170,7 @@ class AuthenticationService
     {
         DB::transaction(function () use ($user, $newPassword) {
             $user->update([
-                'password' => Hash::make($newPassword)
+                'password' => Hash::make($newPassword),
             ]);
 
             $user->tokens()->delete();

@@ -12,6 +12,7 @@ class ResetPasswordSMSNotification extends Notification implements ShouldQueue
     use Queueable;
 
     public function __construct(protected string $otp) {}
+
     public function via(object $notifiable): array
     {
         return ['vonage'];

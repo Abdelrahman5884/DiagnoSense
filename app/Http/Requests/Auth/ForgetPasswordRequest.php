@@ -10,7 +10,7 @@ class ForgetPasswordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'contact' => ['required', 'string',new ValidContactRule],
+            'contact' => ['required', 'string', new ValidContactRule],
         ];
     }
 
