@@ -9,8 +9,8 @@ class UpdateProfileRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['sometimes','string', 'max:255'],
-            'specialization' => ['sometimes','string', 'max:255'],
+            'name' => ['sometimes', 'string', 'max:255'],
+            'specialization' => ['sometimes', 'string', 'max:255'],
         ];
     }
 }

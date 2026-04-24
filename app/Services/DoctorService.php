@@ -17,7 +17,7 @@ class DoctorService
             }
 
             $doctorData = collect($data)->except('name')->toArray();
-            if (!empty($doctorData) && $doctorData !== $doctor->only(array_keys($doctorData))) {
+            if (! empty($doctorData) && $doctorData !== $doctor->only(array_keys($doctorData))) {
                 $doctor->update($doctorData);
             }
         });

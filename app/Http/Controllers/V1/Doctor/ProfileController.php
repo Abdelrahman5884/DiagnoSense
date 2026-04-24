@@ -5,7 +5,6 @@ namespace App\Http\Controllers\V1\Doctor;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\V1\Controller;
 use App\Http\Requests\UpdateProfileRequest;
-use App\Models\Doctor;
 use App\Services\DoctorService;
 use Illuminate\Http\JsonResponse;
 
