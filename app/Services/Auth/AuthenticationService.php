@@ -52,7 +52,6 @@ class AuthenticationService
         $user->currentAccessToken()->delete();
     }
 
-
     private function getUser(string $contact): ?User
     {
         return User::where('contact', $contact)->first();
@@ -121,13 +120,13 @@ class AuthenticationService
         $user = $this->getUser($data['contact']);
 
         if (! $user || $user->type !== $type) {
-        throw new \Exception('', 403); 
+            throw new \Exception('', 403);
         }
 
         $result = $this->otp->validate($user->contact, $data['otp']);
 
         if (! $result->status) {
-        throw new \Exception('', 401); 
+            throw new \Exception('', 401);
         }
 
         $token = $user->createToken('password_reset_'.$user->id, ['reset-password'],
