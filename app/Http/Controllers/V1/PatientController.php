@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\V1;
 
-use App\Http\Controllers\V1\Controller;
 use App\Helpers\ApiResponse;
-use App\Http\Requests\PatientListRequest;
+use App\Http\Requests\Patient\PatientListRequest;
+use App\Http\Requests\Patient\StorePatientRequest;
 use App\Http\Resources\PatientResource;
 use App\Services\PatientService;
 use Illuminate\Http\JsonResponse;
@@ -30,6 +30,26 @@ class PatientController extends Controller
             \Log::error('Patient Index Error: '.$e->getMessage());
 
             return ApiResponse::error(message:'An error occurred while fetching patients.',status:500);
+        }
+    }
+
+    public function store(StorePatientRequest $request): JsonResponse
+    {
+        try{
+            $data = $request->validated();
+            $result = $this->patientService->store($data);
+            return ApiResponse::success(
+                message: 'Patient created successfully and AI analysis is in progress.',
+                data : [
+                    'patient_id' => $result['patient']->id,
+                    'analysis_result_id' => $result['analysisResult']->id,
+                ],
+                status: 201
+            );
+        }catch (\Exception $e) {
+            \Log::error('Patient Store Error: '.$e->getMessage());
+
+            return ApiResponse::error(message:'An error occurred while creating patient.',status:500);
         }
     }
 }
