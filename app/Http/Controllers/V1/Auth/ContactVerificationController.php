@@ -50,7 +50,7 @@ class ContactVerificationController extends Controller
             if (! $result) {
                 return ApiResponse::error(
                     message: 'User already verified.',
-                    status: 400
+                    status: 409
                 );
             }
 

@@ -1,62 +1,51 @@
 <?php
 
 use App\Mail\EmailVerificationMail;
-use Ichtrojan\Otp\Otp;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
-
-uses(RefreshDatabase::class);
-
-const VERIFY_EMAIL_ENDPOINT = '/api/v1/auth/verify-contact';
-const RESEND_OTP_ENDPOINT = '/api/v1/auth/resend-otp';
-
-beforeEach(function () {
-    Mail::fake();
-
-    $this->otpMock = \Mockery::mock(Otp::class);
-
-    $this->otpMock->shouldReceive('generate')
-        ->andReturn((object) [
-            'token' => '123456',
-        ]);
-
-    $this->app->instance(Otp::class, $this->otpMock);
-
-    $doctor = createUserWithType('doctor', 'doctor@gmail.com');
-    $patient = createUserWithType('patient', 'patient@gmail.com');
-
-    $doctor->update(['contact_verified_at' => null]);
-    $patient->update(['contact_verified_at' => null]);
-
-    $this->users = [
-        'doctor' => $doctor,
-        'patient' => $patient,
-    ];
-});
-
-dataset('user_types', ['doctor', 'patient']);
-
-dataset('invalid_data', [
-    'empty otp' => [['otp' => null]],
-]);
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\EmailVerificationSMSNotification;
 
 /*
 |--------------------------------------------------------------------------
-| VERIFY EMAIL
+| Setup
 |--------------------------------------------------------------------------
 */
 
-describe('Verify Email', function () {
+beforeEach(function () {
+    Mail::fake();
+    Notification::fake();
 
-    it('allows user to verify email', function ($type) {
-        $this->otpMock->shouldReceive('validate')
-            ->withAnyArgs()
-            ->andReturn((object) ['status' => true]);
+    $doctorWithEmail = createUserWithType('doctor', 'doctor@email.com');
+    $doctorWithPhone = createUserWithType('doctor', '01012345678');
 
-        $user = $this->users[$type];
+    $doctorWithEmail->update(['contact_verified_at' => null]);
+    $doctorWithPhone->update(['contact_verified_at' => null]);
+
+    $this->users = [
+        'email_user' => $doctorWithEmail,
+        'phone_user' => $doctorWithPhone,
+    ];
+});
+
+dataset('contact_methods', ['email_user', 'phone_user']);
+dataset('invalid_data', ['empty otp' => [['otp' => null]]]);
+
+/*
+|--------------------------------------------------------------------------
+| Verify Contact Section
+|--------------------------------------------------------------------------
+*/
+
+describe('Verify Contact', function () {
+
+    it('allows user to verify contact successfully with valid otp', function ($method) {
+        $user = $this->users[$method];
+        $token = '123456';
+
+        createOtpInDatabase($user->contact, $token, expired: false);
 
         $this->actingAs($user, 'sanctum')
-            ->postJson(VERIFY_EMAIL_ENDPOINT, ['otp' => '123456'])
+            ->postJson(route('verify-contact'), ['otp' => $token])
             ->assertStatus(200)
             ->assertJson([
                 'success' => true,
@@ -64,38 +53,49 @@ describe('Verify Email', function () {
             ]);
 
         expect($user->fresh()->contact_verified_at)->not->toBeNull();
-    })->with('user_types');
+    })->with('contact_methods');
 
-    it('fails verification with invalid otp', function ($type) {
-        $this->otpMock->shouldReceive('validate')
-            ->withAnyArgs()
-            ->andReturn((object) ['status' => false]);
+    it('fails verification with expired otp', function ($method) {
+        $user = $this->users[$method];
+        $token = '123456';
 
-        $user = $this->users[$type];
+        createOtpInDatabase($user->contact, $token, expired: true);
 
         $this->actingAs($user, 'sanctum')
-            ->postJson(VERIFY_EMAIL_ENDPOINT, ['otp' => '000000'])
+            ->postJson(route('verify-contact'), ['otp' => $token])
             ->assertStatus(401)
             ->assertJson([
                 'success' => false,
                 'message' => 'Invalid or expired OTP.',
             ]);
-    })->with('user_types');
+    })->with('contact_methods');
 
-    it('fails verification with invalid data', function ($type, $data) {
-        $user = $this->users[$type];
+    it('fails verification with wrong otp (not in database)', function ($method) {
+        $user = $this->users[$method];
 
         $this->actingAs($user, 'sanctum')
-            ->postJson(VERIFY_EMAIL_ENDPOINT, $data)
+            ->postJson(route('verify-contact'), ['otp' => '999999'])
+            ->assertStatus(401)
+            ->assertJson([
+                'success' => false,
+                'message' => 'Invalid or expired OTP.',
+            ]);
+    })->with('contact_methods');
+
+    it('fails verification if data is invalid', function ($method, $data) {
+        $user = $this->users[$method];
+
+        $this->actingAs($user, 'sanctum')
+            ->postJson(route('verify-contact'), $data)
             ->assertStatus(422)
             ->assertJson([
                 'success' => false,
                 'message' => 'Validation Errors',
             ]);
-    })->with('user_types', 'invalid_data');
+    })->with('contact_methods', 'invalid_data');
 
-    it('fails verification without auth', function () {
-        $this->postJson(VERIFY_EMAIL_ENDPOINT, ['otp' => '123456'])
+    it('denies access to verify contact without authentication', function () {
+        $this->postJson(route('verify-contact'), ['otp' => '123456'])
             ->assertStatus(401);
     });
 
@@ -103,42 +103,46 @@ describe('Verify Email', function () {
 
 /*
 |--------------------------------------------------------------------------
-| RESEND OTP
+| Resend OTP Section
 |--------------------------------------------------------------------------
 */
 
 describe('Resend OTP', function () {
 
-    it('allows user to resend otp', function ($type) {
-        $user = $this->users[$type];
+    it('allows user to resend a new otp via proper channel', function ($method) {
+        $user = $this->users[$method];
 
         $this->actingAs($user, 'sanctum')
-            ->getJson(RESEND_OTP_ENDPOINT)
+            ->getJson(route('resend-otp'))
             ->assertStatus(200)
             ->assertJson([
                 'success' => true,
                 'message' => 'OTP sent successfully.',
             ]);
 
-        Mail::assertSent(EmailVerificationMail::class);
-    })->with('user_types');
+        if (filter_var($user->contact, FILTER_VALIDATE_EMAIL)) {
+            Mail::assertSent(EmailVerificationMail::class);
+        } else {
+            Notification::assertSentTo($user, EmailVerificationSMSNotification::class);
+        }
+    })->with('contact_methods');
 
-    it('fails resend otp without auth', function () {
-        $this->getJson(RESEND_OTP_ENDPOINT)
-            ->assertStatus(401);
-    });
-
-    it('fails resend otp if already verified', function ($type) {
-        $user = $this->users[$type];
+    it('fails to resend otp if user is already verified', function ($method) {
+        $user = $this->users[$method];
         $user->update(['contact_verified_at' => now()]);
 
         $this->actingAs($user, 'sanctum')
-            ->getJson(RESEND_OTP_ENDPOINT)
-            ->assertStatus(400)
+            ->getJson(route('resend-otp'))
+            ->assertStatus(409)
             ->assertJson([
                 'success' => false,
                 'message' => 'User already verified.',
             ]);
-    })->with('user_types');
+    })->with('contact_methods');
+
+    it('denies access to resend otp without authentication', function () {
+        $this->getJson(route('resend-otp'))
+            ->assertStatus(401);
+    });
 
 });

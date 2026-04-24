@@ -52,10 +52,6 @@ class AuthenticationService
         $user->currentAccessToken()->delete();
     }
 
-    private function generateOtp(string $contact): string
-    {
-        return $this->otp->generate($contact, 'numeric', 6, 10)->token;
-    }
 
     private function getUser(string $contact): ?User
     {
@@ -113,7 +109,7 @@ class AuthenticationService
             return false;
         }
 
-        $otpCode = $this->generateOtp($user->contact);
+        $otpCode = Auth::generateOtp($user->contact, $this->otp);
 
         $this->sendOtp($user, $otpCode);
 
@@ -125,13 +121,13 @@ class AuthenticationService
         $user = $this->getUser($data['contact']);
 
         if (! $user || $user->type !== $type) {
-            return false;
+        throw new \Exception('', 403); 
         }
 
         $result = $this->otp->validate($user->contact, $data['otp']);
 
         if (! $result->status) {
-            return false;
+        throw new \Exception('', 401); 
         }
 
         $token = $user->createToken('password_reset_'.$user->id, ['reset-password'],

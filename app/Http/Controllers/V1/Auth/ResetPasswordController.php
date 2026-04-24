@@ -21,29 +21,30 @@ class ResetPasswordController extends Controller
     public function verifyOtp(VerifyOtpRequest $request, string $type): JsonResponse
     {
         try {
-            $data = $request->validated();
+              $data = $request->validated();
 
-            $result = $this->authenticationService->verifyOtp($data, $type);
+              $result = $this->authenticationService->verifyOtp($data, $type);
 
-            if (! $result) {
-                return ApiResponse::error(
-                    message: 'Invalid or expired OTP.',
-                    status: 400
-                );
+              return ApiResponse::success(
+                 message: 'OTP verified. You can now reset your password.',
+                 data: ['reset_token' => $result]
+            );
+
+            } catch (\Exception $e) {
+                \Log::error('Error during OTP verification: '.$e->getMessage(), ['exception' => $e]);
+
+                 $message = match ($e->getCode()) {
+                  403 => 'Unauthorized access: Invalid user type.',
+                  401 => 'Invalid or expired OTP.',
+                  default => 'Failed to verify OTP.',
+           };
+
+               return ApiResponse::error(
+               message: $message,
+               status: $e->getCode() ?: 500
+            );
             }
-
-            return ApiResponse::success(
-                message: 'OTP verified. Use this token to reset your password.',
-                data: ['reset_token' => $result]
-            );
-
-        } catch (\Exception $e) {
-            return ApiResponse::error(
-                message: 'Failed to verify OTP.',
-                status: 500
-            );
         }
-    }
 
     public function resetPassword(ResetPasswordRequest $request, string $type)
     {
