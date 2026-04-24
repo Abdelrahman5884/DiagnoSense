@@ -59,12 +59,12 @@ class Doctor extends Model
 
     public function subscriptions(): HasMany
     {
-        return $this->hasMany(Subscriptions::class);
+        return $this->hasMany(Subscription::class);
     }
 
     public function activeSubscription(): HasOne
     {
-        return $this->hasOne(Subscriptions::class)
+        return $this->hasOne(Subscription::class)
             ->whereIn('status', ['active', 'cancelled'])
             ->where('expires_at', '>', now())
             ->whereHas('plan', function ($query) {
@@ -75,7 +75,7 @@ class Doctor extends Model
 
     public function latestSubscription(): HasOne
     {
-        return $this->hasOne(Subscriptions::class)->latestOfMany();
+        return $this->hasOne(Subscription::class)->latestOfMany();
     }
 
     public function hasFeature(string $featureName): bool
@@ -83,11 +83,11 @@ class Doctor extends Model
         if ($this->billing_mode === 'pay_per_use') {
             return true;
         }
-        $sub = $this->activeSubscription;
-        if (! $sub) {
+        $subscription = $this->activeSubscription;
+        if (! $subscription) {
             return false;
         }
-        $features = is_string($sub->plan->features) ? json_decode($sub->plan->features, true) : $sub->plan->features;
+        $features = is_string($subscription->plan->features) ? json_decode($subscription->plan->features, true) : $subscription->plan->features;
 
         return in_array($featureName, $features ?? []);
     }
