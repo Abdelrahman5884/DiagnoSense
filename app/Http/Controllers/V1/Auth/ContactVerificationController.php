@@ -34,6 +34,7 @@ class ContactVerificationController extends Controller
 
         } catch (\Exception $e) {
             \Log::error('Error verifying contact: '.$e->getMessage(), ['exception' => $e]);
+
             return ApiResponse::error(
                 message: 'Failed to verify contact, please try again later.',
                 status: 500
@@ -61,6 +62,7 @@ class ContactVerificationController extends Controller
 
         } catch (\Exception $e) {
             \Log::error('Error resending OTP: '.$e->getMessage(), ['exception' => $e]);
+
             return ApiResponse::error(
                 message: 'Failed to resend OTP, please try again later.',
                 status: 500
