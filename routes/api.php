@@ -50,7 +50,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/patients', [PatientController::class, 'index'])->name('patients.index');
 
         Route::prefix('doctors')->group(function () {
-            Route::patch('/{doctor}', [ProfileController::class, 'update'])->name('doctor.profile.update');
+            Route::patch('/profile', [ProfileController::class, 'update'])->name('doctor.profile.update');
             Route::patch('/change-password', PasswordController::class)->name('doctor.password.update');
         });
     });

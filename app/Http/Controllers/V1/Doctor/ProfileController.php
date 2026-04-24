@@ -15,10 +15,11 @@ class ProfileController extends Controller
         protected DoctorService $doctorService
     ) {}
 
-    public function update(UpdateProfileRequest $request, Doctor $doctor): JsonResponse
+    public function update(UpdateProfileRequest $request): JsonResponse
     {
         try {
-            $doctor = $this->doctorService->updateProfile(
+            $doctor = $request->user()->doctor;
+            $this->doctorService->updateProfile(
                 doctor: $doctor,
                 data: $request->validated()
             );

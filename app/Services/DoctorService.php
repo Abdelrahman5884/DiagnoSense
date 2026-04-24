@@ -9,20 +9,17 @@ use Illuminate\Support\Facades\Hash;
 
 class DoctorService
 {
-    public function updateProfile(Doctor $doctor, array $data): Doctor
+    public function updateProfile(Doctor $doctor, array $data): void
     {
-        return DB::transaction(function () use ($doctor, $data) {
-            $doctor->user()->update([
-                'name' => $data['name'],
-            ]);
-
-            if (isset($data['specialization'])) {
-                $doctor->update([
-                    'specialization' => $data['specialization'],
-                ]);
+        DB::transaction(function () use ($doctor, $data) {
+            if (isset($data['name']) && $data['name'] !== $doctor->user->name) {
+                $doctor->user->update(['name' => $data['name']]);
             }
 
-            return $doctor->load('user');
+            $doctorData = collect($data)->except('name')->toArray();
+            if (!empty($doctorData) && $doctorData !== $doctor->only(array_keys($doctorData))) {
+                $doctor->update($doctorData);
+            }
         });
     }
 
