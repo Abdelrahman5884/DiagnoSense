@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Actions\Doctor;
 
 use App\Models\User;
