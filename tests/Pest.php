@@ -65,9 +65,9 @@ function createOtpInDatabase(string $contact, string $token, bool $expired = fal
 {
     DB::table('otps')->insert([
         'identifier' => $contact,
-        'token'      => $token,
-        'valid'      => true,
-        'validity'   => 10,
+        'token' => $token,
+        'valid' => true,
+        'validity' => 10,
         'created_at' => $expired ? now()->subMinutes(11) : now(),
         'updated_at' => $expired ? now()->subMinutes(11) : now(),
     ]);

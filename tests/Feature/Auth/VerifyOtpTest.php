@@ -1,6 +1,5 @@
 <?php
 
-
 beforeEach(function () {
     $doctorWithEmail = createUserWithType('doctor', 'testDoctor@gmail.com');
     $patientWithEmail = createUserWithType('patient', 'testPatient@gmail.com');
@@ -57,7 +56,7 @@ describe('Verify OTP (Password Reset)', function () {
 
             $response = $this->postJson(route('verify-otp', ['type' => $userType]), [
                 'contact' => $contact,
-                'otp'     => $token,
+                'otp' => $token,
             ]);
 
             $response->assertStatus(200)
@@ -79,7 +78,7 @@ describe('Verify OTP (Password Reset)', function () {
 
             $response = $this->postJson(route('verify-otp', ['type' => $userType]), [
                 'contact' => $contact,
-                'otp'     => $token,
+                'otp' => $token,
             ]);
             $response->assertStatus(401)
                 ->assertJson([
@@ -95,7 +94,7 @@ describe('Verify OTP (Password Reset)', function () {
         foreach ($contacts as $contact) {
             $response = $this->postJson(route('verify-otp', ['type' => $userType]), [
                 'contact' => $contact,
-                'otp'     => '999999',
+                'otp' => '999999',
             ]);
             $response->assertStatus(401)
                 ->assertJson([
@@ -115,7 +114,7 @@ describe('Verify OTP (Password Reset)', function () {
                 ->assertJson([
                     'success' => false,
                     'message' => 'Validation Errors',
-                    'data'    => $expectedErrors,
+                    'data' => $expectedErrors,
                 ]);
         }
     })->with('user_types', 'invalid_otp_data');
