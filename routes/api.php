@@ -39,7 +39,8 @@ Route::prefix('v1')->middleware('check-user-type')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/v1/verify-email', [EmailVerificationController::class, 'verifyEmail']);
     Route::get('/v1/resend-otp', [EmailVerificationController::class, 'resendOtp']);
-});
+    Route::post('/v1/support', SupportController::class)->name('support.create');
+    });
 
 Route::controller(SocialAuthController::class)->group(function () {
     Route::get('/google/redirect', 'redirectToGoogle');
@@ -86,7 +87,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/dashboard/{patientId}/attend', [DashboardController::class, 'markAttended']);
     Route::get('/patients/{patientId}', [PatientController::class, 'edit']);
     Route::put('/patients/{patientId}', [PatientController::class, 'update']);
-    Route::post('/v1/support', [SupportController::class, '__invoke']);
     Route::get('/doctors/{doctorId}', [DoctorController::class, 'edit']);
     Route::put('/doctors/{doctorId}', [DoctorController::class, 'update']);
     Route::delete('/doctors/{doctorId}', [DoctorController::class, 'destroy']);

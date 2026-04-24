@@ -1,23 +1,21 @@
 <?php
 
-namespace App\Services;
+namespace App\Actions;
 
 use App\Models\SupportTicket;
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
-class SupportService
+class SupportTicketAction
 {
-    public function createTicket(array $data, User $user): void
+    public function execute(array $data, User $user): void
     {
-        $doctor = $user->doctor;
-
+        $doctorId = $user->doctor?->id;
         $attachmentPath = null;
 
         if (isset($data['attachment'])) {
             $file = $data['attachment'];
-
             $uniqueName = Str::uuid() . '.' . $file->getClientOriginalExtension();
 
             $attachmentPath = Storage::disk('azure')
@@ -25,12 +23,12 @@ class SupportService
         }
 
         SupportTicket::create([
-            'doctor_id' => $doctor->id,
-            'name' => $data['name'] ?? $user->name,
-            'contact' => $user->contact,
-            'category' => $data['category'],
-            'urgency' => $data['urgency'],
-            'message' => $data['message'],
+            'doctor_id'       => $doctorId, 
+            'name'            => $data['name'] ?? $user->name,
+            'contact'         => $user->contact,
+            'category'        => $data['category'],
+            'urgency'         => $data['urgency'],
+            'message'         => $data['message'],
             'attachment_path' => $attachmentPath,
         ]);
     }

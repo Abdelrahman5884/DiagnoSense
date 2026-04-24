@@ -5,19 +5,19 @@ namespace App\Http\Controllers\V1;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\V1\Controller;
 use App\Http\Requests\StoreSupportRequest;
-use App\Services\SupportService;
+use App\Actions\SupportTicketAction;
 use Illuminate\Http\JsonResponse;
 
 class SupportController extends Controller
 {
     public function __construct(
-        protected SupportService $supportService
+        protected SupportTicketAction $supportTicketAction
     ) {}
 
     public function __invoke(StoreSupportRequest $request): JsonResponse
     {
         try {
-            $this->supportService->createTicket(
+            $this->supportTicketAction->execute(
                 $request->validated(),
                 $request->user()
             );
@@ -28,6 +28,7 @@ class SupportController extends Controller
             );
 
         } catch (\Exception $e) {
+            \Log::error('Error submitting support message: '.$e->getMessage(), ['exception' => $e]);
 
             return ApiResponse::error(
                 message: 'Failed to submit message.',

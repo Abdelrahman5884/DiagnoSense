@@ -1,61 +1,99 @@
 <?php
 
 use App\Models\SupportTicket;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
-uses(RefreshDatabase::class);
-
-const SUPPORT_ENDPOINT = '/api/v1/support';
+/*
+|--------------------------------------------------------------------------
+| Setup & Datasets
+|--------------------------------------------------------------------------
+*/
 
 beforeEach(function () {
-    Storage::fake('public');
+    Storage::fake('azure');
 
     $this->doctor = createUserWithType('doctor', 'doctor@test.com');
     $this->patient = createUserWithType('patient', 'patient@test.com');
 });
 
+dataset('invalid_support_data', [
+    'empty category' => [
+        ['category' => null],
+        ['category' => ['The category field is required.']],
+    ],
+    'invalid category' => [
+        ['category' => 'not-valid'],
+        ['category' => ['The selected category is invalid.']],
+    ],
+    'empty urgency' => [
+        ['urgency' => null],
+        ['urgency' => ['The urgency field is required.']],
+    ],
+    'invalid urgency' => [
+        ['urgency' => 'critical'], 
+        ['urgency' => ['The selected urgency is invalid.']],
+    ],
+    'empty message' => [
+        ['message' => null],
+        ['message' => ['The message field is required.']],
+    ],
+    'invalid attachment (not file)' => [
+        ['attachment' => 'not-a-file'],
+        ['attachment' => ['The attachment field must be a file.']],
+    ],
+    'large attachment' => [
+        fn() => [
+            'category' => 'technical', 
+            'urgency'  => 'high',
+            'message'  => 'Valid message description',
+            'attachment' => UploadedFile::fake()->create('heavy.pdf', 5001) 
+        ],
+        ['attachment' => ['The attachment field must not be greater than 5000 kilobytes.']],
+    ],
+]);
+
+/*
+|--------------------------------------------------------------------------
+| SUPPORT TESTS
+|--------------------------------------------------------------------------
+*/
+
 describe('Support - Create Ticket', function () {
 
-    it('allows doctor to create support ticket', function () {
-
+    it('allows doctor to create support ticket successfully', function () {
         $response = $this->actingAs($this->doctor, 'sanctum')
-            ->postJson(SUPPORT_ENDPOINT, [
+            ->postJson(route('support.create'), [
                 'category' => 'technical',
                 'urgency' => 'high',
-                'message' => 'Test message',
+                'message' => 'Test message for support',
             ]);
 
-        $response->assertStatus(201);
+        $response->assertStatus(201)
+            ->assertJson([
+                'success' => true,
+                'message' => 'Support message submitted successfully we will get back to you shortly.',
+            ]);
 
         expect(SupportTicket::count())->toBe(1);
     });
 
-});
-
-describe('Support - Attachment Upload', function () {
-
-    it('allows doctor to upload attachment', function () {
-
-        Storage::fake('azure');
-
-        $file = UploadedFile::fake()->create('test.jpg', 100, 'image/jpeg');
+    it('allows doctor to upload attachment and stores it correctly', function () {
+        $file = UploadedFile::fake()->create('report.pdf', 500);
 
         $response = $this->actingAs($this->doctor, 'sanctum')
-            ->post(SUPPORT_ENDPOINT, [
-                'category' => 'technical',
+            ->postJson(route('support.create'), [
+                'category' => 'billing',
                 'urgency' => 'medium',
-                'message' => 'Test with file',
+                'message' => 'Testing file upload',
                 'attachment' => $file,
             ]);
 
         $response->assertStatus(201);
 
         $ticket = SupportTicket::first();
-
         expect($ticket->attachment_path)->not->toBeNull();
-
+        
         Storage::disk('azure')->assertExists($ticket->attachment_path);
     });
 
@@ -63,42 +101,29 @@ describe('Support - Attachment Upload', function () {
 
 describe('Support - Validation', function () {
 
-    it('fails with invalid data', function () {
+    it('fails with invalid data', function (array|Closure $invalidData, array $expectedErrors) {
+        $data = is_callable($invalidData) ? $invalidData() : $invalidData;
 
         $response = $this->actingAs($this->doctor, 'sanctum')
-            ->postJson(SUPPORT_ENDPOINT, [
-                'category' => 'wrong',
-            ]);
+            ->postJson(route('support.create'), $data);
 
-        $response->assertStatus(422);
-    });
+        $response->assertStatus(422)
+            ->assertJson([
+                'success' => false,
+                'message' => 'Validation Errors',
+                'data'    => $expectedErrors,
+            ]);
+    })->with('invalid_support_data');
 
 });
 
-describe('Support - Authorization', function () {
+describe('Support - Permissions & Security', function () {
 
-    it('fails if user is not doctor', function () {
-
-        $response = $this->actingAs($this->patient, 'sanctum')
-            ->postJson(SUPPORT_ENDPOINT, [
-                'category' => 'technical',
-                'urgency' => 'low',
-                'message' => 'Test',
-            ]);
-
-        $response->assertStatus(403);
-    });
-
-});
-
-describe('Support - Guest', function () {
-
-    it('fails if not authenticated', function () {
-
-        $this->postJson(SUPPORT_ENDPOINT, [
+    it('fails if user is not authenticated (guest)', function () {
+        $this->postJson(route('support.create'), [
             'category' => 'technical',
             'urgency' => 'low',
-            'message' => 'Test',
+            'message' => 'Guest message',
         ])->assertStatus(401);
     });
 
