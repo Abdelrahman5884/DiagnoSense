@@ -16,19 +16,19 @@ class SupportTicketAction
 
         if (isset($data['attachment'])) {
             $file = $data['attachment'];
-            $uniqueName = Str::uuid() . '.' . $file->getClientOriginalExtension();
+            $uniqueName = Str::uuid().'.'.$file->getClientOriginalExtension();
 
             $attachmentPath = Storage::disk('azure')
                 ->putFileAs('support-attachments', $file, $uniqueName);
         }
 
         SupportTicket::create([
-            'doctor_id'       => $doctorId, 
-            'name'            => $data['name'] ?? $user->name,
-            'contact'         => $user->contact,
-            'category'        => $data['category'],
-            'urgency'         => $data['urgency'],
-            'message'         => $data['message'],
+            'doctor_id' => $doctorId,
+            'name' => $data['name'] ?? $user->name,
+            'contact' => $user->contact,
+            'category' => $data['category'],
+            'urgency' => $data['urgency'],
+            'message' => $data['message'],
             'attachment_path' => $attachmentPath,
         ]);
     }

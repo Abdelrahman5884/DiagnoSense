@@ -40,7 +40,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/v1/verify-email', [EmailVerificationController::class, 'verifyEmail']);
     Route::get('/v1/resend-otp', [EmailVerificationController::class, 'resendOtp']);
     Route::post('/v1/support', SupportController::class)->name('support.create');
-    });
+});
 
 Route::controller(SocialAuthController::class)->group(function () {
     Route::get('/google/redirect', 'redirectToGoogle');
