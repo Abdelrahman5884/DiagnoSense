@@ -54,7 +54,6 @@ class ContactVerificationController extends Controller
                     status: 409
                 );
             }
-
             return ApiResponse::success(
                 message: 'OTP sent successfully.'
             );
