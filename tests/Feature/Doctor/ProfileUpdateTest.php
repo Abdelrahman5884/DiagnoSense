@@ -8,9 +8,8 @@ beforeEach(function () {
     $this->user->update(['name' => 'Dr. Menna']);
     $this->doctor = $this->user->doctor;
 
-    actingAs($this->user,'sanctum');
+    actingAs($this->user, 'sanctum');
 });
-
 
 describe('Profile Update: Success Scenarios', function () {
     it('allows updating only name without specialization', function () {
