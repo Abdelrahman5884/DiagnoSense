@@ -32,7 +32,9 @@ class DoctorProfileController extends Controller
             return ApiResponse::error(message: 'Failed to update profile', status: 500);
         }
     }
-    public function changePassword(ChangeDoctorPasswordRequest $request,ChangeDoctorPasswordAction $action): JsonResponse {
+
+    public function changePassword(ChangeDoctorPasswordRequest $request, ChangeDoctorPasswordAction $action): JsonResponse
+    {
         try {
             $action->execute(
                 user: $request->user(),
@@ -41,7 +43,8 @@ class DoctorProfileController extends Controller
 
             return ApiResponse::success(message: 'Password changed successfully');
         } catch (\Exception $e) {
-            \Log::error('Password Change Error: ' . $e->getMessage());
+            \Log::error('Password Change Error: '.$e->getMessage());
+
             return ApiResponse::error(message: 'Failed to change password', status: 500);
         }
     }

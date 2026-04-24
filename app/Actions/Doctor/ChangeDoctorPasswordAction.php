@@ -1,9 +1,8 @@
 <?php
+
 namespace App\Actions\Doctor;
 
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
-
 
 final class ChangeDoctorPasswordAction
 {
