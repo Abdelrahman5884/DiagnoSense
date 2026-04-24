@@ -27,7 +27,6 @@ class ContactVerificationController extends Controller
                     status: 401
                 );
             }
-
             return ApiResponse::success(
                 message: 'User verified successfully.'
             );
