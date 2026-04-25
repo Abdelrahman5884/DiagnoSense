@@ -17,7 +17,6 @@ use Illuminate\Support\Str;
 class PatientService
 {
     public function __construct(
-        protected BillingService $billingService,
         protected ReportService $reportService
     ){}
     public function getPaginatedPatients(int $doctorId, array $params): LengthAwarePaginator
@@ -138,7 +137,7 @@ class PatientService
         Patient $patient
     ): void {
         $chain = [
-            new AiAnalysisJob($this->billingService,$analysisResult->id, $jobData),
+            new AiAnalysisJob($analysisResult->id, $jobData),
         ];
         if (!empty($pathsForAI['lab'])) {
             $chain[] = new ComparativeAnalysis($patient->id, $analysisResult->id);

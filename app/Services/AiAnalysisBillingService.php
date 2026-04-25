@@ -9,7 +9,7 @@ use App\Notifications\CreditsExhausted;
 use App\Notifications\UsageExhausted;
 use App\Notifications\UsageThresholdReached;
 
-class BillingService
+class AiAnalysisBillingService
 {
     public function handleBilling(Doctor $doctor, AiAnalysisResult $analysisRecord): void
     {

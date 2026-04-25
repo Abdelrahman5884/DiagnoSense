@@ -5,7 +5,7 @@ namespace App\Jobs;
 use App\Helpers\FileSystem;
 use App\Models\AiAnalysisResult;
 use App\Models\Doctor;
-use App\Services\BillingService;
+use App\Services\AiAnalysisBillingService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Queue\Queueable;
@@ -28,7 +28,6 @@ class AiAnalysisJob implements ShouldQueue
      * Create a new job instance.
      */
     public function __construct(
-        protected BillingService $billingService,
         protected int $analysisId,
         protected array $jobData
     )
@@ -37,7 +36,7 @@ class AiAnalysisJob implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(): void
+    public function handle(AiAnalysisBillingService $billingService): void
     {
         $analysisRecord = AiAnalysisResult::find($this->analysisId);
         if (! $analysisRecord) {
@@ -51,7 +50,7 @@ class AiAnalysisJob implements ShouldQueue
             $response = Http::timeout($this->timeout)->post(config('services.ai.url').'analyze', $apiData);
 
             if ($response->successful()) {
-                $this->processAiAnalysisResponse($response->json(), $analysisRecord);
+                $this->processAiAnalysisResponse($billingService, $response->json(), $analysisRecord);
             } else {
                 $this->handleFailedAnalysis($analysisRecord, $response->body());
                 throw new \Exception('AI analysis failed with status '.$response->status());
@@ -87,6 +86,7 @@ class AiAnalysisJob implements ShouldQueue
         return Doctor::with(['activeSubscription', 'wallet', 'user'])->find($this->jobData['doctor_id']);
     }
     private function processAiAnalysisResponse(
+        AiAnalysisBillingService $billingService,
         array $data,
         AiAnalysisResult $analysisRecord
     ): void {
@@ -107,7 +107,7 @@ class AiAnalysisJob implements ShouldQueue
         $doctor = $this->getDoctor();
 
         if ($doctor) {
-            $this->billingService->handleBilling($doctor, $analysisRecord);
+            $billingService->handleBilling($doctor, $analysisRecord);
         }
     }
     private function storeDecisionSupports(array $data, AiAnalysisResult $analysisRecord): array
