@@ -39,8 +39,8 @@ class AiAnalysisBillingService
             'type' => 'usage',
             'status' => 'completed',
             'description' => 'Pay-per-use Analysis File',
-            'source_type' => AiAnalysisResult::class,
-            'source_id' => $analysisRecord->id,
+            'sourceable_type' => AiAnalysisResult::class,
+            'sourceable_id' => $analysisRecord->id,
         ]);
     }
 
