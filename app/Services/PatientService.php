@@ -31,7 +31,7 @@ class PatientService
             $term = $params['search'];
             $q->where(function ($sub) use ($term) {
                 if (is_numeric($term)) {
-                    $sub->where('patients.notional_id', 'LIKE', $term.'%');
+                    $sub->where('patients.national_id', 'LIKE', $term.'%');
                 } else {
                     $sub->where('users.name', 'LIKE', $term.'%');
                 }
@@ -43,7 +43,7 @@ class PatientService
         });
 
         return $query->with([
-            'patient:id,user_id,date_of_birth,status,created_at,notional_id',
+            'patient:id,user_id,date_of_birth,status,created_at,national_id',
             'patient.latestAiAnalysisResult:id,patient_id,ai_insight',
             'patient.latestVisit',
         ])
@@ -95,7 +95,7 @@ class PatientService
         $patient = $user->patient()->create([
             'date_of_birth' => $data['date_of_birth'],
             'gender' => $data['gender'] ?? null,
-            'notional_id' => $data['notional_id'] ?? null,
+            'national_id' => $data['national_id'] ?? null,
         ]);
         return $patient;
     }
@@ -109,7 +109,7 @@ class PatientService
             'current_medications' => $data['current_medications'] ?? null,
             'allergies' => $data['allergies'] ?? null,
             'family_history' => $data['family_history'] ?? null,
-            'current_complaint' => $data['current_complaint'] ?? null,
+            'current_complaints' => $data['current_complaints'] ?? null,
         ]);
         return $medicalHistory;
     }

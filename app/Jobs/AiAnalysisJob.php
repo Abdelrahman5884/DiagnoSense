@@ -44,7 +44,6 @@ class AiAnalysisJob implements ShouldQueue
         }
 
         try {
-            $analysisRecord->update(['status' => 'processing']);
             $apiData = $this->prepareMedicalData();
 
             $response = Http::timeout($this->timeout)->post(config('services.ai.url').'analyze', $apiData);
