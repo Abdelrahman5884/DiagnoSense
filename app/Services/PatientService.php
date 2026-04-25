@@ -2,12 +2,11 @@
 
 namespace App\Services;
 
-use App\Models\User;
 use App\Models\Doctor;
 use App\Models\Patient;
-use Illuminate\Support\Facades\DB;
-
+use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 
 class PatientService
 {
@@ -43,6 +42,7 @@ class PatientService
             ->paginate(12)
             ->appends($params);
     }
+
     public function getPatientOverview(Doctor $doctor, int $patientId): ?Patient
     {
         return $doctor->patients()->with([

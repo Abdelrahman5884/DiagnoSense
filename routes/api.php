@@ -43,13 +43,13 @@ Route::prefix('v1')->group(function () {
             Route::post('/logout/{type}', [AuthenticatedController::class, 'logout'])->name('logout');
             Route::post('/verify-contact', [ContactVerificationController::class, 'verifyContact'])->name('verify-contact');
             Route::get('/resend-otp', [ContactVerificationController::class, 'resendOtp'])->name('resend-otp');
-            });
-            
-            });
-            Route::middleware('auth:sanctum')->group(function () {
-                Route::get('/patients', [PatientController::class, 'index'])->name('patients.index');
-                Route::get('/patients/{patientId}/overview', [PatientController::class, 'overview'])->name('patients.overview');
-                Route::delete('/patients/{patientId}', [PatientController::class, 'destroy'])->name('patients.destroy');
+        });
+
+    });
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/patients', [PatientController::class, 'index'])->name('patients.index');
+        Route::get('/patients/{patientId}/overview', [PatientController::class, 'overview'])->name('patients.overview');
+        Route::delete('/patients/{patientId}', [PatientController::class, 'destroy'])->name('patients.destroy');
     });
 });
 
