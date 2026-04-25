@@ -38,7 +38,7 @@ describe('Patients Index: Functional Logic (Search & Filter)', function () {
         $assemUser = createUserWithType('patient', 'assem@test.com');
         $assemUser->update(['name' => 'Assem']);
         $assemUser->patient->update([
-            'notional_id' => '2990101001',
+            'national_id' => '2990101001',
             'status' => 'critical'
         ]);
         $assem = $assemUser->patient;
@@ -46,7 +46,7 @@ describe('Patients Index: Functional Logic (Search & Filter)', function () {
         $asmaUser = createUserWithType('patient', 'asma@test.com');
         $asmaUser->update(['name' => 'Asma']);
         $asmaUser->patient->update([
-            'notional_id' => '2990102002',
+            'national_id' => '2990102002',
             'status' => 'stable'
         ]);
         $asma = $asmaUser->patient;
@@ -54,7 +54,7 @@ describe('Patients Index: Functional Logic (Search & Filter)', function () {
         $ahmedUser = createUserWithType('patient', 'ahmed@test.com');
         $ahmedUser->update(['name' => 'Ahmed']);
         $ahmedUser->patient->update([
-            'notional_id' => '2990203003',
+            'national_id' => '2990203003',
             'status' => 'stable'
         ]);
         $ahmed = $ahmedUser->patient;
@@ -64,7 +64,7 @@ describe('Patients Index: Functional Logic (Search & Filter)', function () {
         $aminaUser = createUserWithType('patient', 'amina@test.com');
         $aminaUser->update(['name' => 'Amina']);
         $aminaUser->patient->update([
-            'notional_id' => '3000101001',
+            'national_id' => '3000101001',
             'status' => 'critical'
         ]);
         $amina = $aminaUser->patient;
