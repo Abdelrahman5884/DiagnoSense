@@ -3,6 +3,10 @@
 namespace App\Services;
 
 use App\Models\User;
+use App\Models\Doctor;
+use App\Models\Patient;
+use Illuminate\Support\Facades\DB;
+
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class PatientService
@@ -38,5 +42,26 @@ class PatientService
             ->latest('users.created_at')
             ->paginate(12)
             ->appends($params);
+    }
+    public function getPatientOverview(Doctor $doctor, int $patientId): ?Patient
+    {
+        return $doctor->patients()->with([
+            'user',
+            'medicalHistory',
+            'latestAiAnalysisResult',
+        ])->find($patientId);
+    }
+
+    public function deletePatient(Doctor $doctor, int $patientId): bool
+    {
+        return DB::transaction(function () use ($doctor, $patientId) {
+            $patient = $doctor->patients()->find($patientId);
+
+            if (! $patient) {
+                return false;
+            }
+
+            return (bool) $patient->delete();
+        });
     }
 }

@@ -43,11 +43,13 @@ Route::prefix('v1')->group(function () {
             Route::post('/logout/{type}', [AuthenticatedController::class, 'logout'])->name('logout');
             Route::post('/verify-contact', [ContactVerificationController::class, 'verifyContact'])->name('verify-contact');
             Route::get('/resend-otp', [ContactVerificationController::class, 'resendOtp'])->name('resend-otp');
-        });
-
-    });
-    Route::middleware('auth:sanctum')->group(function () {
-        Route::get('/patients', [PatientController::class, 'index'])->name('patients.index');
+            });
+            
+            });
+            Route::middleware('auth:sanctum')->group(function () {
+                Route::get('/patients', [PatientController::class, 'index'])->name('patients.index');
+                Route::get('/patients/{patientId}/overview', [PatientController::class, 'overview'])->name('patients.overview');
+                Route::delete('/patients/{patientId}', [PatientController::class, 'destroy'])->name('patients.destroy');
     });
 });
 
@@ -59,14 +61,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/patients/{patient}/items', [VisitItemController::class, 'index']);
     Route::delete('/patients/{patient}/medications/{medication}', [VisitItemController::class, 'destroyMedication']);
     Route::delete('/patients/{patient}/tasks/{task}', [VisitItemController::class, 'destroyTask']);
-    Route::get('/patients/{patientId}/overview', [PatientController::class, 'overview']);
     Route::patch('/patients/{patient}/status', [PatientController::class, 'updateStatus']);
     Route::delete('/key-points/{keyPointId}', [KeyPointController::class, 'destroy']);
     Route::get('/patients/{patient}/activities', [PatientController::class, 'activityHistory']);
     Route::patch('/key-points/{keyPointId}', [KeyPointController::class, 'update']);
     Route::post('/patients/{patientId}/key-info', [KeyPointController::class, 'store']);
     Route::get('/patients/{patientId}/decision-support', [PatientController::class, 'getDecisionSupport']);
-    Route::delete('/patients/{patientId}', [PatientController::class, 'destroy']);
     Route::post('/wallet/charge', [WalletController::class, 'store']);
     Route::get('/transactions', [WalletController::class, 'index']);
     Route::post('/subscription/subscribe', [SubscriptionController::class, 'subscribe']);
