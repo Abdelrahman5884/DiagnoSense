@@ -40,17 +40,17 @@ Route::prefix('v1')->group(function () {
         });
 
         Route::middleware('auth:sanctum')->group(function () {
-                Route::post('/logout/{type}', [AuthenticatedController::class, 'logout'])->name('logout');
-                Route::post('/verify-contact', [ContactVerificationController::class, 'verifyContact']);
-                Route::get('/resend-otp', [ContactVerificationController::class, 'resendOtp']);
+            Route::post('/logout/{type}', [AuthenticatedController::class, 'logout'])->name('logout');
+            Route::post('/verify-contact', [ContactVerificationController::class, 'verifyContact']);
+            Route::get('/resend-otp', [ContactVerificationController::class, 'resendOtp']);
         });
 
     });
 
-        Route::controller(PatientController::class)->middleware('auth:sanctum')->prefix('patients')->as('patients.')->group(function () {
-            Route::get('','index')->name('index');
-            Route::post('', 'store')->name('store')->middleware('check-ai-access');
-        });
+    Route::controller(PatientController::class)->middleware('auth:sanctum')->prefix('patients')->as('patients.')->group(function () {
+        Route::get('', 'index')->name('index');
+        Route::post('', 'store')->name('store')->middleware('check-ai-access');
+    });
 });
 
 Route::middleware('auth:sanctum')->group(function () {

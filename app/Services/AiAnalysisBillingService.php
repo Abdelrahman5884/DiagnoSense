@@ -49,7 +49,7 @@ class AiAnalysisBillingService
         $subscription = $doctor->activeSubscription;
         $totalLimit = $subscription->plan->summaries_limit;
         $usagePercentage = ($subscription->used_summaries / $totalLimit) * 100;
-        if ($usagePercentage >= 80 && !$doctor->user->notifications()->where('type', UsageThresholdReached::class)->exists()) {
+        if ($usagePercentage >= 80 && ! $doctor->user->notifications()->where('type', UsageThresholdReached::class)->exists()) {
             $doctor->user->notify(new UsageThresholdReached(80));
         }
         if ($subscription->used_summaries >= $totalLimit) {

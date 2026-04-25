@@ -6,11 +6,11 @@ use App\Models\MedicalHistory;
 use App\Services\AiAnalysisBillingService;
 use Illuminate\Support\Facades\Http;
 
-beforeEach(function (){
+beforeEach(function () {
     Storage::fake('azure');
     $user = createDoctorWithBilling();
     $this->aiAnalysisResult = AiAnalysisResult::factory()->create();
-   $this->medicalHistory = MedicalHistory::factory()->create(['patient_id' => $this->aiAnalysisResult->patient_id]);
+    $this->medicalHistory = MedicalHistory::factory()->create(['patient_id' => $this->aiAnalysisResult->patient_id]);
     $this->jobData = [
         'patient_id' => $this->aiAnalysisResult->patient_id,
         'doctor_id' => $user->doctor->id,
@@ -24,7 +24,7 @@ beforeEach(function (){
         ],
         'features' => [
             'decision_support' => true,
-        ]
+        ],
     ];
 });
 
@@ -45,7 +45,7 @@ function assertKeyPointsStored(array $keyPoints): void
 it('update analysis result when AI response successfully', function () {
     Http::fake([config('services.ai.url').'analyze' => Http::response(fakeAiResponse())]);
     $job = new AiAnalysisJob($this->aiAnalysisResult->id, $this->jobData);
-    $job->handle(new AiAnalysisBillingService());
+    $job->handle(new AiAnalysisBillingService);
     $this->assertDatabaseHas('ai_analysis_results', [
         'id' => $this->aiAnalysisResult->id,
         'ai_insight' => 'Test AI Insight',
@@ -67,7 +67,7 @@ it('update analysis result when AI response successfully', function () {
 it('update analysis result when AI response fails', function () {
     Http::fake([config('services.ai.url').'analyze' => Http::response(['error' => 'AI analysis failed'], 500)]);
     $job = new AiAnalysisJob($this->aiAnalysisResult->id, $this->jobData);
-    expect(fn() => $job->handle(new AiAnalysisBillingService()))->toThrow(\Exception::class);
+    expect(fn () => $job->handle(new AiAnalysisBillingService))->toThrow(\Exception::class);
     $this->assertDatabaseHas('ai_analysis_results', [
         'id' => $this->aiAnalysisResult->id,
         'status' => 'failed',

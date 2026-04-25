@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Jobs\ComparativeAnalysis;
 use App\Jobs\AiAnalysisJob;
+use App\Jobs\ComparativeAnalysis;
 use App\Models\AiAnalysisResult;
 use App\Models\Doctor;
 use App\Models\MedicalHistory;
@@ -18,7 +18,8 @@ class PatientService
 {
     public function __construct(
         protected ReportService $reportService
-    ){}
+    ) {}
+
     public function getPaginatedPatients(int $doctorId, array $params): LengthAwarePaginator
     {
         $query = User::query()
@@ -52,7 +53,7 @@ class PatientService
             ->appends($params);
     }
 
-    public function store(array $data) : array
+    public function store(array $data): array
     {
         return DB::transaction(function () use ($data) {
             $doctor = auth()->user()->doctor;
@@ -75,6 +76,7 @@ class PatientService
             $jobData = $this->getJobData($patient, $doctor, $medicalHistory, $pathsForAI);
 
             $this->triggerAnalysisWorkflows($analysisResult, $jobData, $pathsForAI, $patient);
+
             return compact('patient', 'analysisResult');
         });
     }
@@ -87,6 +89,7 @@ class PatientService
             'type' => 'patient',
             'password' => Str::random(10),
         ]);
+
         return $user;
     }
 
@@ -97,6 +100,7 @@ class PatientService
             'gender' => $data['gender'] ?? null,
             'national_id' => $data['national_id'] ?? null,
         ]);
+
         return $patient;
     }
 
@@ -111,10 +115,11 @@ class PatientService
             'family_history' => $data['family_history'] ?? null,
             'current_complaints' => $data['current_complaints'] ?? null,
         ]);
+
         return $medicalHistory;
     }
 
-    private  function getJobData(Patient $patient, Doctor $doctor, MedicalHistory $medicalHistory, array $pathsForAI): array
+    private function getJobData(Patient $patient, Doctor $doctor, MedicalHistory $medicalHistory, array $pathsForAI): array
     {
         $jobData = [
             'patient_id' => $patient->id,
@@ -127,10 +132,11 @@ class PatientService
                 'decision_support' => $doctor->hasFeature('Decision Support'),
             ],
         ];
+
         return $jobData;
     }
 
-    private  function triggerAnalysisWorkflows(
+    private function triggerAnalysisWorkflows(
         AiAnalysisResult $analysisResult,
         array $jobData,
         array $pathsForAI,
@@ -139,7 +145,7 @@ class PatientService
         $chain = [
             new AiAnalysisJob($analysisResult->id, $jobData),
         ];
-        if (!empty($pathsForAI['lab'])) {
+        if (! empty($pathsForAI['lab'])) {
             $chain[] = new ComparativeAnalysis($patient->id, $analysisResult->id);
         }
         DB::afterCommit(function () use ($chain) {
