@@ -6,7 +6,6 @@ use App\Models\Doctor;
 use Illuminate\Contracts\Pagination\CursorPaginator;
 use Illuminate\Notifications\DatabaseNotification;
 
-
 class WebNotificationService
 {
     public function getPaginatedUserNotifications(Doctor $doctor, int $perPage = 10): CursorPaginator

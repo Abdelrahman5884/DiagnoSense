@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class MarkNotificationAsReadRequest extends FormRequest
@@ -13,7 +12,7 @@ class MarkNotificationAsReadRequest extends FormRequest
     public function authorize(): bool
     {
         $notification = $this->route('notification');
+
         return $this->user()->doctor->notifications()->where('id', $notification->id)->exists();
     }
-
 }
