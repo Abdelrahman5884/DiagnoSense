@@ -47,11 +47,11 @@ Route::prefix('v1')->group(function () {
     });
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/patients', [PatientController::class, 'index'])->name('patients.index');
-        Route::prefix('notifications')->group(function () {
-            Route::get('/', [NotificationController::class, 'index'])->name('notifications.index');
-            Route::get('/unread-count', [NotificationController::class, 'unreadCount'])->name('notifications.unreadCount');
-            Route::patch('/{id}/read', [NotificationController::class, 'markAsRead']);
-            Route::post('/mark-all-read', [NotificationController::class, 'markAllAsRead']);
+        Route::controller(NotificationController::class)->prefix('notifications')->as('notifications.')->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('/unread-count', 'unreadCount')->name('unreadCount');
+            Route::patch('/{notification}/read', 'read')->name('read');
+            Route::patch('/read-all', 'readAll')->name('readAll');
             Route::delete('/clear-all', [NotificationController::class, 'clearAll']);
         });
     });
