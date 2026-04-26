@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\V1;
 
 use App\Helpers\ApiResponse;
+use App\Http\Requests\MarkNotificationAsReadRequest;
 use App\Http\Resources\NotificationResource;
 use App\Services\Notifications\WebNotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Notifications\DatabaseNotification;
+
 
 class NotificationController extends Controller
 {
@@ -46,19 +49,28 @@ class NotificationController extends Controller
         }
     }
 
-    public function markAsRead(Request $request, $id)
+    public function read(MarkNotificationAsReadRequest $request, Databasenotification $notification): JsonResponse
     {
-        $notification = $request->user()->doctor->notifications()->findOrFail($id);
-        $notification->markAsRead();
+        try{
+            $this->notificationService->read($notification);
+            return ApiResponse::success(message: 'Notification marked as read');
+        }catch (\Exception $e) {
+            \Log::error('Failed to mark notification as read: '.$e->getMessage());
 
-        return ApiResponse::success('Notification marked as read', null, 200);
+            return ApiResponse::error(message: 'Could not mark notification as read.', status: 500);
+        }
     }
 
-    public function markAllAsRead(Request $request)
+    public function readAll(Request $request): JsonResponse
     {
-        $request->user()->doctor->unreadNotifications->markAsRead();
+        try{
+            $this->notificationService->readAll($request->user()->doctor);
+            return ApiResponse::success(message: 'All notifications marked as read');
+        }catch (\Exception $e) {
+            \Log::error('Failed to mark all notifications as read: '.$e->getMessage());
 
-        return ApiResponse::success('All notifications marked as read', null, 200);
+            return ApiResponse::error(message: 'Could not mark all notifications as read.', status: 500);
+        }
     }
 
     public function clearAll(Request $request)

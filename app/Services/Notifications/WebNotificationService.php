@@ -4,6 +4,8 @@ namespace App\Services\Notifications;
 
 use App\Models\Doctor;
 use Illuminate\Contracts\Pagination\CursorPaginator;
+use Illuminate\Notifications\DatabaseNotification;
+
 
 class WebNotificationService
 {
@@ -15,5 +17,15 @@ class WebNotificationService
     public function getUnreadCount(Doctor $doctor): int
     {
         return $doctor->unreadNotifications()->count();
+    }
+
+    public function read(DatabaseNotification $notification): void
+    {
+        $notification->markAsRead();
+    }
+
+    public function readAll(Doctor $doctor): void
+    {
+        $doctor->unreadNotifications->markAsRead();
     }
 }
