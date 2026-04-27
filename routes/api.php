@@ -35,7 +35,7 @@ Route::prefix('v1')->group(function () {
             Route::post('/login/{type}', [AuthenticatedController::class, 'login'])->middleware('throttle:login')->name('login');
             Route::post('/forget-password/{type}', [ResetPasswordController::class, 'forgotPassword'])->name('password.forgot');
             Route::post('/verify-otp/{type}', [ResetPasswordController::class, 'verifyOtp'])->name('password.verify');
-            Route::post('/reset-password/{type}', [ResetPasswordController::class, 'resetPassword'])->name('password.reset')->middleware(['auth:sanctum','abilities:reset-password']);
+            Route::post('/reset-password/{type}', [ResetPasswordController::class, 'resetPassword'])->name('password.reset')->middleware(['auth:sanctum', 'abilities:reset-password']);
         });
 
         Route::middleware('auth:sanctum')->group(function () {
