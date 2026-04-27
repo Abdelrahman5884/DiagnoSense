@@ -168,7 +168,7 @@ class AuthenticationService
     {
         DB::transaction(function () use ($user, $newPassword) {
             $user->update([
-                'password' => Hash::make($newPassword),
+                'password' => $newPassword,
             ]);
 
             $user->tokens()->delete();
