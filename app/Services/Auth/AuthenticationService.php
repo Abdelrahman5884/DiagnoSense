@@ -74,18 +74,18 @@ class AuthenticationService
         return $user;
     }
 
-    private function sendOtp(User $user, string $otp, bool $isReset = false): void
+    private function sendOtp(User $user, string $otp, bool $isPasswordReset = false): void
     {
         $isEmail = filter_var($user->contact, FILTER_VALIDATE_EMAIL);
 
         if ($isEmail) {
-            $mailable = $isReset
+            $mailable = $isPasswordReset
                 ? new ResetPasswordMail($user, $otp)
                 : new EmailVerificationMail($user, $otp);
 
             Mail::to($user->contact)->send($mailable);
         } else {
-            $notification = $isReset
+            $notification = $isPasswordReset
                 ? new ResetPasswordSMSNotification($otp)
                 : new EmailVerificationSMSNotification($otp);
 
@@ -131,9 +131,7 @@ class AuthenticationService
 
     public function forgotPassword(array $data, string $type): bool
     {
-        $user = User::where('contact', $data['contact'])
-            ->where('type', $type)
-            ->first();
+        $user = $this->getUser($data['contact']);
 
         if (! $user) {
             return false;
@@ -141,7 +139,7 @@ class AuthenticationService
 
         $otpCode = Auth::generateOtp($user->contact, $this->otp);
 
-        $this->sendOtp($user, $otpCode, isReset: true);
+        $this->sendOtp($user, $otpCode, isPasswordReset: true);
 
         return true;
     }
