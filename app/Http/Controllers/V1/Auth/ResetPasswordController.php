@@ -11,40 +11,40 @@ use App\Services\Auth\AuthenticationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use App\Exceptions\InvalidUserTypeException;
+use App\Exceptions\InvalidOtpException;
 
 class ResetPasswordController extends Controller
 {
     public function __construct(
         protected AuthenticationService $authenticationService
     ) {}
+public function verifyOtp(VerifyOtpRequest $request, string $type): JsonResponse
+{
+    try {
+        $data = $request->validated();
+        $result = $this->authenticationService->verifyOtp($data, $type);
 
-    public function verifyOtp(VerifyOtpRequest $request, string $type): JsonResponse
-    {
-        try {
-            $data = $request->validated();
+        return ApiResponse::success(
+            message: 'OTP verified. You can now reset your password.',
+            data: ['reset_token' => $result]
+        );
+    } catch (InvalidUserTypeException | InvalidOtpException $e) {
+    
+        return ApiResponse::error(
+            message: $e->getMessage(), 
+            status: $e->getCode()
+        );
 
-            $result = $this->authenticationService->verifyOtp($data, $type);
+    } catch (\Throwable $e) {
+        \Log::error('Unexpected OTP Error: ' . $e->getMessage(), ['exception' => $e]);
 
-            return ApiResponse::success(
-                message: 'OTP verified. You can now reset your password.',
-                data: ['reset_token' => $result]
-            );
-
-        } catch (\Exception $e) {
-            \Log::error('Error during OTP verification: '.$e->getMessage(), ['exception' => $e]);
-
-            $message = match ($e->getCode()) {
-                403 => 'Unauthorized access: Invalid user type.',
-                401 => 'Invalid or expired OTP.',
-                default => 'Failed to verify OTP.',
-            };
-
-            return ApiResponse::error(
-                message: $message,
-                status: $e->getCode() ?: 500
-            );
-        }
+        return ApiResponse::error(
+            message: 'An unexpected error occurred. Please try again later.',
+            status: 500
+        );
     }
+}
 
     public function resetPassword(ResetPasswordRequest $request, string $type)
     {

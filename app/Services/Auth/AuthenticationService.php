@@ -11,6 +11,8 @@ use Ichtrojan\Otp\Otp;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use App\Exceptions\InvalidUserTypeException;
+use App\Exceptions\InvalidOtpException;
 
 class AuthenticationService
 {
@@ -120,13 +122,13 @@ class AuthenticationService
         $user = $this->getUser($data['contact']);
 
         if (! $user || $user->type !== $type) {
-            throw new \Exception('', 403);
+            throw new InvalidUserTypeException();
         }
 
         $result = $this->otp->validate($user->contact, $data['otp']);
 
         if (! $result->status) {
-            throw new \Exception('', 401);
+           throw new InvalidOtpException();
         }
 
         $token = $user->createToken('password_reset_'.$user->id, ['reset-password'],

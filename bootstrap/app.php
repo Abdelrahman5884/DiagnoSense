@@ -13,6 +13,8 @@ use Laravel\Sanctum\Http\Middleware\CheckAbilities;
 use Laravel\Sanctum\Http\Middleware\CheckForAnyAbility;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use App\Exceptions\InvalidOtpException;
+use App\Exceptions\InvalidUserTypeException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -45,6 +47,12 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($request->is('api/*')) {
                 return ApiResponse::error('Unauthorized access: You do not have permission for this action.', null, 403);
             }
+        });
+        $exceptions->render(function (InvalidUserTypeException $e, $request) {
+            return ApiResponse::error($e->getMessage(), null, 403);
+        });
+        $exceptions->render(function (InvalidOtpException $e, $request) {
+            return ApiResponse::error($e->getMessage(), null, 401);
         });
         $exceptions->render(function (NotFoundHttpException $e, $request) {
             if ($request->is('api/*')) {
