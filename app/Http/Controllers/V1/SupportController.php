@@ -12,8 +12,7 @@ class SupportController extends Controller
     public function __invoke(
         StoreSupportRequest $request,
         SupportTicketAction $supportTicketAction
-    ): JsonResponse
-    {
+    ): JsonResponse {
         try {
             $supportTicketAction->execute(
                 $request->validated(),

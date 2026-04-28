@@ -2,11 +2,11 @@
 
 namespace App\Actions;
 
+use App\Helpers\FileStorage;
 use App\Models\SupportTicket;
 use App\Models\User;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use App\Helpers\FileStorage;
+
 final class SupportTicketAction
 {
     public function execute(array $data, User $user): void
@@ -18,8 +18,7 @@ final class SupportTicketAction
             $file = $data['attachment'];
             $uniqueName = Str::uuid().'.'.$file->getClientOriginalExtension();
 
-
-         $attachmentPath = FileStorage::store($file,'support-attachments',$uniqueName);
+            $attachmentPath = FileStorage::store($file, 'support-attachments', $uniqueName);
         }
 
         SupportTicket::create([
