@@ -9,14 +9,13 @@ use Illuminate\Http\JsonResponse;
 
 class SupportController extends Controller
 {
-    public function __construct(
-        protected SupportTicketAction $supportTicketAction
-    ) {}
-
-    public function __invoke(StoreSupportRequest $request): JsonResponse
+    public function __invoke(
+        StoreSupportRequest $request,
+        SupportTicketAction $supportTicketAction
+    ): JsonResponse
     {
         try {
-            $this->supportTicketAction->execute(
+            $supportTicketAction->execute(
                 $request->validated(),
                 $request->user()
             );
@@ -27,7 +26,10 @@ class SupportController extends Controller
             );
 
         } catch (\Exception $e) {
-            \Log::error('Error submitting support message: '.$e->getMessage(), ['exception' => $e]);
+            \Log::error('Error submitting support message: '.$e->getMessage(), [
+                'exception' => $e,
+                'user_id' => $request->user()?->id,
+            ]);
 
             return ApiResponse::error(
                 message: 'Failed to submit message.',
