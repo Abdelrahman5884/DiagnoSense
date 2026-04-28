@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\V1\Auth;
 
+use App\Exceptions\InvalidOtpException;
+use App\Exceptions\InvalidUserTypeException;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\V1\Controller;
 use App\Http\Requests\Auth\ResetPasswordRequest;
@@ -11,40 +13,39 @@ use App\Services\Auth\AuthenticationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use App\Exceptions\InvalidUserTypeException;
-use App\Exceptions\InvalidOtpException;
 
 class ResetPasswordController extends Controller
 {
     public function __construct(
         protected AuthenticationService $authenticationService
     ) {}
-public function verifyOtp(VerifyOtpRequest $request, string $type): JsonResponse
-{
-    try {
-        $data = $request->validated();
-        $result = $this->authenticationService->verifyOtp($data, $type);
 
-        return ApiResponse::success(
-            message: 'OTP verified. You can now reset your password.',
-            data: ['reset_token' => $result]
-        );
-    } catch (InvalidUserTypeException | InvalidOtpException $e) {
-    
-        return ApiResponse::error(
-            message: $e->getMessage(), 
-            status: $e->getCode()
-        );
+    public function verifyOtp(VerifyOtpRequest $request, string $type): JsonResponse
+    {
+        try {
+            $data = $request->validated();
+            $result = $this->authenticationService->verifyOtp($data, $type);
 
-    } catch (\Throwable $e) {
-        \Log::error('Unexpected OTP Error: ' . $e->getMessage(), ['exception' => $e]);
+            return ApiResponse::success(
+                message: 'OTP verified. You can now reset your password.',
+                data: ['reset_token' => $result]
+            );
+        } catch (InvalidUserTypeException|InvalidOtpException $e) {
 
-        return ApiResponse::error(
-            message: 'An unexpected error occurred. Please try again later.',
-            status: 500
-        );
+            return ApiResponse::error(
+                message: $e->getMessage(),
+                status: $e->getCode()
+            );
+
+        } catch (\Throwable $e) {
+            \Log::error('Unexpected OTP Error: '.$e->getMessage(), ['exception' => $e]);
+
+            return ApiResponse::error(
+                message: 'An unexpected error occurred. Please try again later.',
+                status: 500
+            );
+        }
     }
-}
 
     public function resetPassword(ResetPasswordRequest $request, string $type)
     {

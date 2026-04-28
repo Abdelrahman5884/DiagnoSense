@@ -1,5 +1,7 @@
 <?php
 
+use App\Exceptions\InvalidOtpException;
+use App\Exceptions\InvalidUserTypeException;
 use App\Helpers\ApiResponse;
 use App\Http\Middleware\CheckAiAccess;
 use App\Http\Middleware\CheckUserType;
@@ -13,8 +15,6 @@ use Laravel\Sanctum\Http\Middleware\CheckAbilities;
 use Laravel\Sanctum\Http\Middleware\CheckForAnyAbility;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use App\Exceptions\InvalidOtpException;
-use App\Exceptions\InvalidUserTypeException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(

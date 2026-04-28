@@ -3,6 +3,8 @@
 namespace App\Services\Auth;
 
 use App\Events\UserRegistered;
+use App\Exceptions\InvalidOtpException;
+use App\Exceptions\InvalidUserTypeException;
 use App\Helpers\Auth;
 use App\Mail\EmailVerificationMail;
 use App\Models\User;
@@ -11,8 +13,6 @@ use Ichtrojan\Otp\Otp;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use App\Exceptions\InvalidUserTypeException;
-use App\Exceptions\InvalidOtpException;
 
 class AuthenticationService
 {
@@ -122,13 +122,13 @@ class AuthenticationService
         $user = $this->getUser($data['contact']);
 
         if (! $user || $user->type !== $type) {
-            throw new InvalidUserTypeException();
+            throw new InvalidUserTypeException;
         }
 
         $result = $this->otp->validate($user->contact, $data['otp']);
 
         if (! $result->status) {
-           throw new InvalidOtpException();
+            throw new InvalidOtpException;
         }
 
         $token = $user->createToken('password_reset_'.$user->id, ['reset-password'],
