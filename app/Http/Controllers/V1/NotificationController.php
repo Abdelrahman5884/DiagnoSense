@@ -74,10 +74,16 @@ class NotificationController extends Controller
         }
     }
 
-    public function clearAll(Request $request)
+    public function clearAll(Request $request): JsonResponse
     {
-        $request->user()->doctor->notifications()->delete();
+        try {
+            $this->notificationService->clearAll($request->user()->doctor);
 
-        return ApiResponse::success('All notifications deleted', null, 200);
+            return ApiResponse::success(message: 'All notifications deleted successfully');
+        } catch (\Exception $e) {
+            \Log::error('Failed to clear all notifications: '.$e->getMessage(), ['exception' => $e]);
+ 
+             return ApiResponse::error(message: 'Could not clear notifications at the moment.', status: 500);
+        }
     }
 }

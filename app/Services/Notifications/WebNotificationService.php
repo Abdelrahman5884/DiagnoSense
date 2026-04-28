@@ -27,4 +27,9 @@ class WebNotificationService
     {
         $doctor->unreadNotifications->markAsRead();
     }
+    
+    public function clearAll(Doctor $doctor): void
+    {
+         $doctor->notifications()->delete();
+     }
 }
