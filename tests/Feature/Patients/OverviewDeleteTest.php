@@ -1,11 +1,10 @@
 <?php
 
-
 use function Pest\Laravel\actingAs;
-use function Pest\Laravel\getJson;
-use function Pest\Laravel\deleteJson;
-use function Pest\Laravel\assertSoftDeleted;
 use function Pest\Laravel\assertDatabaseHas;
+use function Pest\Laravel\assertSoftDeleted;
+use function Pest\Laravel\deleteJson;
+use function Pest\Laravel\getJson;
 
 beforeEach(function () {
     $this->user = createUserWithType('doctor', 'abdelrahman@gmail.com');
@@ -27,8 +26,8 @@ describe('Patient Overview', function () {
                 'success' => true,
                 'data' => [
                     'patientName' => $patientUser->name,
-                    'status' => 'stable'
-                ]
+                    'status' => 'stable',
+                ],
             ]);
     });
 

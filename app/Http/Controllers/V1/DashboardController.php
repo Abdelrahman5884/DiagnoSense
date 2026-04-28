@@ -30,12 +30,11 @@ class DashboardController extends Controller
                 data: new WidgetsDashboardResource($stats),
             );
         } catch (\Exception $e) {
-            \Log::error('Error retrieving dashboard summary: ' . $e->getMessage(), ['exception' => $e]);
+            \Log::error('Error retrieving dashboard summary: '.$e->getMessage(), ['exception' => $e]);
 
             return ApiResponse::error(message: 'Failed to retrieve dashboard summary, please try again later.', status: 500);
         }
     }
-
 
     public function statusDistribution(Request $request)
     {

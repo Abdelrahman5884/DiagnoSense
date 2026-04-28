@@ -3,11 +3,12 @@
 use App\Models\AiAnalysisResult;
 use App\Models\Visit;
 use Illuminate\Support\Facades\DB;
+
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\getJson;
 
 beforeEach(function () {
-    $this->user   = createUserWithType('doctor', 'doctor@gmail.com');
+    $this->user = createUserWithType('doctor', 'doctor@gmail.com');
     $this->doctor = $this->user->doctor;
     actingAs($this->user);
 });
@@ -24,13 +25,12 @@ describe('Dashboard Summary', function () {
     });
 
     it('returns correct total patients count', function () {
-        collect(range(1, 3))->each(fn ($i) =>
-            tap(createUserWithType('patient', "patient{$i}@gmail.com")->patient,
-                fn ($p) => $this->doctor->patients()->attach($p->id)
-            )
+        collect(range(1, 3))->each(fn ($i) => tap(createUserWithType('patient', "patient{$i}@gmail.com")->patient,
+            fn ($p) => $this->doctor->patients()->attach($p->id)
+        )
         );
 
-        getJson(route('dashboard.summary'))->assertJsonFragment(['total_patients' => "3"]);
+        getJson(route('dashboard.summary'))->assertJsonFragment(['total_patients' => '3']);
     });
 
     it('returns correct today appointments count', function () {
@@ -42,10 +42,10 @@ describe('Dashboard Summary', function () {
         $firstStatus = explode("','", $matches[1])[0];
 
         Visit::create([
-            'doctor_id'       => $this->doctor->id,
-            'patient_id'      => $patient->id,
+            'doctor_id' => $this->doctor->id,
+            'patient_id' => $patient->id,
             'next_visit_date' => now()->toDateString(),
-            'status'          => $firstStatus, 
+            'status' => $firstStatus,
         ]);
 
         getJson(route('dashboard.summary'))
@@ -62,10 +62,10 @@ describe('Dashboard Summary', function () {
         $firstStatus = explode("','", $matches[1])[0];
 
         Visit::create([
-            'doctor_id'       => $this->doctor->id,
-            'patient_id'      => $patient->id,
+            'doctor_id' => $this->doctor->id,
+            'patient_id' => $patient->id,
             'next_visit_date' => now()->subDay()->toDateString(),
-            'status'          => $firstStatus,
+            'status' => $firstStatus,
         ]);
 
         getJson(route('dashboard.summary'))->assertJsonFragment(['today_appointments' => 0]);
@@ -78,7 +78,7 @@ describe('Dashboard Summary', function () {
         AiAnalysisResult::create(['patient_id' => $patient->id, 'status' => 'completed']);
         AiAnalysisResult::create(['patient_id' => $patient->id, 'status' => 'completed']);
 
-        getJson(route('dashboard.summary'))->assertJsonFragment(['reports_analyzed' => "2"]);
+        getJson(route('dashboard.summary'))->assertJsonFragment(['reports_analyzed' => '2']);
     });
 
     it('returns trend up when growth is positive', function () {
@@ -93,7 +93,7 @@ describe('Dashboard Summary', function () {
         $this->doctor->patients()->attach($oldPatient->id);
 
         DB::table('patients')->where('id', $oldPatient->id)->update([
-            'created_at' => now()->subMonth()->startOfMonth()
+            'created_at' => now()->subMonth()->startOfMonth(),
         ]);
 
         getJson(route('dashboard.summary'))->assertJsonFragment(['trend' => 'down']);

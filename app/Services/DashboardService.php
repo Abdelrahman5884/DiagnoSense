@@ -12,9 +12,9 @@ class DashboardService
     public function getSummary(Doctor $doctor): array
     {
         $now = Carbon::now();
-        $currentMonthStart  = $now->copy()->startOfMonth();
+        $currentMonthStart = $now->copy()->startOfMonth();
         $previousMonthStart = $now->copy()->subMonth()->startOfMonth();
-        $previousMonthEnd   = $now->copy()->subMonth()->endOfMonth();
+        $previousMonthEnd = $now->copy()->subMonth()->endOfMonth();
 
         $patientIds = $doctor->patients()->pluck('patients.id');
 
@@ -36,7 +36,7 @@ class DashboardService
             ->whereBetween('patients.created_at', [$previousMonthStart, $previousMonthEnd])
             ->count();
 
-        $diff             = $patientsThisMonth - $patientsLastMonth;
+        $diff = $patientsThisMonth - $patientsLastMonth;
         $growthPercentage = 0;
 
         if ($patientsLastMonth > 0) {
@@ -46,14 +46,14 @@ class DashboardService
         }
 
         return [
-            'doctor_name'        => $doctor->user->name,
-            'total_patients'     => $totalPatients,
+            'doctor_name' => $doctor->user->name,
+            'total_patients' => $totalPatients,
             'today_appointments' => $todayVisits,
-            'reports_analyzed'   => $reportsAnalyzed,
-            'last_month_count'   => $patientsLastMonth,
-            'this_month_count'   => $patientsThisMonth,
-            'diff'               => $diff,
-            'growth_percentage'  => $growthPercentage,
+            'reports_analyzed' => $reportsAnalyzed,
+            'last_month_count' => $patientsLastMonth,
+            'this_month_count' => $patientsThisMonth,
+            'diff' => $diff,
+            'growth_percentage' => $growthPercentage,
         ];
     }
 }
