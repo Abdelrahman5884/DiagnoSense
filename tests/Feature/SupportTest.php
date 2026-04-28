@@ -31,7 +31,7 @@ dataset('invalid_support_data', [
         ['urgency' => ['The urgency field is required.']],
     ],
     'invalid urgency' => [
-        ['urgency' => 'critical'], 
+        ['urgency' => 'critical'],
         ['urgency' => ['The selected urgency is invalid.']],
     ],
     'empty message' => [
@@ -43,11 +43,11 @@ dataset('invalid_support_data', [
         ['attachment' => ['The attachment field must be a file.']],
     ],
     'large attachment' => [
-        fn() => [
-            'category' => 'technical', 
-            'urgency'  => 'high',
-            'message'  => 'Valid message description',
-            'attachment' => UploadedFile::fake()->create('heavy.pdf', 5001) 
+        fn () => [
+            'category' => 'technical',
+            'urgency' => 'high',
+            'message' => 'Valid message description',
+            'attachment' => UploadedFile::fake()->create('heavy.pdf', 5001),
         ],
         ['attachment' => ['The attachment field must not be greater than 5000 kilobytes.']],
     ],
@@ -93,7 +93,7 @@ describe('Support - Create Ticket', function () {
 
         $ticket = SupportTicket::first();
         expect($ticket->attachment_path)->not->toBeNull();
-        
+
         Storage::disk('azure')->assertExists($ticket->attachment_path);
     });
 
@@ -111,7 +111,7 @@ describe('Support - Validation', function () {
             ->assertJson([
                 'success' => false,
                 'message' => 'Validation Errors',
-                'data'    => $expectedErrors,
+                'data' => $expectedErrors,
             ]);
     })->with('invalid_support_data');
 

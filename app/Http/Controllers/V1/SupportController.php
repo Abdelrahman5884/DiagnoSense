@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\V1;
 
+use App\Actions\SupportTicketAction;
 use App\Helpers\ApiResponse;
 use App\Http\Requests\StoreSupportRequest;
-use App\Actions\SupportTicketAction;
 use Illuminate\Http\JsonResponse;
 
 class SupportController extends Controller
