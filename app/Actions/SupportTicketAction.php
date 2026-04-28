@@ -6,8 +6,8 @@ use App\Models\SupportTicket;
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-
-class SupportTicketAction
+use App\Helpers\FileStorage;
+final class SupportTicketAction
 {
     public function execute(array $data, User $user): void
     {
@@ -18,8 +18,8 @@ class SupportTicketAction
             $file = $data['attachment'];
             $uniqueName = Str::uuid() . '.' . $file->getClientOriginalExtension();
 
-            $attachmentPath = Storage::disk('azure')
-                ->putFileAs('support-attachments', $file, $uniqueName);
+
+         $attachmentPath = FileStorage::store($file,'support-attachments',$uniqueName);
         }
 
         SupportTicket::create([
