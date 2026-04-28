@@ -1,13 +1,14 @@
 <?php
 
 use Illuminate\Notifications\DatabaseNotification;
+
 use function Pest\Laravel\actingAs;
+use function Pest\Laravel\deleteJson;
 use function Pest\Laravel\getJson;
 use function Pest\Laravel\patchJson;
-use function Pest\Laravel\deleteJson;
 
 beforeEach(function () {
-    $this->user   = createUserWithType('doctor', 'menna@gmail.com');
+    $this->user = createUserWithType('doctor', 'menna@gmail.com');
     $this->doctor = $this->user->doctor;
     actingAs($this->user);
 });
@@ -15,12 +16,12 @@ beforeEach(function () {
 function createNotification($doctor, bool $read = false): DatabaseNotification
 {
     return DatabaseNotification::create([
-        'id'              => \Str::uuid(),
-        'type'            => 'App\Notifications\TestNotification',
+        'id' => \Str::uuid(),
+        'type' => 'App\Notifications\TestNotification',
         'notifiable_type' => 'App\Models\Doctor',
-        'notifiable_id'   => $doctor->id,
-        'data'            => ['message' => 'Test notification'],
-        'read_at'         => $read ? now() : null,
+        'notifiable_id' => $doctor->id,
+        'data' => ['message' => 'Test notification'],
+        'read_at' => $read ? now() : null,
     ]);
 }
 

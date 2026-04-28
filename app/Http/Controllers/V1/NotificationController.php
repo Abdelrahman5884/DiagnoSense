@@ -82,8 +82,8 @@ class NotificationController extends Controller
             return ApiResponse::success(message: 'All notifications deleted successfully');
         } catch (\Exception $e) {
             \Log::error('Failed to clear all notifications: '.$e->getMessage(), ['exception' => $e]);
- 
-             return ApiResponse::error(message: 'Could not clear notifications at the moment.', status: 500);
+
+            return ApiResponse::error(message: 'Could not clear notifications at the moment.', status: 500);
         }
     }
 }

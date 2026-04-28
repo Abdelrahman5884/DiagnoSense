@@ -52,7 +52,7 @@ Route::prefix('v1')->group(function () {
             Route::get('/unread-count', 'unreadCount')->name('unreadCount');
             Route::patch('/{notification}/read', 'read')->name('read');
             Route::patch('/read-all', 'readAll')->name('readAll');
-            Route::delete('/clear-all','clearAll')->name('clearAll');
+            Route::delete('/clear-all', 'clearAll')->name('clearAll');
         });
     });
 });
