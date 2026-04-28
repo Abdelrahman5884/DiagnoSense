@@ -3,75 +3,39 @@
 namespace App\Http\Controllers\V1;
 
 use App\Helpers\ApiResponse;
-use App\Http\Resources\CurrentVisitDashboardResource;
-use App\Http\Resources\QueueDashboardResource;
 use App\Http\Resources\WidgetsDashboardResource;
-use App\Models\AiAnalysisResult;
-use App\Models\MedicalHistory;
-use App\Models\Patient;
-use Carbon\Carbon;
+use App\Services\DashboardService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-    public function summary(Request $request)
+    public function __construct(
+        protected DashboardService $dashboardService
+    ) {}
+
+    public function summary(Request $request): JsonResponse
     {
-        $doctor = $request->user()->doctor;
-        if (! $doctor) {
-            return ApiResponse::error('Unauthorized', null, 403);
+        try {
+            $doctor = $request->user()->doctor;
+
+            if (! $doctor) {
+                return ApiResponse::error(message: 'Unauthorized', status: 403);
+            }
+
+            $stats = $this->dashboardService->getSummary($doctor);
+
+            return ApiResponse::success(
+                message: 'Dashboard summary retrieved successfully',
+                data: new WidgetsDashboardResource($stats),
+            );
+        } catch (\Exception $e) {
+            \Log::error('Error retrieving dashboard summary: ' . $e->getMessage(), ['exception' => $e]);
+
+            return ApiResponse::error(message: 'Failed to retrieve dashboard summary, please try again later.', status: 500);
         }
-
-        $totalPatients = $doctor->patients()->count();
-        $todayVisits = Patient::whereHas('doctors', function ($q) use ($doctor) {
-            $q->where('doctor_id', $doctor->id);
-        })
-            ->whereDate('next_visit_date', today())
-            ->count();
-
-        $reportsAnalyzed = AiAnalysisResult::whereHas('patient', function ($query) use ($doctor) {
-            $query->whereHas('doctors', function ($q) use ($doctor) {
-                $q->where('doctor_id', $doctor->id);
-            });
-        })->where('status', 'completed')
-            ->count();
-
-        $currentMonthStart = Carbon::now()->startOfMonth();
-        $previousMonthStart = Carbon::now()->subMonth()->startOfMonth();
-        $previousMonthEnd = Carbon::now()->subMonth()->endOfMonth();
-
-        $patientsThisMonth = $doctor->patients()
-            ->where('patients.created_at', '>=', $currentMonthStart)
-            ->count();
-
-        $patientsLastMonth = $doctor->patients()
-            ->whereBetween('patients.created_at', [$previousMonthStart, $previousMonthEnd])
-            ->count();
-        $diff = $patientsThisMonth - $patientsLastMonth;
-
-        $growthPercentage = 0;
-        if ($patientsLastMonth > 0) {
-            $growthPercentage = round(($diff / $patientsLastMonth) * 100, 2);
-        } elseif ($patientsThisMonth > 0) {
-            $growthPercentage = 100;
-        }
-        $stats = [
-            'doctor_name' => $doctor->user->name,
-            'total_patients' => $totalPatients,
-            'today_appointments' => $todayVisits,
-            'reports_analyzed' => $reportsAnalyzed,
-            'last_month_count' => $patientsLastMonth,
-            'this_month_count' => $patientsThisMonth,
-            'diff' => $diff,
-            'growth_percentage' => $growthPercentage,
-        ];
-
-        return ApiResponse::success(
-            'Dashboard summary retrieved successfully',
-            new WidgetsDashboardResource($stats),
-            200
-        );
     }
+
 
     public function statusDistribution(Request $request)
     {
