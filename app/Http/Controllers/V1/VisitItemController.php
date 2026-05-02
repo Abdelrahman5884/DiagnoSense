@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\V1;
 
 use App\Helpers\ApiResponse;
-use App\Http\Requests\StoreVisitItemRequest;
+use App\Http\Requests\StoreTaskRequest;
 use App\Http\Resources\MedicationResource;
 use App\Http\Resources\TaskResource;
 use App\Models\Patient;
@@ -35,7 +35,7 @@ class VisitItemController extends Controller
         );
     }
 
-    public function store(StoreVisitItemRequest $request, $visit)
+    public function store(StoreTaskRequest $request, $visit)
     {
         $visit = Visit::query()->findOrFail($visit);
         if (! $visit->next_visit_date) {
