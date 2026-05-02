@@ -11,12 +11,7 @@ class StoreNextVisitRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        $currentDoctor = auth()->user()->doctor;
-        if (! $currentDoctor) {
-            return false;
-        }
-
-        return $currentDoctor->patients()->whereKey($this->patient_id)->exists();
+        return $this->user()->can('store', $this->route('patient'));
     }
 
     /**
@@ -27,10 +22,9 @@ class StoreNextVisitRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'patient_id' => ['required', 'exists:patients,id'],
             'has_next_visit' => ['required', 'boolean'],
             'next_visit_date' => ['required_if:has_next_visit,true', 'prohibited_if:has_next_visit,false', 'date'],
-            'action' => ['required', 'string', 'max:255', 'in:save,next'],
+            'action' => ['required', 'string', 'in:save,next'],
         ];
     }
 }
