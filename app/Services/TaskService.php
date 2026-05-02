@@ -10,8 +10,7 @@ class TaskService
 {
     public function store(Visit $visit, array $data): Task|bool
     {
-        $doctor = auth()->user()->doctor;
-        return (new StoreTaskAction)->execute($visit, $data, $doctor);
+        return (new StoreTaskAction)->execute($visit, $data);
     }
 
     public function delete(Task $task) : void

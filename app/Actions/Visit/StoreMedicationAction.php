@@ -8,10 +8,10 @@ use App\Models\Visit;
 
 class StoreMedicationAction extends StoreVisitRequirementAction
 {
-    public function execute(Visit $visit, array $data, Doctor $doctor):Medication
+    public function execute(Visit $visit, array $data):Medication
     {
         $this->updateVisitIfNeeded($visit, $data);
-         $medication = $doctor->medications()->create([
+         $medication = $visit->medications()->create([
             'name' => $data['name'],
             'dosage' => $data['dosage'] ?? null,
             'notes' => $data['notes'] ?? null,

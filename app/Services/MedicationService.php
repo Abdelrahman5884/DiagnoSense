@@ -10,8 +10,7 @@ class MedicationService
 {
     public function store(Visit $visit, array $data) : Medication
     {
-        $doctor = auth()->user()->doctor;
-        return (new StoreMedicationAction)->execute($visit, $data, $doctor);
+        return (new StoreMedicationAction)->execute($visit, $data);
     }
 
     public function delete(Medication $medication) : void
