@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Visit;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreNextVisitRequest extends FormRequest
@@ -11,7 +12,7 @@ class StoreNextVisitRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->can('store', $this->route('patient'));
+        return $this->user()->can('store', [Visit::class, $this->route('patient')]);
     }
 
     /**
