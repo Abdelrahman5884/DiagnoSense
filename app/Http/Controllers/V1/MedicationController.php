@@ -15,27 +15,32 @@ class MedicationController
 {
     public function __construct(
         protected MedicationService $medicationService
-    ){}
-    public function store(StoreMedicationRequest $request, Visit $visit) :JsonResponse
+    ) {}
+
+    public function store(StoreMedicationRequest $request, Visit $visit): JsonResponse
     {
-        try{
+        try {
             $data = $request->validated();
-           $medication =  $this->medicationService->store($visit, $data);
-           return ApiResponse::success(message:'Medication created successfully',data: new MedicationResource($medication));
-        }catch (\Exception $e){
+            $medication = $this->medicationService->store($visit, $data);
+
+            return ApiResponse::success(message: 'Medication created successfully', data: new MedicationResource($medication));
+        } catch (\Exception $e) {
             \Log::error('Store Medication Error: '.$e->getMessage());
-            return ApiResponse::error(message:'An error occurred while creating medication.',status:500);
+
+            return ApiResponse::error(message: 'An error occurred while creating medication.', status: 500);
         }
     }
 
     public function destroy(DeleteMedicationRequest $request, Medication $medication): JsonResponse
     {
-        try{
+        try {
             $this->medicationService->delete($medication);
-            return ApiResponse::success(message:'Medication deleted successfully');
-        }catch (\Exception $e){
+
+            return ApiResponse::success(message: 'Medication deleted successfully');
+        } catch (\Exception $e) {
             \Log::error('Delete Medication Error: '.$e->getMessage());
-            return ApiResponse::error(message:'An error occurred while deleting medication.',status:500);
+
+            return ApiResponse::error(message: 'An error occurred while deleting medication.', status: 500);
         }
     }
 }

@@ -28,7 +28,7 @@ class StoreMedicationRequest extends FormRequest
             'frequency' => ['required', 'string', 'max:255'],
             'duration' => ['nullable', 'string', 'max:255'],
             'next_visit_date' => ['nullable', 'date'],
-            'action' => ['required', 'string', 'max:255', 'in:save,save_and_create_another']
+            'action' => ['required', 'string', 'max:255', 'in:save,save_and_create_another'],
         ];
     }
 }

@@ -8,12 +8,12 @@ use App\Models\Visit;
 
 class MedicationService
 {
-    public function store(Visit $visit, array $data) : Medication
+    public function store(Visit $visit, array $data): Medication
     {
         return (new StoreMedicationAction)->execute($visit, $data);
     }
 
-    public function delete(Medication $medication) : void
+    public function delete(Medication $medication): void
     {
         $medication->delete();
     }

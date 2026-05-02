@@ -1,9 +1,5 @@
 <?php
 
-use App\Models\Doctor;
-use App\Models\Patient;
-use App\Models\User;
-
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\getJson;
 
@@ -19,7 +15,7 @@ describe('Patients Index: Validation', function () {
         getJson(route('patients.index', ['status' => 'invalid_status']))
             ->assertStatus(422)
             ->assertJsonFragment([
-                'status' => ['The selected status is invalid.']
+                'status' => ['The selected status is invalid.'],
             ]);
     });
 
@@ -39,7 +35,7 @@ describe('Patients Index: Functional Logic (Search & Filter)', function () {
         $assemUser->update(['name' => 'Assem']);
         $assemUser->patient->update([
             'national_id' => '2990101001',
-            'status' => 'critical'
+            'status' => 'critical',
         ]);
         $assem = $assemUser->patient;
 
@@ -47,7 +43,7 @@ describe('Patients Index: Functional Logic (Search & Filter)', function () {
         $asmaUser->update(['name' => 'Asma']);
         $asmaUser->patient->update([
             'national_id' => '2990102002',
-            'status' => 'stable'
+            'status' => 'stable',
         ]);
         $asma = $asmaUser->patient;
 
@@ -55,7 +51,7 @@ describe('Patients Index: Functional Logic (Search & Filter)', function () {
         $ahmedUser->update(['name' => 'Ahmed']);
         $ahmedUser->patient->update([
             'national_id' => '2990203003',
-            'status' => 'stable'
+            'status' => 'stable',
         ]);
         $ahmed = $ahmedUser->patient;
 
@@ -65,7 +61,7 @@ describe('Patients Index: Functional Logic (Search & Filter)', function () {
         $aminaUser->update(['name' => 'Amina']);
         $aminaUser->patient->update([
             'national_id' => '3000101001',
-            'status' => 'critical'
+            'status' => 'critical',
         ]);
         $amina = $aminaUser->patient;
         $saraDoctor->patients()->attach($amina->id);

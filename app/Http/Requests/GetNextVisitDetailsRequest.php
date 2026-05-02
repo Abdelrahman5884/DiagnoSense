@@ -13,5 +13,4 @@ class GetNextVisitDetailsRequest extends FormRequest
     {
         return $this->user()->can('manage', $this->route('visit'));
     }
-
 }

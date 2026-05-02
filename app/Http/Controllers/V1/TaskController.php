@@ -16,7 +16,8 @@ class TaskController extends Controller
 {
     public function __construct(
         protected TaskService $taskService
-    ){}
+    ) {}
+
     public function index()
     {
         $patient = auth()->user()->patient;
@@ -37,28 +38,32 @@ class TaskController extends Controller
         );
     }
 
-    public function store(StoreTaskRequest $request, Visit $visit) : JsonResponse
+    public function store(StoreTaskRequest $request, Visit $visit): JsonResponse
     {
-        try{
+        try {
             $data = $request->validated();
             $task = $this->taskService->store($visit, $data);
-            if( !$task) {
+            if (! $task) {
                 return ApiResponse::error(message: 'Next visit date is required for tasks.', status: 422);
             }
+
             return ApiResponse::success(message: 'Task created successfully', data: new TaskResource($task));
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             \Log::error('Error creating task: '.$e->getMessage(), ['exception' => $e]);
+
             return ApiResponse::error(message: 'Failed to create task, please try again later.', status: 500);
         }
     }
 
     public function destroy(DeleteTaskRequest $request, Task $task): JsonResponse
     {
-        try{
+        try {
             $this->taskService->delete($task);
+
             return ApiResponse::success(message: 'Task deleted successfully');
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             \Log::error('Error deleting task: '.$e->getMessage(), ['exception' => $e]);
+
             return ApiResponse::error(message: 'Failed to delete task, please try again later.', status: 500);
         }
     }

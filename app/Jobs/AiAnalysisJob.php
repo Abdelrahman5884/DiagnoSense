@@ -23,15 +23,13 @@ class AiAnalysisJob implements ShouldQueue
 
     public int $backoff = 10;
 
-
     /**
      * Create a new job instance.
      */
     public function __construct(
         protected int $analysisId,
         protected array $jobData
-    )
-    {}
+    ) {}
 
     /**
      * Execute the job.
@@ -59,11 +57,14 @@ class AiAnalysisJob implements ShouldQueue
             throw $e;
         }
     }
+
     private function generateUrls(string $type): array
     {
         $paths = $this->jobData['file_paths'][$type] ?? [];
-        return  array_map(fn ($path) => FileSystem::getTempUrl($path), $paths);
+
+        return array_map(fn ($path) => FileSystem::getTempUrl($path), $paths);
     }
+
     private function updateAnalysisResult(
         AiAnalysisResult $analysisRecord,
         ?string $insight,
@@ -80,10 +81,12 @@ class AiAnalysisJob implements ShouldQueue
             'ocr_file_path' => $ocr_file_path,
         ]);
     }
+
     private function getDoctor(): ?Doctor
     {
         return Doctor::with(['activeSubscription', 'wallet', 'user'])->find($this->jobData['doctor_id']);
     }
+
     private function processAiAnalysisResponse(
         AiAnalysisBillingService $billingService,
         array $data,
@@ -91,7 +94,7 @@ class AiAnalysisJob implements ShouldQueue
     ): void {
         $insight = $data['key_information']['ai_insight'] ?? null;
         $summary = $data['key_information']['ai_summary'] ?? null;
-        $hasLabFiles = !empty($this->jobData['file_paths']['lab']);
+        $hasLabFiles = ! empty($this->jobData['file_paths']['lab']);
         $ocr_file_path = $data['pdf_path'] ?? null;
         $this->updateAnalysisResult($analysisRecord, $insight, $summary, $data, $hasLabFiles, $ocr_file_path);
 
@@ -109,6 +112,7 @@ class AiAnalysisJob implements ShouldQueue
             $billingService->handleBilling($doctor, $analysisRecord);
         }
     }
+
     private function storeDecisionSupports(array $data, AiAnalysisResult $analysisRecord): array
     {
         $decisions = $data['decision_support'] ?? [];
@@ -121,12 +125,14 @@ class AiAnalysisJob implements ShouldQueue
                 'clinical_reasoning' => $decision['clinical_reasoning'],
             ]);
         }
+
         return $data;
     }
+
     private function storeKeyPoints(array $key_information, AiAnalysisResult $analysisRecord): void
     {
         foreach (['high_priority_alerts', 'medium_priority_alerts', 'low_priority_alerts'] as $type) {
-            $alerts = $key_information[$type]?? [];
+            $alerts = $key_information[$type] ?? [];
             foreach ($alerts as $item) {
                 $analysisRecord->keyPoints()->create([
                     'priority' => str_replace('_priority_alerts', '', $type),
@@ -137,6 +143,7 @@ class AiAnalysisJob implements ShouldQueue
             }
         }
     }
+
     private function prepareMedicalData(): array
     {
         return [
@@ -159,6 +166,7 @@ class AiAnalysisJob implements ShouldQueue
             'decision_support' => (bool) ($this->jobData['features']['decision_support'] ?? false),
         ];
     }
+
     private function handleFailedAnalysis(AiAnalysisResult $analysisRecord, string $message): void
     {
         $analysisRecord->update([

@@ -29,15 +29,16 @@ class PatientController extends Controller
         } catch (\Exception $e) {
             \Log::error('Patient Index Error: '.$e->getMessage());
 
-            return ApiResponse::error(message:'An error occurred while fetching patients.',status:500);
+            return ApiResponse::error(message: 'An error occurred while fetching patients.', status: 500);
         }
     }
 
     public function store(StorePatientRequest $request): JsonResponse
     {
-        try{
+        try {
             $data = $request->validated();
             $result = $this->patientService->store($data);
+
             return ApiResponse::success(
                 message: 'Patient created successfully and AI analysis is in progress.',
                 data : [
@@ -46,10 +47,10 @@ class PatientController extends Controller
                 ],
                 status: 201
             );
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
             \Log::error('Patient Store Error: '.$e->getMessage());
 
-            return ApiResponse::error(message:'An error occurred while creating patient.',status:500);
+            return ApiResponse::error(message: 'An error occurred while creating patient.', status: 500);
         }
     }
 }

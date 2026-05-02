@@ -4,9 +4,10 @@ use App\Jobs\AiAnalysisJob;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
+
 use function Pest\Laravel\actingAs;
 
-beforeEach(function() {
+beforeEach(function () {
     Queue::fake();
     Http::fake();
     Storage::fake('azure');
@@ -15,7 +16,7 @@ beforeEach(function() {
     $this->validPatientData = validPatientData();
 });
 
-it('allow doctor to create patient successfully', function (){
+it('allow doctor to create patient successfully', function () {
     $response = $this->postJson(route('patients.store'), $this->validPatientData);
     $response->assertStatus(201);
     $response->assertJsonStructure([
@@ -23,7 +24,7 @@ it('allow doctor to create patient successfully', function (){
         'message',
         'data' => [
             'patient_id',
-            'analysis_result_id'
+            'analysis_result_id',
         ],
     ]);
     $this->assertDatabaseHas('users', [
@@ -73,8 +74,8 @@ it('if fails validation when contact or files are invalid', function (array $inv
         'data' => $expectedErrors,
     ]);
 })->with([
-    'invalid contact' => [fn() => array_merge(validPatientData(), ['contact' => 'invalid']), ['contact' => ['The contact must be a valid email address or a valid phone number starting with 010, 011, 012, or 015 followed by 8 digits.']]],
-   'no files' => [[array_diff_key(validPatientData(), ['lab' => [], 'radiology' => [], 'medical_history' => []])], ['lab' => ['Please upload at least one lab test result or radiology report or medical history report.'], 'radiology' => ['Please upload at least one lab test result or radiology report or medical history report.'], 'medical_history' => ['Please upload at least one lab test result or radiology report or medical history report.']]],
+    'invalid contact' => [fn () => array_merge(validPatientData(), ['contact' => 'invalid']), ['contact' => ['The contact must be a valid email address or a valid phone number starting with 010, 011, 012, or 015 followed by 8 digits.']]],
+    'no files' => [[array_diff_key(validPatientData(), ['lab' => [], 'radiology' => [], 'medical_history' => []])], ['lab' => ['Please upload at least one lab test result or radiology report or medical history report.'], 'radiology' => ['Please upload at least one lab test result or radiology report or medical history report.'], 'medical_history' => ['Please upload at least one lab test result or radiology report or medical history report.']]],
 ]);
 
 it('if fails validation when contact is already taken', function () {

@@ -17,36 +17,40 @@ use Illuminate\Support\Carbon;
 class VisitController extends Controller
 {
     public function __construct(
-        protected  VisitService $visitService
-    ){}
+        protected VisitService $visitService
+    ) {}
 
-    public function show(GetNextVisitDetailsRequest $request, Visit $visit) :JsonResponse
+    public function show(GetNextVisitDetailsRequest $request, Visit $visit): JsonResponse
     {
-        try{
+        try {
             $visitDetails = $this->visitService->getVisitDetails($visit);
             $data = [
                 'task' => TaskResource::collection($visitDetails->tasks),
                 'medications' => MedicationResource::collection($visitDetails->medications),
                 'next_visit_date' => $visit->next_visit_date ?
-                    Carbon::parse($visit->next_visit_date)->timezone('Africa/Cairo')->format('D, F j, Y - g:i A') : null
+                    Carbon::parse($visit->next_visit_date)->timezone('Africa/Cairo')->format('D, F j, Y - g:i A') : null,
             ];
+
             return ApiResponse::success(message: 'Visit details retrieved successfully.', data: $data);
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
             \Log::error('Show Visit Error: '.$e->getMessage());
-            return ApiResponse::error(message:'An error occurred while fetching visit details.',status:500);
+
+            return ApiResponse::error(message: 'An error occurred while fetching visit details.', status: 500);
         }
     }
+
     public function store(StoreNextVisitRequest $request, Patient $patient): JsonResponse
     {
-        try{
+        try {
             $data = $request->validated();
             $doctor = auth()->user()->doctor;
             $nextVisit = $this->visitService->store($data, $patient, $doctor);
-            return ApiResponse::success(message: 'Visit created successfully.', data: new NextVisitResource($nextVisit),);
-        }catch (\Exception $e) {
+
+            return ApiResponse::success(message: 'Visit created successfully.', data: new NextVisitResource($nextVisit));
+        } catch (\Exception $e) {
             \Log::error('Store Visit Error: '.$e->getMessage());
 
-            return ApiResponse::error(message:'An error occurred while creating visit.',status:500);
+            return ApiResponse::error(message: 'An error occurred while creating visit.', status: 500);
         }
     }
 }

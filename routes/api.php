@@ -46,21 +46,20 @@ Route::prefix('v1')->group(function () {
             Route::get('/resend-otp', [ContactVerificationController::class, 'resendOtp']);
         });
     });
-            Route::middleware('auth:sanctum')->group(function () {
-                Route::controller(PatientController::class)->prefix('patients')->as('patients.')->group(function () {
-                    Route::get('','index')->name('index');
-                    Route::post('', 'store')->name('store')->middleware('check-ai-access');
-                });
-                Route::apiResource('patients.visits', VisitController::class)->only(['show', 'store'])->shallow();
-                Route::apiResource('visits.medications', MedicationController::class)->only(['store', 'destroy'])->shallow();
-                Route::apiResource('visits.tasks', TaskController::class)->only(['store', 'destroy'])->shallow();
-            });
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::controller(PatientController::class)->prefix('patients')->as('patients.')->group(function () {
+            Route::get('', 'index')->name('index');
+            Route::post('', 'store')->name('store')->middleware('check-ai-access');
         });
+        Route::apiResource('patients.visits', VisitController::class)->only(['show', 'store'])->shallow();
+        Route::apiResource('visits.medications', MedicationController::class)->only(['store', 'destroy'])->shallow();
+        Route::apiResource('visits.tasks', TaskController::class)->only(['store', 'destroy'])->shallow();
+    });
+});
 
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/patients/{patientId}/key-info', [PatientController::class, 'getKeyInfo']);
-
 
     Route::get('/patients/{patientId}/overview', [PatientController::class, 'overview']);
     Route::patch('/patients/{patient}/status', [PatientController::class, 'updateStatus']);

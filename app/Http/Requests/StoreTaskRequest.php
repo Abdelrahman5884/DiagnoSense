@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreTaskRequest extends FormRequest
@@ -23,7 +22,7 @@ class StoreTaskRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => ['required','string', 'max:255'],
+            'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'notes' => ['nullable', 'string'],
             'next_visit_date' => ['nullable', 'date'],
