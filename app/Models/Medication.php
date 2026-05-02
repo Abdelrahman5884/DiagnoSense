@@ -13,7 +13,6 @@ class Medication extends Model
         'name',
         'dosage',
         'frequency',
-        'patient_id',
         'doctor_id',
         'duration',
         'visit_id',

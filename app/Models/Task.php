@@ -14,7 +14,6 @@ class Task extends Model
         'description',
         'notes',
         'visit_id',
-        'patient_id',
         'doctor_id',
         'is_completed',
     ];

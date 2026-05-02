@@ -95,14 +95,4 @@ class Patient extends Model
     {
         return $this->morphMany(ActivityLog::class, 'model');
     }
-
-    public function refreshVisitDates(?string $newDate = null): void
-    {
-        if ($newDate && $this->next_visit_date != $newDate) {
-            $this->update([
-                'last_visit_date' => $this->next_visit_date ?? $this->last_visit_date,
-                'next_visit_date' => $newDate,
-            ]);
-        }
-    }
 }
