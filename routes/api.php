@@ -12,6 +12,7 @@ use App\Http\Controllers\V1\DoctorController;
 use App\Http\Controllers\V1\FlutterNotificationController;
 use App\Http\Controllers\V1\KeyPointController;
 use App\Http\Controllers\V1\MedicalFileController;
+use App\Http\Controllers\V1\MedicationController;
 use App\Http\Controllers\V1\NotificationController;
 use App\Http\Controllers\V1\PatientController;
 use App\Http\Controllers\V1\StripeWebhookController;
@@ -19,7 +20,6 @@ use App\Http\Controllers\V1\SubscriptionController;
 use App\Http\Controllers\V1\SupportController;
 use App\Http\Controllers\V1\TaskController;
 use App\Http\Controllers\V1\VisitController;
-use App\Http\Controllers\V1\VisitItemController;
 use App\Http\Controllers\V1\WalletController;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
@@ -33,34 +33,35 @@ Route::prefix('v1')->group(function () {
         });
 
         Route::middleware('check-user-type')->group(function () {
-            Route::post('/login/{type}', [AuthenticatedController::class, 'login'])->middleware('throttle:login')->name('login');
+            Route::post('/login/{type}',
+                [AuthenticatedController::class, 'login'])->middleware('throttle:login')->name('login');
             Route::post('/forget-password/{type}', [ForgetPasswordController::class, 'forgetPassword']);
             Route::post('/verify-otp/{type}', [ResetPasswordController::class, 'verifyOtp']);
             Route::post('/reset-password/{type}', [ResetPasswordController::class, 'resetPassword']);
         });
 
         Route::middleware('auth:sanctum')->group(function () {
-                Route::post('/logout/{type}', [AuthenticatedController::class, 'logout'])->name('logout');
-                Route::post('/verify-contact', [ContactVerificationController::class, 'verifyContact']);
-                Route::get('/resend-otp', [ContactVerificationController::class, 'resendOtp']);
+            Route::post('/logout/{type}', [AuthenticatedController::class, 'logout'])->name('logout');
+            Route::post('/verify-contact', [ContactVerificationController::class, 'verifyContact']);
+            Route::get('/resend-otp', [ContactVerificationController::class, 'resendOtp']);
         });
-
     });
-
-        Route::controller(PatientController::class)->middleware('auth:sanctum')->prefix('patients')->as('patients.')->group(function () {
-            Route::get('','index')->name('index');
-            Route::post('', 'store')->name('store')->middleware('check-ai-access');
+            Route::middleware('auth:sanctum')->group(function () {
+                Route::controller(PatientController::class)->prefix('patients')->as('patients.')->group(function () {
+                    Route::get('','index')->name('index');
+                    Route::post('', 'store')->name('store')->middleware('check-ai-access');
+                });
+                Route::apiResource('patients.visits', VisitController::class)->only(['show', 'store'])->shallow();
+                Route::apiResource('visits.medications', MedicationController::class)->only(['store', 'destroy'])->shallow();
+                Route::apiResource('visits.tasks', TaskController::class)->only(['store', 'destroy'])->shallow();
+            });
         });
-});
 
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/patients/{patientId}/key-info', [PatientController::class, 'getKeyInfo']);
-    Route::post('/visits', [VisitController::class, 'store']);
-    Route::post('/visits/{visit}/items', [VisitItemController::class, 'store']);
-    Route::get('/patients/{patient}/items', [VisitItemController::class, 'index']);
-    Route::delete('/patients/{patient}/medications/{medication}', [VisitItemController::class, 'destroyMedication']);
-    Route::delete('/patients/{patient}/tasks/{task}', [VisitItemController::class, 'destroyTask']);
+
+
     Route::get('/patients/{patientId}/overview', [PatientController::class, 'overview']);
     Route::patch('/patients/{patient}/status', [PatientController::class, 'updateStatus']);
     Route::delete('/key-points/{keyPointId}', [KeyPointController::class, 'destroy']);
