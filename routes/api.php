@@ -8,6 +8,7 @@ use App\Http\Controllers\V1\Auth\ResetPasswordController;
 use App\Http\Controllers\V1\Auth\SocialAuthController;
 use App\Http\Controllers\V1\ChatbotController;
 use App\Http\Controllers\V1\DashboardController;
+use App\Http\Controllers\V1\Doctor\DoctorProfileController;
 use App\Http\Controllers\V1\DoctorController;
 use App\Http\Controllers\V1\FlutterNotificationController;
 use App\Http\Controllers\V1\KeyPointController;
@@ -48,6 +49,11 @@ Route::prefix('v1')->group(function () {
     });
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/patients', [PatientController::class, 'index'])->name('patients.index');
+
+        Route::prefix('doctors')->group(function () {
+            Route::patch('/profile', [DoctorProfileController::class, 'update'])->name('doctor.profile.update');
+            Route::patch('/change-password', [DoctorProfileController::class, 'changePassword'])->name('doctor.password.update');
+        });
     });
 });
 
@@ -90,9 +96,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/patients/{patientId}', [PatientController::class, 'update']);
     Route::post('/support', [SupportController::class, 'store']);
     Route::get('/doctors/{doctorId}', [DoctorController::class, 'edit']);
-    Route::put('/doctors/{doctorId}', [DoctorController::class, 'update']);
     Route::delete('/doctors/{doctorId}', [DoctorController::class, 'destroy']);
-    Route::patch('/change-password', [DoctorController::class, 'changePassword']);
     Route::get('/patients/{patientId}/comparative-analysis', [PatientController::class, 'getComparativeAnalysis']);
 });
 
