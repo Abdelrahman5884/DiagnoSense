@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\V1\Auth\AuthenticatedController;
 use App\Http\Controllers\V1\Auth\ContactVerificationController;
-use App\Http\Controllers\V1\Auth\ForgetPasswordController;
 use App\Http\Controllers\V1\Auth\RegisterController;
 use App\Http\Controllers\V1\Auth\ResetPasswordController;
 use App\Http\Controllers\V1\Auth\SocialAuthController;
@@ -35,9 +34,9 @@ Route::prefix('v1')->group(function () {
 
         Route::middleware('check-user-type')->group(function () {
             Route::post('/login/{type}', [AuthenticatedController::class, 'login'])->middleware('throttle:login')->name('login');
-            Route::post('/forget-password/{type}', [ForgetPasswordController::class, 'forgetPassword']);
-            Route::post('/verify-otp/{type}', [ResetPasswordController::class, 'verifyOtp'])->name('verify-otp');
-            Route::post('/reset-password/{type}', [ResetPasswordController::class, 'resetPassword']);
+            Route::post('/forget-password/{type}', [ResetPasswordController::class, 'forgotPassword'])->name('password.forgot');
+            Route::post('/verify-otp/{type}', [ResetPasswordController::class, 'verifyOtp'])->name('password.verify');
+            Route::post('/reset-password/{type}', [ResetPasswordController::class, 'resetPassword'])->name('password.reset')->middleware(['auth:sanctum', 'abilities:reset-password']);
         });
 
         Route::middleware('auth:sanctum')->group(function () {
