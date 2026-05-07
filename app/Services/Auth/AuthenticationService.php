@@ -3,6 +3,8 @@
 namespace App\Services\Auth;
 
 use App\Events\UserRegistered;
+use App\Exceptions\InvalidOtpException;
+use App\Exceptions\InvalidUserTypeException;
 use App\Helpers\Auth;
 use App\Mail\EmailVerificationMail;
 use App\Models\User;
@@ -50,11 +52,6 @@ class AuthenticationService
     public function logout(User $user): void
     {
         $user->currentAccessToken()->delete();
-    }
-
-    private function generateOtp(string $contact): string
-    {
-        return $this->otp->generate($contact, 'numeric', 6, 10)->token;
     }
 
     private function getUser(string $contact): ?User
@@ -113,7 +110,7 @@ class AuthenticationService
             return false;
         }
 
-        $otpCode = $this->generateOtp($user->contact);
+        $otpCode = Auth::generateOtp($user->contact, $this->otp);
 
         $this->sendOtp($user, $otpCode);
 
@@ -125,13 +122,13 @@ class AuthenticationService
         $user = $this->getUser($data['contact']);
 
         if (! $user || $user->type !== $type) {
-            return false;
+            throw new InvalidUserTypeException;
         }
 
         $result = $this->otp->validate($user->contact, $data['otp']);
 
         if (! $result->status) {
-            return false;
+            throw new InvalidOtpException;
         }
 
         $token = $user->createToken('password_reset_'.$user->id, ['reset-password'],

@@ -35,14 +35,14 @@ Route::prefix('v1')->group(function () {
         Route::middleware('check-user-type')->group(function () {
             Route::post('/login/{type}', [AuthenticatedController::class, 'login'])->middleware('throttle:login')->name('login');
             Route::post('/forget-password/{type}', [ForgetPasswordController::class, 'forgetPassword']);
-            Route::post('/verify-otp/{type}', [ResetPasswordController::class, 'verifyOtp']);
+            Route::post('/verify-otp/{type}', [ResetPasswordController::class, 'verifyOtp'])->name('verify-otp');
             Route::post('/reset-password/{type}', [ResetPasswordController::class, 'resetPassword']);
         });
 
         Route::middleware('auth:sanctum')->group(function () {
-                Route::post('/logout/{type}', [AuthenticatedController::class, 'logout'])->name('logout');
-                Route::post('/verify-contact', [ContactVerificationController::class, 'verifyContact']);
-                Route::get('/resend-otp', [ContactVerificationController::class, 'resendOtp']);
+            Route::post('/logout/{type}', [AuthenticatedController::class, 'logout'])->name('logout');
+            Route::post('/verify-contact', [ContactVerificationController::class, 'verifyContact'])->name('verify-contact');
+            Route::get('/resend-otp', [ContactVerificationController::class, 'resendOtp'])->name('resend-otp');
         });
 
     });

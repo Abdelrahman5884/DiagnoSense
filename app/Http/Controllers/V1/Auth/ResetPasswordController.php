@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\V1\Auth;
 
+use App\Exceptions\InvalidOtpException;
+use App\Exceptions\InvalidUserTypeException;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\V1\Controller;
 use App\Http\Requests\Auth\ResetPasswordRequest;
@@ -22,24 +24,24 @@ class ResetPasswordController extends Controller
     {
         try {
             $data = $request->validated();
-
             $result = $this->authenticationService->verifyOtp($data, $type);
 
-            if (! $result) {
-                return ApiResponse::error(
-                    message: 'Invalid or expired OTP.',
-                    status: 400
-                );
-            }
-
             return ApiResponse::success(
-                message: 'OTP verified. Use this token to reset your password.',
+                message: 'OTP verified. You can now reset your password.',
                 data: ['reset_token' => $result]
             );
+        } catch (InvalidUserTypeException|InvalidOtpException $e) {
 
-        } catch (\Exception $e) {
             return ApiResponse::error(
-                message: 'Failed to verify OTP.',
+                message: $e->getMessage(),
+                status: $e->getCode()
+            );
+
+        } catch (\Throwable $e) {
+            \Log::error('Unexpected OTP Error: '.$e->getMessage(), ['exception' => $e]);
+
+            return ApiResponse::error(
+                message: 'An unexpected error occurred. Please try again later.',
                 status: 500
             );
         }
