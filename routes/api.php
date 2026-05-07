@@ -48,6 +48,12 @@ Route::prefix('v1')->group(function () {
     });
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/patients', [PatientController::class, 'index'])->name('patients.index');
+        Route::controller(NotificationController::class)->prefix('notifications')->as('notifications.')->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('/unread-count', 'unreadCount')->name('unreadCount');
+            Route::patch('/{notification}/read', 'read')->name('read');
+            Route::patch('/read-all', 'readAll')->name('readAll');
+            Route::delete('/clear-all', 'clearAll')->name('clearAll');
 
         Route::prefix('doctors')->group(function () {
             Route::patch('/profile', [DoctorProfileController::class, 'update'])->name('doctor.profile.update');
@@ -80,11 +86,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/subscription/current', [SubscriptionController::class, 'current']);
     Route::post('/subscription/cancel', [SubscriptionController::class, 'cancel']);
     Route::get('/patient/next-visit', [PatientController::class, 'nextVisit']);
-    Route::get('/notifications', [NotificationController::class, 'index']);
-    Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
-    Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
-    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead']);
-    Route::delete('/notifications/clear-all', [NotificationController::class, 'clearAll']);
     Route::post('/chatbot/{patientId}', [ChatbotController::class, 'store'])->middleware('check-ai-access');
     Route::get('/dashboard/summary', [DashboardController::class, 'summary']);
     Route::get('/dashboard/status-distribution', [DashboardController::class, 'statusDistribution']);
