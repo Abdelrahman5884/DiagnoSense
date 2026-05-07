@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 */
 
 beforeEach(function () {
-    Storage::fake('azure');
+    Storage::fake('support-attachments');
 
     $this->doctor = createUserWithType('doctor', 'doctor@test.com');
     $this->patient = createUserWithType('patient', 'patient@test.com');
