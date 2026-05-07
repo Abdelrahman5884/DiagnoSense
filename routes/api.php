@@ -59,6 +59,7 @@ Route::prefix('v1')->group(function () {
             Route::patch('/profile', [DoctorProfileController::class, 'update'])->name('doctor.profile.update');
             Route::patch('/change-password', [DoctorProfileController::class, 'changePassword'])->name('doctor.password.update');
         });
+        Route::post('/v1/support', SupportController::class)->name('support.create');
     });
 });
 
@@ -94,7 +95,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/dashboard/{patientId}/attend', [DashboardController::class, 'markAttended']);
     Route::get('/patients/{patientId}', [PatientController::class, 'edit']);
     Route::put('/patients/{patientId}', [PatientController::class, 'update']);
-    Route::post('/support', [SupportController::class, 'store']);
     Route::get('/doctors/{doctorId}', [DoctorController::class, 'edit']);
     Route::delete('/doctors/{doctorId}', [DoctorController::class, 'destroy']);
     Route::get('/patients/{patientId}/comparative-analysis', [PatientController::class, 'getComparativeAnalysis']);
