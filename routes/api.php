@@ -54,7 +54,7 @@ Route::prefix('v1')->group(function () {
             Route::patch('/{notification}/read', 'read')->name('read');
             Route::patch('/read-all', 'readAll')->name('readAll');
             Route::delete('/clear-all', 'clearAll')->name('clearAll');
-
+        });
         Route::prefix('doctors')->group(function () {
             Route::patch('/profile', [DoctorProfileController::class, 'update'])->name('doctor.profile.update');
             Route::patch('/change-password', [DoctorProfileController::class, 'changePassword'])->name('doctor.password.update');
@@ -125,3 +125,4 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Broadcast::routes(['middleware' => ['auth:sanctum']]);
+
