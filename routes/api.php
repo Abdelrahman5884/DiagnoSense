@@ -59,7 +59,7 @@ Route::prefix('v1')->group(function () {
             Route::patch('/profile', [DoctorProfileController::class, 'update'])->name('doctor.profile.update');
             Route::patch('/change-password', [DoctorProfileController::class, 'changePassword'])->name('doctor.password.update');
         });
-        Route::post('/v1/support', SupportController::class)->name('support.create');
+        Route::post('/support', SupportController::class)->name('support.create');
     });
 });
 
