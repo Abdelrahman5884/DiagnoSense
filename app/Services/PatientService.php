@@ -220,7 +220,7 @@ class PatientService
         $isProcessing = $latestAnalysis?->status === 'processing';
         $allResults = $patient->labResults()->orderBy('created_at', 'asc')->get();
 
-        if ($allResults->isEmpty() && !$isProcessing) {
+        if ($allResults->isEmpty() && ! $isProcessing) {
             throw new \Exception('No analysis data found for this patient.', 404);
         }
 
@@ -235,10 +235,11 @@ class PatientService
             'message' => $message,
             'data' => [
                 'still_processing' => $isProcessing,
-                'analysis' => $analysisResponse
+                'analysis' => $analysisResponse,
             ],
         ];
     }
+
     private function formatComparativeData(Collection $groupedResults): Collection
     {
         return $groupedResults->map(function ($testResults, $testName) {
@@ -254,15 +255,15 @@ class PatientService
 
             return [
                 'test_name' => $testName,
-                'category'  => $currentRecord->category,
-                'unit'      => $currentRecord->unit,
+                'category' => $currentRecord->category,
+                'unit' => $currentRecord->unit,
                 'comparison' => [
-                    'current_value'    => $currentVal,
-                    'previous_value'   => ($count > 1) ? $previousVal : 'Initial',
-                    'change_value'     => $changeValue,
-                    'change_percentage'=> $percentage,
-                    'trend'            => $this->calculateTrend($currentVal, $previousVal),
-                    'status'           => $currentRecord->status,
+                    'current_value' => $currentVal,
+                    'previous_value' => ($count > 1) ? $previousVal : 'Initial',
+                    'change_value' => $changeValue,
+                    'change_percentage' => $percentage,
+                    'trend' => $this->calculateTrend($currentVal, $previousVal),
+                    'status' => $currentRecord->status,
                 ],
                 'all_points' => $testResults->map(fn($item, $index) => [
                     'visit_label' => 'Visit #' . ($index + 1),
@@ -276,8 +277,13 @@ class PatientService
 
     private function calculateTrend(float $current, float $previous): string
     {
-        if ($current > $previous) return 'up';
-        if ($current < $previous) return 'down';
+        if ($current > $previous) {
+            return 'up';
+        }
+        if ($current < $previous) {
+            return 'down';
+        }
+
         return 'stable';
     }
 

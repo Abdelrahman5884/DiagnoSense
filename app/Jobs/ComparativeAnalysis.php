@@ -40,7 +40,7 @@ class ComparativeAnalysis implements ShouldQueue
             ]);
 
             if ($response->failed()) {
-                throw new Exception('AI Server error: ' . $response->status());
+                throw new Exception('AI Server error: '.$response->status());
             }
 
             $labResults = $response->json()['data']['lab_results'] ?? [];
@@ -50,14 +50,14 @@ class ComparativeAnalysis implements ShouldQueue
 
             $dataToInsert = collect($labResults)->map(function ($result) {
                 return [
-                    'patient_id'            => $this->patient->id,
+                    'patient_id' => $this->patient->id,
                     'ai_analysis_result_id' => $this->analysis->id,
-                    'category'              => $result['category'],
-                    'standard_name'         => $result['standard_name'],
-                    'numeric_value'         => $result['numeric_value'],
-                    'unit'                  => $result['unit'] ?? '',
-                    'status'                => $result['status'],
-                    'created_at'            => now(),
+                    'category' => $result['category'],
+                    'standard_name' => $result['standard_name'],
+                    'numeric_value' => $result['numeric_value'],
+                    'unit' => $result['unit'] ?? '',
+                    'status' => $result['status'],
+                    'created_at' => now(),
                 ];
             })->toArray();
 
@@ -74,7 +74,7 @@ class ComparativeAnalysis implements ShouldQueue
     protected function handleFailure(Exception $e): void
     {
         $this->analysis->update(['status' => 'failed']);
-        \Log::error("Comparative Analysis Failed for Analysis #{$this->analysis->id}: " . $e->getMessage());
+        \Log::error("Comparative Analysis Failed for Analysis #{$this->analysis->id}: ".$e->getMessage());
         throw $e;
     }
 }
