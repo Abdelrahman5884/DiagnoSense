@@ -99,12 +99,13 @@ class PatientController extends Controller
     {
         try {
             $result = $this->patientService->getPatientComparativeAnalysis($patient);
-            if(empty($result)) {
+            if (empty($result)) {
                 return ApiResponse::success(
                     message: 'No comparative analysis data available for this patient.',
                     data: null
                 );
             }
+
             return ApiResponse::success(
                 message: $result['message'],
                 data: $result['data']
@@ -112,6 +113,7 @@ class PatientController extends Controller
 
         } catch (\Exception $e) {
             \Log::error("Comparative Analysis Error for Patient {$patient->id}: ".$e->getMessage());
+
             return ApiResponse::error(
                 message: 'An error occurred while fetching comparative analysis.',
                 data: null,
