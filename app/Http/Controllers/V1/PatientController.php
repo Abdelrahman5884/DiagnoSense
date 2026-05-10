@@ -89,6 +89,7 @@ class PatientController extends Controller
             return ApiResponse::error('An error occurred while fetching decision support.', 500);
         }
     }
+
     public function getComparativeAnalysis(Patient $patient): JsonResponse
     {
         try {

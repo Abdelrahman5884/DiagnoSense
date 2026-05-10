@@ -105,6 +105,7 @@ class Patient extends Model
             ]);
         }
     }
+
     public function labResults(): HasMany
     {
         return $this->hasMany(PatientLabResult::class);

@@ -265,11 +265,11 @@ class PatientService
                     'trend' => $this->calculateTrend($currentVal, $previousVal),
                     'status' => $currentRecord->status,
                 ],
-                'all_points' => $testResults->map(fn($item, $index) => [
-                    'visit_label' => 'Visit #' . ($index + 1),
-                    'value'       => (float) $item->numeric_value,
-                    'status'      => $item->status,
-                    'date'        => $item->created_at->format('Y-m-d'),
+                'all_points' => $testResults->map(fn ($item, $index) => [
+                    'visit_label' => 'Visit #'.($index + 1),
+                    'value' => (float) $item->numeric_value,
+                    'status' => $item->status,
+                    'date' => $item->created_at->format('Y-m-d'),
                 ])->values(),
             ];
         })->values();
