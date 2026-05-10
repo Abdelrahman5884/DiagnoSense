@@ -51,17 +51,17 @@ it('shows historical decisions while new analysis is processing', function () {
     $oldAnalysis = AiAnalysisResult::factory()->create([
         'patient_id' => $this->patient->id,
         'status' => 'completed',
-        'created_at' => now()->subHour()
+        'created_at' => now()->subHour(),
     ]);
     DecisionSupport::factory()->create([
         'ai_analysis_result_id' => $oldAnalysis->id,
-        'condition' => 'Old Condition'
+        'condition' => 'Old Condition',
     ]);
 
     AiAnalysisResult::factory()->create([
         'patient_id' => $this->patient->id,
         'status' => 'processing',
-        'created_at' => now()
+        'created_at' => now(),
     ]);
 
     $response = $this->getJson(route('patients.decision-support', $this->patient));

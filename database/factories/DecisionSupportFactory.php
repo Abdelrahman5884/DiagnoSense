@@ -22,7 +22,7 @@ class DecisionSupportFactory extends Factory
                 'Iron Deficiency Anemia',
                 'Chronic Hypertension',
                 'Hyperthyroidism',
-                'Acute Bronchitis'
+                'Acute Bronchitis',
             ]),
             'probability' => $this->faker->randomFloat(2, 0.5, 0.99),
             'status' => $this->faker->randomElement(['HIGH LIKELIHOOD', 'LOW LIKELIHOOD', 'POSSIBLE']),
