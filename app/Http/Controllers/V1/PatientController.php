@@ -6,6 +6,7 @@ use App\Helpers\ApiResponse;
 use App\Http\Requests\Patient\PatientListRequest;
 use App\Http\Requests\Patient\StorePatientRequest;
 use App\Http\Resources\PatientResource;
+use App\Models\Patient;
 use App\Services\PatientService;
 use Illuminate\Http\JsonResponse;
 
@@ -14,6 +15,7 @@ class PatientController extends Controller
     public function __construct(
         protected PatientService $patientService
     ) {}
+
 
     public function index(PatientListRequest $request): JsonResponse
     {
@@ -51,6 +53,23 @@ class PatientController extends Controller
             \Log::error('Patient Store Error: '.$e->getMessage());
 
             return ApiResponse::error(message: 'An error occurred while creating patient.', status: 500);
+        }
+    }
+    public function getKeyInfo(Patient $patient): JsonResponse
+    {
+        try {
+                $result = $this->patientService->getPatientKeyInfo($patient);
+                return ApiResponse::success(
+                    message:$result['message'],
+                    data: $result['data'],
+                );
+            } catch (\Exception $e) {
+                \Log::error("Error retrieving key info for Patient {$patient->id}: " . $e->getMessage());
+
+                return ApiResponse::error(
+                    message:'An error occurred while fetching key information.',
+                    status: 500
+                );
         }
     }
 }
