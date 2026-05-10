@@ -89,4 +89,20 @@ class PatientController extends Controller
             return ApiResponse::error('An error occurred while fetching decision support.', 500);
         }
     }
+    public function getComparativeAnalysis(Patient $patient): JsonResponse
+    {
+        try {
+            $result = $this->patientService->getPatientComparativeAnalysis($patient);
+
+            return ApiResponse::success(
+                message: $result['message'],
+                data: $result['data']
+            );
+
+        } catch (\Exception $e) {
+            \Log::error("Comparative Analysis Error for Patient {$patient->id}: ".$e->getMessage());
+
+            return ApiResponse::error('An error occurred while fetching comparative analysis.', 500);
+        }
+    }
 }

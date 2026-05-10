@@ -13,7 +13,7 @@ use App\Models\MedicalHistory;
 use App\Models\Patient;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -264,7 +264,7 @@ class PatientService
                     'trend'            => $this->calculateTrend($currentVal, $previousVal),
                     'status'           => $currentRecord->status,
                 ],
-                'history' => $testResults->map(fn($item, $index) => [
+                'all_points' => $testResults->map(fn($item, $index) => [
                     'visit_label' => 'Visit #' . ($index + 1),
                     'value'       => (float) $item->numeric_value,
                     'status'      => $item->status,
