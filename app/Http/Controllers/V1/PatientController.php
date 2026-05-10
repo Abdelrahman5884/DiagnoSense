@@ -16,7 +16,6 @@ class PatientController extends Controller
         protected PatientService $patientService
     ) {}
 
-
     public function index(PatientListRequest $request): JsonResponse
     {
         try {
@@ -55,21 +54,23 @@ class PatientController extends Controller
             return ApiResponse::error(message: 'An error occurred while creating patient.', status: 500);
         }
     }
+
     public function getKeyInfo(Patient $patient): JsonResponse
     {
         try {
-                $result = $this->patientService->getPatientKeyInfo($patient);
-                return ApiResponse::success(
-                    message:$result['message'],
-                    data: $result['data'],
-                );
-            } catch (\Exception $e) {
-                \Log::error("Error retrieving key info for Patient {$patient->id}: " . $e->getMessage());
+            $result = $this->patientService->getPatientKeyInfo($patient);
 
-                return ApiResponse::error(
-                    message:'An error occurred while fetching key information.',
-                    status: 500
-                );
+            return ApiResponse::success(
+                message: $result['message'],
+                data: $result['data'],
+            );
+        } catch (\Exception $e) {
+            \Log::error("Error retrieving key info for Patient {$patient->id}: ".$e->getMessage());
+
+            return ApiResponse::error(
+                message: 'An error occurred while fetching key information.',
+                status: 500
+            );
         }
     }
 }
