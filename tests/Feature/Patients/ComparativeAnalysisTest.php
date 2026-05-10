@@ -67,7 +67,7 @@ it('shows historical data and a warning message when the latest analysis fails',
     PatientLabResult::factory()->create([
         'patient_id' => $this->patient->id,
         'standard_name' => 'Blood Sugar',
-        'numeric_value' => '100'
+        'numeric_value' => '100',
     ]);
 
     AiAnalysisResult::factory()->create([

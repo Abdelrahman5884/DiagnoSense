@@ -23,7 +23,7 @@ class PatientLabResultFactory extends Factory
             'ai_analysis_result_id' => AiAnalysisResult::factory(),
             'category' => $this->faker->randomElement(['Hematology', 'Biochemistry', 'Lipid Profile']),
             'standard_name' => $this->faker->randomElement([
-                'Hemoglobin', 'Blood Glucose', 'Cholesterol', 'Creatinine', 'White Blood Cells'
+                'Hemoglobin', 'Blood Glucose', 'Cholesterol', 'Creatinine', 'White Blood Cells',
             ]),
             'numeric_value' => (string) $this->faker->randomFloat(1, 5, 200),
             'unit' => $this->faker->randomElement(['g/dL', 'mg/dL', 'mmol/L', 'cells/mcL']),

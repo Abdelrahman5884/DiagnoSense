@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class PatientLabResult extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'patient_id',
         'ai_analysis_result_id',
