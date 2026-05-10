@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\V1\Auth;
 
+use App\Actions\Doctor\ChangeDoctorPasswordAction;
 use App\Exceptions\InvalidOtpException;
 use App\Exceptions\InvalidUserTypeException;
 use App\Helpers\ApiResponse;
@@ -63,13 +64,13 @@ class ResetPasswordController extends Controller
         }
     }
 
-    public function resetPassword(ResetPasswordRequest $request): JsonResponse
+    public function resetPassword(ResetPasswordRequest $request, ChangeDoctorPasswordAction $action): JsonResponse
     {
         try {
             $user = auth()->user();
             $data = $request->validated();
 
-            $this->authenticationService->resetPassword($user, $data['password']);
+            $action->execute($user, $data['password']);
 
             return ApiResponse::success(message: 'Password has been reset successfully.');
         } catch (\Exception $e) {

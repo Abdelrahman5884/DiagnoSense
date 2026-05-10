@@ -161,14 +161,4 @@ class AuthenticationService
         return $token;
     }
 
-    public function resetPassword(User $user, string $newPassword): void
-    {
-        DB::transaction(function () use ($user, $newPassword) {
-            $user->update([
-                'password' => $newPassword,
-            ]);
-
-            $user->tokens()->delete();
-        });
-    }
 }
