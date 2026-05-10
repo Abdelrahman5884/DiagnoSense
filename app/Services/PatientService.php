@@ -221,7 +221,7 @@ class PatientService
         $allResults = $patient->labResults()->orderBy('created_at', 'asc')->get();
 
         if ($allResults->isEmpty() && ! $isProcessing) {
-            throw new \Exception('No analysis data found for this patient.', 404);
+            return [];
         }
 
         $analysisResponse = $this->formatComparativeData($allResults->groupBy('standard_name'));
