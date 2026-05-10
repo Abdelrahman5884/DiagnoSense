@@ -185,16 +185,17 @@ class PatientService
             ],
         ];
     }
+
     public function getPatientDecisionSupport(Patient $patient): array
     {
         $latestAnalysis = $patient->latestAiAnalysisResult()->with('decisionSupports')->first();
         $isStillProcessing = $latestAnalysis?->status === 'processing';
         $hasCurrentDecisions = $latestAnalysis?->decisionSupports->isNotEmpty() ?? false;
         $oldAnalysis = $patient->aiAnalysisResults()
-        ->where('id', '!=', $latestAnalysis?->id)
-        ->where('status', 'completed')
-        ->latest()
-        ->first();
+            ->where('id', '!=', $latestAnalysis?->id)
+            ->where('status', 'completed')
+            ->latest()
+            ->first();
         $hasOldDecisions = $oldAnalysis?->decisionSupports->isNotEmpty() ?? false;
         $decisionsToReturn = collect();
         if ($hasCurrentDecisions) {
@@ -202,16 +203,17 @@ class PatientService
         } elseif ($hasOldDecisions) {
             $decisionsToReturn = $oldAnalysis->decisionSupports;
         }
+
         return [
-            'message' => $this->determineStatusMessage($hasCurrentDecisions, $hasOldDecisions, $isStillProcessing , 'Decision support'),
+            'message' => $this->determineStatusMessage($hasCurrentDecisions, $hasOldDecisions, $isStillProcessing, 'Decision support'),
             'data' => [
-                'still_processing' => $isStillProcessing && !$hasCurrentDecisions,
+                'still_processing' => $isStillProcessing && ! $hasCurrentDecisions,
                 'decisions' => DecisionSupportResource::collection($decisionsToReturn),
-            ]
+            ],
         ];
     }
 
-    private function determineStatusMessage(bool $hasCurrentData, bool $hasOldData, bool $isStillProcessing,string $label): string
+    private function determineStatusMessage(bool $hasCurrentData, bool $hasOldData, bool $isStillProcessing, string $label): string
     {
         if ($isStillProcessing && $hasCurrentData) {
             return "{$label} retrieved successfully but comparative analysis is still running.";
@@ -225,5 +227,4 @@ class PatientService
 
         return $hasOldData || $hasCurrentData ? "{$label} retrieved successfully." : "No {$label} found for this patient.";
     }
-
 }

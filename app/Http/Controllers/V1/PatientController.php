@@ -73,6 +73,7 @@ class PatientController extends Controller
             );
         }
     }
+
     public function getDecisionSupport(Patient $patient): JsonResponse
     {
         try {
@@ -83,7 +84,8 @@ class PatientController extends Controller
                 data: $result['data']
             );
         } catch (\Exception $e) {
-            \Log::error("Decision Support Error for Patient {$patient->id}: " . $e->getMessage());
+            \Log::error("Decision Support Error for Patient {$patient->id}: ".$e->getMessage());
+
             return ApiResponse::error('An error occurred while fetching decision support.', 500);
         }
     }
