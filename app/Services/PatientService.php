@@ -173,7 +173,7 @@ class PatientService
         $allKeyPoints = $analysesWithData->flatMap->keyPoints->sortByDesc('created_at');
 
         return [
-            'message' => $this->determineStatusMessage($hasCurrentData, $hasOldData, $isStillProcessing, 'Key points'),
+            'message' => $this->determineStatusMessage($hasCurrentData, $hasOldData, $isStillProcessing, 'key points'),
             'data' => [
                 'still_processing' => $isStillProcessing && ! $hasCurrentData,
                 'ocr_files' => $ocrFiles,
@@ -205,7 +205,7 @@ class PatientService
         }
 
         return [
-            'message' => $this->determineStatusMessage($hasCurrentDecisions, $hasOldDecisions, $isStillProcessing, 'Decision support'),
+            'message' => $this->determineStatusMessage($hasCurrentDecisions, $hasOldDecisions, $isStillProcessing, 'decision support'),
             'data' => [
                 'still_processing' => $isStillProcessing && ! $hasCurrentDecisions,
                 'decisions' => DecisionSupportResource::collection($decisionsToReturn),

@@ -44,7 +44,7 @@ it('returns still_processing false when key points are ready but status is still
     $response->assertStatus(200)
         ->assertJsonPath('data.still_processing', false)
         ->assertJsonCount(1, 'data.key_points.high')
-        ->assertJsonPath('message', 'Key points retrieved successfully but comparative analysis is still running.');
+        ->assertJsonPath('message', 'key points retrieved successfully but comparative analysis is still running.');
 });
 
 it('shows historical data while new analysis is processing', function () {
