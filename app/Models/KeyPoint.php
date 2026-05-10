@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class KeyPoint extends Model
 {
-    use LogsActivity , SoftDeletes ,  HasFactory;
+    use HasFactory , LogsActivity ,  SoftDeletes;
 
     protected $fillable = [
         'ai_analysis_result_id',

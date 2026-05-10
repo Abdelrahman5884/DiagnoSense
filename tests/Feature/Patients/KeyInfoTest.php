@@ -1,7 +1,8 @@
 <?php
-use App\Models\Patient;
+
 use App\Models\AiAnalysisResult;
 use App\Models\KeyPoint;
+use App\Models\Patient;
 use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
@@ -17,7 +18,7 @@ beforeEach(function () {
 it('returns still_processing true when first analysis is running', function () {
     AiAnalysisResult::factory()->create([
         'patient_id' => $this->patient->id,
-        'status' => 'processing'
+        'status' => 'processing',
     ]);
 
     $response = $this->getJson(route('patients.key-info', $this->patient));
@@ -30,12 +31,12 @@ it('returns still_processing true when first analysis is running', function () {
 it('returns still_processing false when key points are ready but status is still processing', function () {
     $analysis = AiAnalysisResult::factory()->create([
         'patient_id' => $this->patient->id,
-        'status' => 'processing'
+        'status' => 'processing',
     ]);
 
     KeyPoint::factory()->create([
         'ai_analysis_result_id' => $analysis->id,
-        'priority' => 'high'
+        'priority' => 'high',
     ]);
 
     $response = $this->getJson(route('patients.key-info', $this->patient));
@@ -47,10 +48,10 @@ it('returns still_processing false when key points are ready but status is still
 });
 
 it('shows historical data while new analysis is processing', function () {
-    $oldAnalysis = AiAnalysisResult::factory()->create(['patient_id' => $this->patient->id, 'status' => 'completed' , 'created_at' => now()->subHour()]);
+    $oldAnalysis = AiAnalysisResult::factory()->create(['patient_id' => $this->patient->id, 'status' => 'completed', 'created_at' => now()->subHour()]);
     KeyPoint::factory()->create(['ai_analysis_result_id' => $oldAnalysis->id, 'title' => 'Old Info']);
 
-    AiAnalysisResult::factory()->create(['patient_id' => $this->patient->id, 'status' => 'processing' , 'created_at' => now()]);
+    AiAnalysisResult::factory()->create(['patient_id' => $this->patient->id, 'status' => 'processing', 'created_at' => now()]);
 
     $response = $this->getJson(route('patients.key-info', $this->patient));
 
