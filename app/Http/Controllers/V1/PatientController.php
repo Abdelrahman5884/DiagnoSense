@@ -5,6 +5,7 @@ namespace App\Http\Controllers\V1;
 use App\Helpers\ApiResponse;
 use App\Http\Requests\Patient\PatientListRequest;
 use App\Http\Requests\Patient\StorePatientRequest;
+use App\Http\Requests\UpdatePatientRequest;
 use App\Http\Resources\PatientResource;
 use App\Models\Patient;
 use App\Services\PatientService;
@@ -119,6 +120,16 @@ class PatientController extends Controller
                 data: null,
                 status: 500
             );
+        }
+    }
+    public function update(UpdatePatientRequest $request, Patient $patient): JsonResponse
+    {
+        try {
+            $this->patientService->update($patient, $request->validated());
+            return ApiResponse::success(message: 'Patient file updated successfully');
+        } catch (\Exception $e) {
+            \Log::error('Update Error: '.$e->getMessage());
+            return ApiResponse::error(message: 'Update failed: '.$e->getMessage(), status: 500);
         }
     }
 }
