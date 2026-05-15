@@ -122,6 +122,27 @@ class PatientService
 
         return $medicalHistory;
     }
+        public function runAiAnalysis(Patient $patient, array $newPaths = []): AiAnalysisResult
+    {
+        $doctor = auth()->user()->doctor;
+
+        $this->checkBillingPlan($doctor);
+
+        $analysisResult = $patient->latestAiAnalysisResult()->create([
+            'status' => 'processing',
+        ]);
+
+        $allPaths = $newPaths;
+        if (empty(array_filter($newPaths))) {
+            $allPaths = $patient->reports->groupBy('type')->map(fn($group) => $group->pluck('file_path')->toArray())->toArray();
+        }
+
+        $jobData = $this->getJobData($patient, $doctor, $patient->medicalHistory, $allPaths);
+
+        $this->triggerAnalysisWorkflows($analysisResult, $jobData, $allPaths, $patient);
+
+        return $analysisResult;
+    }
 
     private function getJobData(Patient $patient, Doctor $doctor, MedicalHistory $medicalHistory, array $pathsForAI): array
     {
@@ -300,5 +321,41 @@ class PatientService
         }
 
         return $hasOldData || $hasCurrentData ? "{$label} retrieved successfully." : "No {$label} found for this patient.";
+    }
+    public function update(Patient $patient, array $data): Patient
+    {
+        return DB::transaction(function () use ($patient, $data) {
+            $patient->user->update($data);
+            $patient->update($data);
+            $oldComplaint = $patient->medicalHistory->current_complaints;
+            $patient->medicalHistory->update($data);
+
+            $reportsTypes = ['lab', 'radiology', 'medical_history'];
+            $newPathsForAI = [
+                'lab' => [], 'radiology' => [], 'medical_history' => [],
+            ];
+            $newPathsForAI = $this->reportService->getPathsForAI($reportsTypes, $data, $patient, $newPathsForAI);
+            $hasNewFiles = !empty(array_filter($newPathsForAI));
+            $complaintChanged = isset($data['current_complaints']) && $data['current_complaints'] !== $oldComplaint;
+
+            if ($hasNewFiles || $complaintChanged) {
+                $this->runAiAnalysis($patient, $newPathsForAI);
+            }
+
+            return $patient;
+        });
+    }
+
+    private function checkBillingPlan(Doctor $doctor)
+    {
+        if (!$doctor->billing_mode) throw new \Exception('No billing mode found.');
+
+        if ($doctor->billing_mode == 'pay_per_use' && $doctor->wallet->balance < config('app.pay_per_use_cost')) {
+            throw new \Exception('Insufficient balance for AI analysis.');
+        }
+
+        if ($doctor->billing_mode == 'subscription' && !$doctor->activeSubscription) {
+            throw new \Exception('No active subscription found.');
+        }
     }
 }
