@@ -47,12 +47,17 @@ Route::prefix('v1')->group(function () {
 
     });
 
-    Route::controller(PatientController::class)->middleware('auth:sanctum')->prefix('patients')->as('patients.')->group(function () {
-        Route::get('', 'index')->name('index');
-        Route::post('', 'store')->name('store')->middleware('check-ai-access');
-        Route::get('/{patient}/key-info', 'getKeyInfo')->name('key-info');
-        Route::get('/{patient}/decision-support', 'getDecisionSupport')->name('decision-support');
-        Route::get('/{patient}/comparative-analysis', 'getComparativeAnalysis')->name('comparative-analysis');
+    Route::middleware('auth:sanctum')->prefix('patients')->as('patients.')->group(function () {
+        Route::controller(PatientController::class)->group(function () {
+            Route::get('', 'index')->name('index');
+            Route::post('', 'store')->name('store')->middleware('check-ai-access');
+            Route::get('/{patient}/key-info', 'getKeyInfo')->name('key-info');
+            Route::get('/{patient}/decision-support', 'getDecisionSupport')->name('decision-support');
+            Route::get('/{patient}/comparative-analysis', 'getComparativeAnalysis')->name('comparative-analysis');
+        });
+        Route::controller(KeyPointController::class)->group(function () {
+            Route::post('/{patient}/key-info', 'store')->name('add-note');
+        });
     });
 });
 
@@ -67,7 +72,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/key-points/{keyPointId}', [KeyPointController::class, 'destroy']);
     Route::get('/patients/{patient}/activities', [PatientController::class, 'activityHistory']);
     Route::patch('/key-points/{keyPointId}', [KeyPointController::class, 'update']);
-    Route::post('/patients/{patientId}/key-info', [KeyPointController::class, 'store']);
     Route::delete('/patients/{patientId}', [PatientController::class, 'destroy']);
     Route::post('/wallet/charge', [WalletController::class, 'store']);
     Route::get('/transactions', [WalletController::class, 'index']);
