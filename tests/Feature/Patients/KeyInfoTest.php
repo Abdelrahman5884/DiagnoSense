@@ -60,3 +60,37 @@ it('shows historical data while new analysis is processing', function () {
         ->assertJsonPath('message', 'Showing old key points. Some files are still being processed.')
         ->assertJsonFragment(['title' => 'Old Info']);
 });
+
+it('can add a new manual note successfully', function () {
+    AiAnalysisResult::factory()->create([
+        'patient_id' => $this->patient->id,
+        'status' => 'completed',
+    ]);
+
+    $payload = [
+        'insight' => 'Patient should follow a strict diet.',
+        'priority' => 'medium',
+    ];
+
+    $response = $this->postJson(route('patients.add-note', $this->patient), $payload);
+
+    $response->assertStatus(201)
+        ->assertJsonPath('message', 'Doctor Manual key point added successfully')
+        ->assertJsonPath('data.insight', $payload['insight'])
+        ->assertJsonPath('data.is_ai_generated', 'Doctor Note');
+
+    $this->assertDatabaseHas('key_points', [
+        'insight' => $payload['insight'],
+        'priority' => 'medium',
+        'is_ai_generated' => false,
+    ]);
+});
+
+it('fails to add a manual note when insight is missing', function () {
+    $response = $this->postJson(route('patients.add-note', $this->patient), [
+        'priority' => 'high',
+    ]);
+
+    $response->assertStatus(422)
+        ->assertJsonPath('data.insight.0', 'The insight field is required.');
+});
