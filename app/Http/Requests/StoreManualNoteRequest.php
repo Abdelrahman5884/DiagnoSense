@@ -10,6 +10,7 @@ class StoreManualNoteRequest extends FormRequest
     {
         $doctor = $this->user()->doctor;
         $patient = $this->route('patient');
+
         return $doctor->patients()->where('patients.id', $patient->id)->exists();
     }
 
@@ -20,5 +21,4 @@ class StoreManualNoteRequest extends FormRequest
             'priority' => 'required|string|in:high,medium,low',
         ];
     }
-
 }
