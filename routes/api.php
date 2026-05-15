@@ -54,6 +54,8 @@ Route::prefix('v1')->group(function () {
             Route::get('/{patient}/key-info', 'getKeyInfo')->name('key-info');
             Route::get('/{patient}/decision-support', 'getDecisionSupport')->name('decision-support');
             Route::get('/{patient}/comparative-analysis', 'getComparativeAnalysis')->name('comparative-analysis');
+            Route::put('/{patient}',  'update')->name('update');
+
         });
         Route::controller(KeyPointController::class)->group(function () {
             Route::post('/{patient}/key-info', 'store')->name('add-note');
@@ -93,7 +95,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/dashboard/today-visits', [DashboardController::class, 'todayVisits']);
     Route::patch('/dashboard/{patientId}/attend', [DashboardController::class, 'markAttended']);
     Route::get('/patients/{patientId}', [PatientController::class, 'edit']);
-    Route::put('/patients/{patientId}', [PatientController::class, 'update']);
     Route::post('/support', [SupportController::class, 'store']);
     Route::get('/doctors/{doctorId}', [DoctorController::class, 'edit']);
     Route::put('/doctors/{doctorId}', [DoctorController::class, 'update']);
