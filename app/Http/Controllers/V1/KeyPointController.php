@@ -15,6 +15,7 @@ use Illuminate\Http\JsonResponse;
 class KeyPointController extends Controller
 {
     public function __construct(protected KeyPointService $keyPointService) {}
+
     public function destroy(DestroyKeyPointRequest $request, $keyPointId)
     {
         $keyPoint = KeyPoint::findOrFail($keyPointId);
@@ -34,10 +35,10 @@ class KeyPointController extends Controller
         return ApiResponse::success('Key point updated successfully', ['id' => $keyPoint->id, 'insight' => $keyPoint->insight], 200);
     }
 
-    public function store(StoreManualNoteRequest $request, Patient $patient):JsonResponse
+    public function store(StoreManualNoteRequest $request, Patient $patient): JsonResponse
     {
         try {
-            $keyPoint = $this->keyPointService->storeManualNote(patient:$patient,data: $request->validated());
+            $keyPoint = $this->keyPointService->storeManualNote(patient: $patient, data: $request->validated());
 
             return ApiResponse::success(
                 message: 'Doctor Manual key point added successfully',
@@ -45,7 +46,8 @@ class KeyPointController extends Controller
                 status: 201
             );
         } catch (\Exception $e) {
-            \Log::error('Error adding manual note: ' . $e->getMessage());
+            \Log::error('Error adding manual note: '.$e->getMessage());
+
             return ApiResponse::error(message: 'Error while adding manual note', status: 500);
         }
     }
