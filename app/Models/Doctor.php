@@ -80,7 +80,7 @@ class Doctor extends Model
 
     public function hasFeature(string $featureName): bool
     {
-        if ($this->billing_mode === 'pay_per_use') {
+        if ($this->billing_mode === 'pay-per-use') {
             return true;
         }
         $subscription = $this->activeSubscription;

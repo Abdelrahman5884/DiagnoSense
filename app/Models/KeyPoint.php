@@ -3,20 +3,20 @@
 namespace App\Models;
 
 use App\Traits\LogsActivity;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class KeyPoint extends Model
 {
-    use LogsActivity;
-    use SoftDeletes;
+    use HasFactory , LogsActivity ,  SoftDeletes;
 
     protected $fillable = [
         'ai_analysis_result_id',
         'priority',
         'title',
         'insight',
-        'is_manual',
+        'is_ai_generated',
         'evidence',
     ];
 

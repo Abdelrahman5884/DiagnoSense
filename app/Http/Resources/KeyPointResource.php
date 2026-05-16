@@ -20,7 +20,7 @@ class KeyPointResource extends JsonResource
             'title' => $this->whenNotNull($this->title),
             'insight' => $this->insight,
             'evidence' => $this->whenNotNull($this->evidence),
-            'is_manual' => $this->is_manual ? 'Doctor Note' : 'AI Generated',
+            'is_ai_generated' => $this->is_ai_generated ? 'AI Generated' : 'Doctor Note',
             'date' => $this->created_at->format('M d, Y'),
         ];
     }

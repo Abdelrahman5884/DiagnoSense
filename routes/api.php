@@ -50,6 +50,7 @@ Route::prefix('v1')->group(function () {
     Route::controller(PatientController::class)->middleware('auth:sanctum')->prefix('patients')->as('patients.')->group(function () {
         Route::get('', 'index')->name('index');
         Route::post('', 'store')->name('store')->middleware('check-ai-access');
+        Route::get('/{patient}/key-info', 'getKeyInfo')->name('key-info');
     });
 
     Route::middleware('auth:sanctum')->group(function () {

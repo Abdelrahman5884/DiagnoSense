@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Helpers\FileSystem;
+use App\Http\Resources\KeyPointResource;
 use App\Jobs\AiAnalysisJob;
 use App\Jobs\ComparativeAnalysis;
 use App\Models\AiAnalysisResult;
@@ -151,5 +153,50 @@ class PatientService
         DB::afterCommit(function () use ($chain) {
             Bus::chain($chain)->dispatch();
         });
+    }
+
+    public function getPatientKeyInfo(Patient $patient): array
+    {
+        $allAnalyses = $patient->aiAnalysisResults()->with('keyPoints')->latest()->get();
+        $latestAnalysis = $allAnalyses->first();
+        $hasCurrentData = $latestAnalysis?->keyPoints->isNotEmpty() ?? false;
+        $hasOldData = $allAnalyses->where('id', '!=', $latestAnalysis?->id)->flatMap->keyPoints->isNotEmpty();
+        $isStillProcessing = $latestAnalysis?->status === 'processing';
+        $analysesWithData = $allAnalyses->filter(fn ($a) => $a->keyPoints->isNotEmpty());
+
+        $ocrFiles = $analysesWithData->map(function ($analysis) {
+            return $analysis->ocr_file_path
+                ? FileSystem::getTempUrl($analysis->ocr_file_path)
+                : null;
+        })->filter()->values()->all();
+        $allKeyPoints = $analysesWithData->flatMap->keyPoints->sortByDesc('created_at');
+
+        return [
+            'message' => $this->determineStatusMessage($hasCurrentData, $hasOldData, $isStillProcessing),
+            'data' => [
+                'still_processing' => $isStillProcessing && ! $hasCurrentData,
+                'ocr_files' => $ocrFiles,
+                'key_points' => [
+                    'high' => KeyPointResource::collection($allKeyPoints->where('priority', 'high')),
+                    'medium' => KeyPointResource::collection($allKeyPoints->where('priority', 'medium')),
+                    'low' => KeyPointResource::collection($allKeyPoints->where('priority', 'low')),
+                ],
+            ],
+        ];
+    }
+
+    private function determineStatusMessage(bool $hasCurrentData, bool $hasOldData, bool $isStillProcessing): string
+    {
+        if ($isStillProcessing && $hasCurrentData) {
+            return 'Key points retrieved successfully but comparative analysis is still running.';
+        }
+        if ($isStillProcessing && $hasOldData) {
+            return 'Showing old key points. Some files are still being processed.';
+        }
+        if ($isStillProcessing) {
+            return 'AI analysis for key points is still running.';
+        }
+
+        return $hasOldData || $hasCurrentData ? 'Key points retrieved successfully.' : 'No key points found for this patient.';
     }
 }
