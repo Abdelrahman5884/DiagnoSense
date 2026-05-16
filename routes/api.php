@@ -131,4 +131,3 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Broadcast::routes(['middleware' => ['auth:sanctum']]);
-
