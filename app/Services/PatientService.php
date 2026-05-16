@@ -189,7 +189,6 @@ class PatientService
         });
     }
 
-
     public function getPatientDecisionSupport(Patient $patient): array
     {
         $latestAnalysis = $this->fetchLatestAnalysisWithDecisions($patient);

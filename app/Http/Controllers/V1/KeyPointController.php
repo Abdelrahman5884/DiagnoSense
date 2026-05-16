@@ -34,6 +34,7 @@ class KeyPointController extends Controller
             );
         }
     }
+
     public function destroy(DestroyKeyPointRequest $request, $keyPointId)
     {
         $keyPoint = KeyPoint::findOrFail($keyPointId);
