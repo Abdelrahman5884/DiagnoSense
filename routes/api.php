@@ -51,6 +51,8 @@ Route::prefix('v1')->group(function () {
         Route::get('', 'index')->name('index');
         Route::post('', 'store')->name('store')->middleware('check-ai-access');
         Route::get('/{patient}/key-info', 'getKeyInfo')->name('key-info');
+        Route::get('{patient}/decision-support', 'getDecisionSupport')->name('decision-support');
+
     });
 
     Route::middleware('auth:sanctum')->group(function () {
@@ -70,8 +72,6 @@ Route::prefix('v1')->group(function () {
 });
 
 Route::middleware('auth:sanctum')->group(function () {
-
-    Route::get('/patients/{patientId}/key-info', [PatientController::class, 'getKeyInfo']);
     Route::post('/visits', [VisitController::class, 'store']);
     Route::post('/visits/{visit}/items', [VisitItemController::class, 'store']);
     Route::get('/patients/{patient}/items', [VisitItemController::class, 'index']);
@@ -83,7 +83,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/patients/{patient}/activities', [PatientController::class, 'activityHistory']);
     Route::patch('/key-points/{keyPointId}', [KeyPointController::class, 'update']);
     Route::post('/patients/{patientId}/key-info', [KeyPointController::class, 'store']);
-    Route::get('/patients/{patientId}/decision-support', [PatientController::class, 'getDecisionSupport']);
     Route::delete('/patients/{patientId}', [PatientController::class, 'destroy']);
     Route::post('/wallet/charge', [WalletController::class, 'store']);
     Route::get('/transactions', [WalletController::class, 'index']);

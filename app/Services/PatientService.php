@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Helpers\FileSystem;
+use App\Http\Resources\DecisionSupportResource;
 use App\Http\Resources\KeyPointResource;
 use App\Jobs\AiAnalysisJob;
 use App\Jobs\ComparativeAnalysis;
@@ -172,7 +173,7 @@ class PatientService
         $allKeyPoints = $analysesWithData->flatMap->keyPoints->sortByDesc('created_at');
 
         return [
-            'message' => $this->determineStatusMessage($hasCurrentData, $hasOldData, $isStillProcessing),
+            'message' => $this->determineStatusMessage($hasCurrentData, $hasOldData, $isStillProcessing, 'key points'),
             'data' => [
                 'still_processing' => $isStillProcessing && ! $hasCurrentData,
                 'ocr_files' => $ocrFiles,
@@ -185,18 +186,45 @@ class PatientService
         ];
     }
 
-    private function determineStatusMessage(bool $hasCurrentData, bool $hasOldData, bool $isStillProcessing): string
+    public function getPatientDecisionSupport(Patient $patient): array
     {
-        if ($isStillProcessing && $hasCurrentData) {
-            return 'Key points retrieved successfully but comparative analysis is still running.';
-        }
-        if ($isStillProcessing && $hasOldData) {
-            return 'Showing old key points. Some files are still being processed.';
-        }
-        if ($isStillProcessing) {
-            return 'AI analysis for key points is still running.';
+        $latestAnalysis = $patient->latestAiAnalysisResult()->with('decisionSupports')->first();
+        $isStillProcessing = $latestAnalysis?->status === 'processing';
+        $hasCurrentDecisions = $latestAnalysis?->decisionSupports->isNotEmpty() ?? false;
+        $oldAnalysis = $patient->aiAnalysisResults()
+            ->where('id', '!=', $latestAnalysis?->id)
+            ->where('status', 'completed')
+            ->latest()
+            ->first();
+        $hasOldDecisions = $oldAnalysis?->decisionSupports->isNotEmpty() ?? false;
+        $decisionsToReturn = collect();
+        if ($hasCurrentDecisions) {
+            $decisionsToReturn = $latestAnalysis->decisionSupports;
+        } elseif ($hasOldDecisions) {
+            $decisionsToReturn = $oldAnalysis->decisionSupports;
         }
 
-        return $hasOldData || $hasCurrentData ? 'Key points retrieved successfully.' : 'No key points found for this patient.';
+        return [
+            'message' => $this->determineStatusMessage($hasCurrentDecisions, $hasOldDecisions, $isStillProcessing, 'decision support'),
+            'data' => [
+                'still_processing' => $isStillProcessing && ! $hasCurrentDecisions,
+                'decisions' => DecisionSupportResource::collection($decisionsToReturn),
+            ],
+        ];
+    }
+
+    private function determineStatusMessage(bool $hasCurrentData, bool $hasOldData, bool $isStillProcessing, string $label): string
+    {
+        if ($isStillProcessing && $hasCurrentData) {
+            return "{$label} retrieved successfully but comparative analysis is still running.";
+        }
+        if ($isStillProcessing && $hasOldData) {
+            return "Showing old {$label}. Some files are still being processed.";
+        }
+        if ($isStillProcessing) {
+            return "AI analysis for {$label} is still running.";
+        }
+
+        return $hasOldData || $hasCurrentData ? "{$label} retrieved successfully." : "No {$label} found for this patient.";
     }
 }
