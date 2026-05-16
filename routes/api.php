@@ -51,11 +51,16 @@ Route::prefix('v1')->group(function () {
         Route::controller(PatientController::class)->group(function () {
             Route::get('', 'index')->name('index');
             Route::post('', 'store')->name('store')->middleware('check-ai-access');
-            Route::get('/{patient}/key-info', 'getKeyInfo')->name('key-info');
-            Route::get('/{patient}/decision-support', 'getDecisionSupport')->name('decision-support');
-            Route::get('/{patient}/comparative-analysis', 'getComparativeAnalysis')->name('comparative-analysis');
+            Route::middleware('can:view,patient')->group(function () {
+                Route::get('/{patient}/decision-support', 'getDecisionSupport')->name('decision-support');
+                Route::get('/{patient}/comparative-analysis', 'getComparativeAnalysis')->name('comparative-analysis');
+            });
+            Route::patch('/{patient}', 'update')->name('update');
+            Route::post('/{patient}/re-analyze', 'triggerAiAnalysis')->name('re-analyze')->middleware('check-ai-access');
+
         });
         Route::controller(KeyPointController::class)->group(function () {
+            Route::get('/{patient}/key-info', 'index')->name('key-info')->middleware('can:view,patient');
             Route::post('/{patient}/key-info', 'store')->name('add-note');
         });
     });
@@ -103,6 +108,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/dashboard/today-visits', [DashboardController::class, 'todayVisits']);
     Route::patch('/dashboard/{patientId}/attend', [DashboardController::class, 'markAttended']);
     Route::get('/patients/{patientId}', [PatientController::class, 'edit']);
+    Route::post('/support', [SupportController::class, 'store']);
     Route::put('/patients/{patientId}', [PatientController::class, 'update']);
     Route::get('/doctors/{doctorId}', [DoctorController::class, 'edit']);
     Route::delete('/doctors/{doctorId}', [DoctorController::class, 'destroy']);

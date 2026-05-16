@@ -77,7 +77,7 @@ class AiAnalysisJob implements ShouldQueue
             'ai_insight' => $insight,
             'ai_summary' => $summary,
             'response' => $data,
-            'status' => $hasLabFiles ? 'processing' : 'completed',
+            'status' => $hasLabFiles && ! ($this->jobData['isReAnalysis'] ?? false) ? 'processing' : 'completed',
             'ocr_file_path' => $ocr_file_path,
         ]);
     }
@@ -104,8 +104,10 @@ class AiAnalysisJob implements ShouldQueue
 
         unset($data['key_information']['ai_insight'], $data['key_information']['ai_summary']);
 
-        $this->storeKeyPoints($data['key_information'], $analysisRecord);
-
+        $isReAnalysis = $this->jobData['isReAnalysis'] ?? false;
+        if (! $isReAnalysis) {
+            $this->storeKeyPoints($data['key_information'], $analysisRecord);
+        }
         $doctor = $this->getDoctor();
 
         if ($doctor) {
