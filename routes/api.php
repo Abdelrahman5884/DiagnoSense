@@ -1,4 +1,5 @@
 <?php
+
 use App\Http\Controllers\V1\Auth\AuthenticatedController;
 use App\Http\Controllers\V1\Auth\ContactVerificationController;
 use App\Http\Controllers\V1\Auth\ForgetPasswordController;
@@ -20,9 +21,9 @@ use App\Http\Controllers\V1\TaskController;
 use App\Http\Controllers\V1\VisitController;
 use App\Http\Controllers\V1\VisitItemController;
 use App\Http\Controllers\V1\WalletController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Http\Request;
 
 Route::prefix('v1')->group(function () {
     Route::prefix('auth')->group(function () {
@@ -40,9 +41,9 @@ Route::prefix('v1')->group(function () {
         });
 
         Route::middleware('auth:sanctum')->group(function () {
-                Route::post('/logout/{type}', [AuthenticatedController::class, 'logout'])->name('logout');
-                Route::post('/verify-contact', [ContactVerificationController::class, 'verifyContact']);
-                Route::get('/resend-otp', [ContactVerificationController::class, 'resendOtp']);
+            Route::post('/logout/{type}', [AuthenticatedController::class, 'logout'])->name('logout');
+            Route::post('/verify-contact', [ContactVerificationController::class, 'verifyContact']);
+            Route::get('/resend-otp', [ContactVerificationController::class, 'resendOtp']);
         });
 
     });
@@ -52,10 +53,10 @@ Route::prefix('v1')->group(function () {
         Route::get('transactions', 'index')->name('transactions');
     });
 
-        Route::controller(PatientController::class)->middleware('auth:sanctum')->prefix('patients')->as('patients.')->group(function () {
-            Route::get('','index')->name('index');
-            Route::post('', 'store')->name('store')->middleware('check-ai-access');
-        });
+    Route::controller(PatientController::class)->middleware('auth:sanctum')->prefix('patients')->as('patients.')->group(function () {
+        Route::get('', 'index')->name('index');
+        Route::post('', 'store')->name('store')->middleware('check-ai-access');
+    });
 });
 
 Route::middleware('auth:sanctum')->group(function () {

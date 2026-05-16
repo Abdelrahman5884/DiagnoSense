@@ -1,9 +1,9 @@
 <?php
 
-beforeEach(function (){
+beforeEach(function () {
     $this->doctor = createUserWithType('doctor', fake()->unique()->safeEmail())->doctor;
 });
-function fakePaymobObj(int $doctorId) :array
+function fakePaymobObj(int $doctorId): array
 {
     return [
         'amount_cents' => 10000,
@@ -21,7 +21,7 @@ function fakePaymobObj(int $doctorId) :array
         'is_voided' => false,
         'order' => [
             'id' => 98765,
-            'merchant_order_id' => $doctorId . '-' . time(),
+            'merchant_order_id' => $doctorId.'-'.time(),
         ],
         'owner' => 111,
         'pending' => false,
@@ -33,10 +33,13 @@ function fakePaymobObj(int $doctorId) :array
         'success' => true,
     ];
 }
-function generatePaymobHmac(array $obj) :string
+function generatePaymobHmac(array $obj): string
 {
     $boolToString = function (bool $value) {
-        if(is_string($value)) return $value;
+        if (is_string($value)) {
+            return $value;
+        }
+
         return $value ? 'true' : 'false';
     };
 
@@ -60,13 +63,14 @@ function generatePaymobHmac(array $obj) :string
         ($obj['source_data']['sub_type'] ?? '').
         ($obj['source_data']['type'] ?? '').
         $boolToString($obj['success']);
+
     return hash_hmac('sha512', $string, config('services.paymob.hmac_secret'));
 }
 
-it('valid webhook records transaction and updates wallet', function (){
+it('valid webhook records transaction and updates wallet', function () {
     $obj = fakePaymobObj($this->doctor->id);
     $hmac = generatePaymobHmac($obj);
-    $url = route('paymob.webhook') . '?hmac=' . $hmac;
+    $url = route('paymob.webhook').'?hmac='.$hmac;
     $response = $this->postJson($url, ['obj' => $obj]);
     $response->assertStatus(200);
     $this->assertDatabaseHas('transactions', [
@@ -80,16 +84,16 @@ it('valid webhook records transaction and updates wallet', function (){
     ]);
 });
 
-it('falis webhook if hmac is missing', function (){
+it('falis webhook if hmac is missing', function () {
     $obj = fakePaymobObj($this->doctor->id);
     $response = $this->postJson(route('paymob.webhook'), ['obj' => $obj]);
     $response->assertStatus(400);
 });
 
-it('fails webhook if hmac is invalid', function (){
+it('fails webhook if hmac is invalid', function () {
     $obj = fakePaymobObj($this->doctor->id);
     $hmac = generatePaymobHmac($obj);
-    $url = route('paymob.webhook') . '?hmac=' . $hmac . 'invalid';
+    $url = route('paymob.webhook').'?hmac='.$hmac.'invalid';
     $response = $this->postJson($url, ['obj' => $obj]);
     $response->assertStatus(401);
 });

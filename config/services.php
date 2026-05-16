@@ -71,5 +71,5 @@ return [
         }, explode(',', env('PAYMOB_INTEGRATION_IDS'))),
         'base_url' => env('PAYMOB_BASE_URL'),
         'notification_url' => env('PAYMOB_NOTIFICATION_URL'),
-    ]
+    ],
 ];

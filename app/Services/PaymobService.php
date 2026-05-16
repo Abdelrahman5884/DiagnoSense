@@ -2,28 +2,28 @@
 
 namespace App\Services;
 
-use App\Models\Doctor;
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
 
 class PaymobService
 {
-    public function createIntention(User $user, array $data) : array
+    public function createIntention(User $user, array $data): array
     {
         $headers = [
-            'Authorization' => 'Token ' . config('services.paymob.secret_key'),
+            'Authorization' => 'Token '.config('services.paymob.secret_key'),
             'content-type' => 'application/json',
         ];
 
-        $reference = $user->doctor->id . '-' . time();
+        $reference = $user->doctor->id.'-'.time();
 
         $body = $this->preparePaymentData($user, $data['balance'], $reference);
-        return Http::withHeaders($headers)->post(config('services.paymob.base_url') . 'v1/intention/', $body)->throw()->json();
+
+        return Http::withHeaders($headers)->post(config('services.paymob.base_url').'v1/intention/', $body)->throw()->json();
     }
 
     private function preparePaymentData(User $user, float|int $balance, string $reference): array
     {
-        return[
+        return [
             'amount' => $balance * 100,
             'currency' => 'EGP',
             'payment_methods' => config('services.paymob.integration_ids'),
@@ -36,7 +36,7 @@ class PaymobService
             ],
             'special_reference' => $reference,
             'notification_url' => config('services.paymob.notification_url'),
-            'redirection_url' => url('/api/payment-redirect')
+            'redirection_url' => url('/api/payment-redirect'),
         ];
     }
 }
