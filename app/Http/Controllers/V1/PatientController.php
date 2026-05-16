@@ -122,13 +122,16 @@ class PatientController extends Controller
             );
         }
     }
+
     public function update(UpdatePatientRequest $request, Patient $patient): JsonResponse
     {
         try {
             $this->patientService->update($patient, $request->validated());
+
             return ApiResponse::success(message: 'Patient file updated successfully');
         } catch (\Exception $e) {
             \Log::error('Update Error: '.$e->getMessage());
+
             return ApiResponse::error(message: 'Update failed: '.$e->getMessage(), status: 500);
         }
     }

@@ -8,7 +8,6 @@ use Illuminate\Validation\Rule;
 
 class UpdatePatientRequest extends FormRequest
 {
-
     public function authorize(): bool
     {
         $currentDoctor = auth()->user()->doctor;
@@ -16,10 +15,9 @@ class UpdatePatientRequest extends FormRequest
             return false;
         }
         $patient = $this->route('patient');
+
         return $currentDoctor->patients()->where('patients.id', $patient->id)->exists();
     }
-
-
 
     public function rules(): array
     {
