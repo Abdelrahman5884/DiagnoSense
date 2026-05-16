@@ -24,342 +24,497 @@ tags:
   - name: Doctor Profile
     description: 'Operations related to doctor profile management.'
 paths:
-  '/api/register/{type}':
+  '/api/v1/auth/register':
     post:
       summary: 'Register'
-      operationId: postApiRegisterType
-      description: ''
-      parameters: []
-      responses: {  }
+      operationId: postApiV1AuthRegister
+      description: 'Creates a new doctor account using a unified contact field (Email or Phone) and returns an access token.'
       tags:
         - Auth
+      security: [] # No token needed for registration
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
+              required:
+                - name
+                - contact
+                - password
+                - password_confirmation
               properties:
                 name:
                   type: string
-                  description: 'Must not be greater than 255 characters.'
-                  example: vmqeopfuudtdsufvyvddq
-                  nullable: false
-                email:
+                  maxLength: 255
+                  example: "Menna Baligh"
+                contact:
                   type: string
-                  description: 'This field is required when <code>phone</code> is not present. Must be a valid email address. Must not be greater than 255 characters.'
-                  example: kunde.eloisa@example.com
-                  nullable: false
+                  description: 'Can be a valid Email address or a Phone number.'
+                  example: "menna@example.com"
                 password:
                   type: string
-                  description: 'Must be at least 8 characters.'
-                  example: '4[*UyPJ"}6'
-                  nullable: false
-                phone:
+                  format: password
+                  minLength: 8
+                  example: "password123"
+                password_confirmation:
                   type: string
-                  description: 'This field is required when <code>email</code> is not present. Must be at least 10 characters. Must not be greater than 15 characters.'
-                  example: hdtqtqxbajwbp
-                  nullable: false
-              required:
-                - name
-                - password
-      security: []
-    parameters:
-      -
-        in: path
-        name: type
-        description: ''
-        example: consequatur
-        required: true
-        schema:
-          type: string
-  '/api/login/{type}':
-    post:
-      summary: 'Login'
-      operationId: postApiLoginType
-      description: ''
-      parameters: []
-      responses: {  }
-      tags:
-        - Auth
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                identity:
-                  type: string
-                  description: ''
-                  example: consequatur
-                  nullable: false
-                password:
-                  type: string
-                  description: ''
-                  example: 'O[2UZ5ij-e/dl4m{o,'
-                  nullable: false
-              required:
-                - identity
-                - password
-      security: []
-    parameters:
-      -
-        in: path
-        name: type
-        description: ''
-        example: consequatur
-        required: true
-        schema:
-          type: string
-  '/api/forget-password/{type}':
-    post:
-      summary: 'Forget Password'
-      operationId: postApiForgetPasswordType
-      description: ''
-      parameters: []
-      responses: {  }
-      tags:
-        - Auth
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                identity:
-                  type: string
-                  description: ''
-                  example: consequatur
-                  nullable: false
-              required:
-                - identity
-      security: []
-    parameters:
-      -
-        in: path
-        name: type
-        description: ''
-        example: consequatur
-        required: true
-        schema:
-          type: string
-  '/api/verify-otp/{type}':
-    post:
-      summary: 'Verify OTP'
-      operationId: postApiVerifyOtpType
-      description: ''
-      parameters: []
-      responses: {  }
-      tags:
-        - Auth
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                identity:
-                  type: string
-                  description: ''
-                  example: consequatur
-                  nullable: false
-                otp:
-                  type: string
-                  description: 'Must not be greater than 6 characters.'
-                  example: mqeop
-                  nullable: false
-              required:
-                - identity
-                - otp
-      security: []
-    parameters:
-      -
-        in: path
-        name: type
-        description: ''
-        example: consequatur
-        required: true
-        schema:
-          type: string
-  '/api/reset-password/{type}':
-    post:
-      summary: 'Reset Password'
-      operationId: postApiResetPasswordType
-      description: ''
-      parameters: []
-      responses: {  }
-      tags:
-        - Auth
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                reset_token:
-                  type: string
-                  description: ''
-                  example: consequatur
-                  nullable: false
-                password:
-                  type: string
-                  description: 'Must be at least 8 characters.'
-                  example: '[2UZ5ij-e/dl4'
-                  nullable: false
-              required:
-                - reset_token
-                - password
-      security: []
-    parameters:
-      -
-        in: path
-        name: type
-        description: ''
-        example: consequatur
-        required: true
-        schema:
-          type: string
-  '/api/logout/{type}':
-    post:
-      summary: 'Logout'
-      operationId: postApiLogoutType
-      description: ''
-      parameters: []
-      responses: {  }
-      tags:
-        - Auth
-      security: []
-    parameters:
-      -
-        in: path
-        name: type
-        description: ''
-        example: consequatur
-        required: true
-        schema:
-          type: string
-  '/api/verify-email/{type}':
-    post:
-      summary: 'Verify Email'
-      operationId: postApiVerifyEmailType
-      description: ''
-      parameters: []
-      responses: {  }
-      tags:
-        - Auth
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                identity:
-                  type: string
-                  description: ''
-                  example: consequatur
-                  nullable: false
-                otp:
-                  type: string
-                  description: 'Must not be greater than 6 characters.'
-                  example: mqeop
-                  nullable: false
-              required:
-                - identity
-                - otp
-      security: []
-    parameters:
-      -
-        in: path
-        name: type
-        description: ''
-        example: consequatur
-        required: true
-        schema:
-          type: string
-  '/api/resend-otp/{type}':
-    get:
-      summary: 'Resend OTP'
-      operationId: getApiResendOtpType
-      description: ''
-      parameters: []
+                  format: password
+                  example: "password123"
       responses:
-        400:
-          description: ''
+        201:
+          description: 'User registered successfully'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: "User registered successfully"
+                  data:
+                    user:
+                      id: 1
+                      name: "Menna Baligh"
+                      contact: "menna@example.com"
+                      created_at: "2026-05-08 01:00:00"
+                      updated_at: "2026-05-08 01:00:00"
+                    token: "1|def456..."
+        422:
+          description: 'Validation Error'
           content:
             application/json:
               schema:
                 type: object
                 example:
                   success: false
-                  message: 'Invalid user type.'
-                properties:
-                  success:
-                    type: boolean
-                    example: false
-                  message:
-                    type: string
-                    example: 'Invalid user type.'
+                  message: "The contact has already been taken."
+                  data: null
+        500:
+          description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: "Failed to register user, please try again later."
+                  data: null
+  '/api/v1/auth/login/{type}':
+    post:
+      summary: 'Login'
+      operationId: postApiV1AuthLogin
+      description: 'Authenticates a user (doctor or patient) using their contact (Email or Phone) and returns an access token.'
       tags:
         - Auth
-      security: []
-    parameters:
-      -
-        in: path
-        name: type
-        description: ''
-        example: consequatur
+      parameters:
+        - in: path
+          name: type
+          required: true
+          description: 'The type of user attempting to login.'
+          schema:
+            type: string
+            enum: [doctor, patient]
+          example: doctor
+      requestBody:
         required: true
-        schema:
-          type: string
-  /api/google/redirect:
-    get:
-      summary: 'Login with Google'
-      operationId: getApiGoogleRedirect
-      description: ''
-      parameters: []
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - contact
+                - password
+              properties:
+                contact:
+                  type: string
+                  description: 'The user email address or phone number.'
+                  example: "menna@example.com"
+                password:
+                  type: string
+                  format: password
+                  minLength: 8
+                  example: "password123"
       responses:
         200:
-          description: ''
+          description: 'Login successful'
           content:
             application/json:
               schema:
                 type: object
                 example:
-                  url: 'https://accounts.google.com/o/oauth2/auth?client_id=1070705461335-kuvjl2bc2oaovka7fp3t8onv97qaotlj.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Fnontelepathically-pamphletary-cyndi.ngrok-free.dev%2Fapi%2Fgoogle%2Fcallback&scope=openid+profile+email&response_type=code'
-                properties:
-                  url:
-                    type: string
-                    example: 'https://accounts.google.com/o/oauth2/auth?client_id=1070705461335-kuvjl2bc2oaovka7fp3t8onv97qaotlj.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Fnontelepathically-pamphletary-cyndi.ngrok-free.dev%2Fapi%2Fgoogle%2Fcallback&scope=openid+profile+email&response_type=code'
+                  success: true
+                  message: "Login successful"
+                  data:
+                    user:
+                      id: 1
+                      name: "Menna Baligh"
+                      contact: "menna@example.com"
+                      created_at: "2026-05-08 01:00:00"
+                      updated_at: "2026-05-08 01:00:00"
+                    token: "2|ghi789..."
+        401:
+          description: 'Unauthorized - Invalid credentials'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: "Invalid credentials"
+                  data: null
+        422:
+          description: 'Validation Error - Invalid contact format or missing fields'
+        500:
+          description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: "Failed to login, please try again later."
+  '/api/v1/auth/forget-password/{type}':
+    post:
+      summary: 'Forget Password'
+      operationId: postApiV1AuthForgetPassword
+      description: 'Sends a 6-digit OTP to the provided contact (email or phone) if the user exists.'
       tags:
         - Auth
-      security: []
-  /api/patients:
-    get:
-      summary: 'Get List of Patients'
-      operationId: getApiPatients
-      description: ''
-      parameters: []
+      parameters:
+        - in: path
+          name: type
+          required: true
+          schema:
+            type: string
+            enum: [doctor, patient]
+          example: doctor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [contact]
+              properties:
+                contact:
+                  type: string
+                  description: 'The registered email or phone number.'
+                  example: "menna@example.com"
       responses:
-        401:
-          description: ''
+        200:
+          description: 'OTP sent successfully'
           content:
             application/json:
               schema:
                 type: object
                 example:
-                  message: Unauthenticated.
-                properties:
-                  message:
-                    type: string
-                    example: Unauthenticated.
+                  success: true
+                  message: "OTP has been sent to your registered contact."
+        404:
+          description: 'User not found'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: "User not found with these credentials."
+        422:
+          description: 'Validation Error'
+
+  '/api/v1/auth/verify-otp/{type}':
+    post:
+      summary: 'Verify OTP'
+      operationId: postApiV1AuthVerifyOtp
+      description: 'Validates the OTP and returns a temporary reset token to be used for password reset.'
+      tags:
+        - Auth
+      parameters:
+        - in: path
+          name: type
+          required: true
+          schema:
+            type: string
+            enum: [doctor, patient]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [contact, otp]
+              properties:
+                contact:
+                  type: string
+                  example: "menna@example.com"
+                otp:
+                  type: string
+                  example: "123456"
+      responses:
+        200:
+          description: 'OTP verified successfully'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: "OTP verified. You can now reset your password."
+                  data:
+                    reset_token: "3|abc123token..."
+        400:
+          description: 'Invalid OTP or User Type'
+
+  '/api/v1/auth/reset-password/{type}':
+    post:
+      summary: 'Reset Password'
+      operationId: postApiV1AuthResetPassword
+      description: 'Updates the password using the reset token obtained from OTP verification.'
+      tags:
+        - Auth
+      security:
+        - sanctum: [] # This endpoint requires the reset_token as a Bearer token
+      parameters:
+        - in: path
+          name: type
+          required: true
+          schema:
+            type: string
+            enum: [doctor, patient]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [password, password_confirmation]
+              properties:
+                password:
+                  type: string
+                  format: password
+                  minLength: 8
+                  example: "new_secure_password"
+                password_confirmation:
+                  type: string
+                  format: password
+                  example: "new_secure_password"
+      responses:
+        200:
+          description: 'Password reset successfully'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: "Password has been reset successfully."
+        401:
+          description: 'Unauthorized - Invalid or expired reset token'
+  '/api/v1/auth/logout/{type}':
+    post:
+      summary: 'Logout'
+      operationId: postApiV1AuthLogout
+      description: 'Revokes the current access token for the authenticated doctor or patient.'
+      tags:
+        - Auth
+      security:
+        - sanctum: []
+      parameters:
+        - in: path
+          name: type
+          required: true
+          schema:
+            type: string
+            enum: [doctor, patient]
+          example: doctor
+      responses:
+        200:
+          description: 'Logout successful'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: "Logout successful"
+                  data: null
+        401:
+          $ref: '#/components/responses/Unauthorized'
+
+  '/api/v1/auth/verify-contact':
+    post:
+      summary: 'Verify Contact'
+      operationId: postApiV1AuthVerifyContact
+      description: 'Verifies the user contact (email or phone) using the 6-digit OTP sent during registration.'
+      tags:
+        - Auth
+      security:
+        - sanctum: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [otp]
+              properties:
+                otp:
+                  type: string
+                  minLength: 6
+                  maxLength: 6
+                  example: "123456"
+      responses:
+        200:
+          description: 'Verification successful'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: "User verified successfully."
+        401:
+          description: 'Invalid or expired OTP'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: "Invalid or expired OTP."
+
+  '/api/v1/auth/resend-otp':
+    get:
+      summary: 'Resend Verification OTP'
+      operationId: getApiV1AuthResendOtp
+      description: 'Triggers a new OTP to be sent to the user registered contact if not already verified.'
+      tags:
+        - Auth
+      security:
+        - sanctum: []
+      responses:
+        200:
+          description: 'OTP sent successfully'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: "OTP sent successfully."
+        409:
+          description: 'Conflict - User already verified'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: "User already verified."
+        401:
+          $ref: '#/components/responses/Unauthorized'
+  '/api/v1/auth/google/redirect':
+    get:
+      summary: 'Login With Google'
+      operationId: getApiV1AuthGoogleRedirect
+      description: 'Generates and returns the Google OAuth2 authorization URL. The frontend should redirect the user to this URL.'
+      tags:
+        - Auth
+      security: [] # Public endpoint
+      responses:
+        200:
+          description: 'Redirect URL generated successfully'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: "Redirect URL generated"
+                  data:
+                    url: "https://accounts.google.com/o/oauth2/auth?client_id=1070705461335...&redirect_uri=...&scope=openid+profile+email&response_type=code"
+        500:
+          description: 'Server Error'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: "Unable to connect to Google at the moment"
+                  data: null
+  '/api/v1/patients':
+    get:
+      summary: 'List + Search + Filter'
+      operationId: getApiV1PatientsIndex
+      description: 'Retrieves a paginated list of patients associated with the authenticated doctor. Supports searching by name/National ID and filtering by health status.'
       tags:
         - Patients List
-      security: []
+      security:
+        - sanctum: []
+      parameters:
+        - in: query
+          name: search
+          schema:
+            type: string
+          description: 'Search by patient name or National ID.'
+          example: "Ahmed"
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [critical, stable, under review]
+          description: 'Filter patients by their current health status.'
+          example: "stable"
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: 'The page number for pagination.'
+          example: 1
+      responses:
+        200:
+          description: 'Patients list retrieved successfully'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: "Patients list retrieved successfully"
+                  data:
+                    data: # This is the array from PatientResource
+                      - id: 48
+                        name: "Menna Baligh"
+                        age: 22
+                        status: "stable"
+                        ai_insight: "Patient shows steady recovery signs."
+                        last_visit: "May 01, 2026"
+                        next_appointment: "May 15, 2026"
+                      - id: 50
+                        name: "Ahmed Mohamed"
+                        age: 45
+                        status: "critical"
+                        ai_insight: "Abnormal cardiac rhythm detected."
+                        last_visit: "May 07, 2026"
+                        next_appointment: "Not scheduled"
+                    links: # Laravel Pagination Links
+                      first: "http://localhost:8000/api/v1/patients?page=1"
+                      last: "http://localhost:8000/api/v1/patients?page=5"
+                      prev: null
+                      next: "http://localhost:8000/api/v1/patients?page=2"
+                    meta: # Laravel Pagination Meta
+                      current_page: 1
+                      from: 1
+                      last_page: 5
+                      path: "http://localhost:8000/api/v1/patients"
+                      per_page: 12
+                      to: 12
+                      total: 60
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        500:
+          description: 'Internal Server Error'
     post:
       summary: 'Upload Patient Data'
       operationId: postApiPatients
@@ -603,59 +758,6 @@ paths:
         required: true
         schema:
           type: string
-  '/api/patients/status/{type}':
-    get:
-      summary: 'Filter Patients by status'
-      operationId: getApiPatientsStatusType
-      description: ''
-      parameters: []
-      responses:
-        401:
-          description: ''
-          content:
-            application/json:
-              schema:
-                type: object
-                example:
-                  message: Unauthenticated.
-                properties:
-                  message:
-                    type: string
-                    example: Unauthenticated.
-      tags:
-        - Patients List
-      security: []
-    parameters:
-      -
-        in: path
-        name: type
-        description: ''
-        example: consequatur
-        required: true
-        schema:
-          type: string
-  '/api/search':
-    get:
-      summary: 'Search in list of Patients'
-      operationId: handleTheIncomingRequest
-      description: ''
-      parameters: []
-      responses:
-        401:
-          description: ''
-          content:
-            application/json:
-              schema:
-                type: object
-                example:
-                  message: Unauthenticated.
-                properties:
-                  message:
-                    type: string
-                    example: Unauthenticated.
-      tags:
-        - Patients List
-      security: []
   '/api/key-points/{keyPointId}':
     delete:
       summary: 'Delete Key Point'
@@ -1208,89 +1310,133 @@ paths:
       tags:
         - Subscriptions
       security: []
-  /api/notifications:
+  '/api/v1/notifications':
     get:
-      summary: 'Get Notifications'
-      operationId: getApiNotifications
-      description: ''
-      parameters: []
+      summary: 'Get User Notifications'
+      operationId: getApiV1NotificationsIndex
+      description: 'Retrieves a paginated list of notifications for the authenticated doctor using Cursor Pagination.'
+      tags:
+        - Notifications
+      security:
+        - sanctum: []
       responses:
-        401:
-          description: ''
+        200:
+          description: 'Notifications retrieved successfully'
           content:
             application/json:
               schema:
                 type: object
                 example:
-                  message: Unauthenticated.
-                properties:
-                  message:
-                    type: string
-                    example: Unauthenticated.
+                  success: true
+                  message: "Notifications retrieved successfully."
+                  data:
+                    data:
+                      - id: "uuid-1234-5678"
+                        type: "App\\Notifications\\PatientCriticalStatus"
+                        data: { "patient_name": "Ahmed Mohamed", "message": "Status changed to Critical" }
+                        read_at: null
+                        created_at: "2026-05-08 02:00:00"
+                    next_cursor: "eyJjcmVhdGVkX2F0Ijo..."
+                    next_page_url: "http://localhost:8000/api/v1/notifications?cursor=..."
+                    prev_cursor: null
+                    prev_page_url: null
+        401:
+          $ref: '#/components/responses/Unauthorized'
+
+  '/api/v1/notifications/unread-count':
+    get:
+      summary: 'Get Unread Count'
+      operationId: getApiV1NotificationsUnreadCount
+      description: 'Returns the total number of notifications that have not been read yet.'
       tags:
         - Notifications
-      security: []
-  /api/notifications/unread-count:
-    get:
-      summary: 'Get Unread Notifications Count'
-      operationId: getApiNotificationsUnreadCount
-      description: ''
-      parameters: []
+      security:
+        - sanctum: []
       responses:
-        401:
-          description: ''
+        200:
+          description: 'Count retrieved successfully'
           content:
             application/json:
               schema:
                 type: object
                 example:
-                  message: Unauthenticated.
-                properties:
-                  message:
-                    type: string
-                    example: Unauthenticated.
-      tags:
-        - Notifications
-      security: []
-  '/api/notifications/{id}/read':
+                  success: true
+                  message: "Unread notifications count retrieved successfully."
+                  data:
+                    unread_count: 5
+
+  '/api/v1/notifications/{notification}/read':
     patch:
-      summary: 'Mark Notification as Read'
-      operationId: patchApiNotificationsIdRead
-      description: ''
-      parameters: []
-      responses: {  }
+      summary: 'Mark Single Notification as Read'
+      operationId: patchApiV1NotificationsRead
+      description: 'Marks a specific notification as read. Validates that the notification belongs to the authenticated doctor.'
       tags:
         - Notifications
-      security: []
-    parameters:
-      -
-        in: path
-        name: id
-        description: 'The ID of the notification.'
-        example: consequatur
-        required: true
-        schema:
-          type: string
-  /api/notifications/mark-all-read:
-    post:
-      summary: 'Mark All Notifications as Read'
-      operationId: postApiNotificationsMarkAllRead
-      description: ''
-      parameters: []
-      responses: {  }
+      security:
+        - sanctum: []
+      parameters:
+        - in: path
+          name: notification
+          required: true
+          description: 'The UUID of the notification.'
+          schema:
+            type: string
+            format: uuid
+          example: "9a3b8d12-..."
+      responses:
+        200:
+          description: 'Success'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: "Notification marked as read"
+        403:
+          description: 'Forbidden - Notification does not belong to you'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+
+  '/api/v1/notifications/read-all':
+    patch:
+      summary: 'Mark All as Read'
+      operationId: patchApiV1NotificationsReadAll
+      description: 'Marks all unread notifications for the doctor as read at once.'
       tags:
         - Notifications
-      security: []
-  /api/notifications/clear-all:
+      security:
+        - sanctum: []
+      responses:
+        200:
+          description: 'Success'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: "All notifications marked as read"
+
+  '/api/v1/notifications/clear-all':
     delete:
-      summary: 'Clear All Notifications'
-      operationId: deleteApiNotificationsClearAll
-      description: ''
-      parameters: []
-      responses: {  }
+      summary: 'Delete All Notifications'
+      operationId: deleteApiV1NotificationsClearAll
+      description: 'Permanently deletes all notifications (read and unread) for the doctor.'
       tags:
         - Notifications
-      security: []
+      security:
+        - sanctum: []
+      responses:
+        200:
+          description: 'Success'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: "All notifications deleted successfully"
   /api/broadcasting/auth:
     get:
       summary: 'Authenticate the request for channel access.'
@@ -1535,81 +1681,74 @@ paths:
                   example:
                     success: false
                     message: "Failed to get answer from chatbot"
-  '/api/support':
-      post:
-        summary: 'Send Support Request'
-        operationId: postApiSupport
-        description: 'Allows doctors to submit support requests (technical, billing, or general) with optional attachments.'
-        tags:
-          - Support & Help
-        security:
-          - sanctum: []
-        requestBody:
-          required: true
+  '/api/v1/support':
+    post:
+      summary: 'Submit Support Ticket'
+      operationId: postApiV1Support
+      description: 'Allows authenticated doctors to submit support requests regarding technical issues, billing, or general inquiries. Supports optional file attachments (JPG, PNG, PDF).'
+      tags:
+        - Support & Help
+      security:
+        - sanctum: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - category
+                - urgency
+                - message
+              properties:
+                name:
+                  type: string
+                  maxLength: 255
+                  description: 'Optional name. Defaults to user name if null.'
+                  example: "Dr. Layla"
+                  nullable: true
+                category:
+                  type: string
+                  enum: [technical, billing, general]
+                  example: "technical"
+                urgency:
+                  type: string
+                  enum: [low, medium, high]
+                  example: "high"
+                message:
+                  type: string
+                  description: 'The content of the support request.'
+                  example: "I am having trouble accessing the patient history."
+                attachment:
+                  type: string
+                  format: binary
+                  description: 'Optional file (jpg, png, pdf). Max size: 5MB.'
+                  nullable: true
+      responses:
+        201:
+          description: 'Support ticket created successfully'
           content:
-            multipart/form-data:
+            application/json:
               schema:
                 type: object
-                required:
-                  - category
-                  - urgency
-                  - message
-                properties:
-                  name:
-                    type: string
-                    maxLength: 255
-                    description: 'Optional name. Defaults to user name if null.'
-                    example: "Dr. Layla"
-                    nullable: true
-                  category:
-                    type: string
-                    enum: [technical, billing, general]
-                    example: "technical"
-                  urgency:
-                    type: string
-                    enum: [low, medium, high]
-                    example: "high"
-                  message:
-                    type: string
-                    example: "I am unable to see the latest AI analysis for patient #48."
-                  attachment:
-                    type: string
-                    format: binary
-                    description: 'Optional file (jpg, png, pdf). Max size: 10MB.'
-                    nullable: true
-        responses:
-          201:
-            description: 'Support message submitted successfully'
-            content:
-              application/json:
-                schema:
-                  type: object
-                  example:
-                    success: true
-                    message: "Support message submitted successfully we will get back to you shortly."
-                    data: null
-          403:
-            description: 'Forbidden - User is not a doctor'
-            content:
-              application/json:
-                schema:
-                  type: object
-                  example:
-                    success: false
-                    message: "Unauthorized"
-          422:
-            description: 'Validation Error'
-          401:
-            $ref: '#/components/responses/Unauthorized'
-          500:
-            description: 'Server Error'
-            content:
-              application/json:
-                schema:
-                  type: object
-                  example:
-                    success: false
-                    message: "Failed to submit message: [Error details]"
+                example:
+                  success: true
+                  message: "Support message submitted successfully we will get back to you shortly."
+                  data: null
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        422:
+          description: 'Validation Error - Check category, urgency or attachment size'
+        500:
+          description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: "Failed to submit message."
+                  data: null
   '/api/doctors/{doctorId}':
       get:
         summary: 'Get Doctor Profile Information'
@@ -1645,147 +1784,96 @@ paths:
             description: 'Forbidden - You can only view your own profile'
           401:
             $ref: '#/components/responses/Unauthorized'
+  '/api/v1/doctors/profile':
+    patch:
+      summary: 'Update Doctor Profile'
+      operationId: patchApiV1DoctorsProfile
+      description: 'Updates the authenticated doctor’s name or specialization. Only provided fields will be updated.'
+      tags:
+        - Doctor Profile
+      security:
+        - sanctum: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  maxLength: 255
+                  example: "Dr. Layla M."
+                specialization:
+                  type: string
+                  maxLength: 255
+                  example: "Advanced Cardiology"
+      responses:
+        200:
+          description: 'Profile updated successfully'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: "Profile updated successfully"
+                  data: null
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        422:
+          description: 'Validation Error'
+        500:
+          description: 'Internal Server Error'
 
-      put:
-        summary: 'Update Doctor Information'
-        operationId: putApiDoctorsDoctorId
-        description: 'Allows the doctor to update their name and specialization.'
-        tags:
-          - Doctor Profile
-        security:
-          - sanctum: []
-        parameters:
-          - in: path
-            name: doctorId
-            required: true
+  '/api/v1/doctors/change-password':
+    patch:
+      summary: 'Change Account Password'
+      operationId: patchApiV1DoctorsChangePassword
+      description: 'Changes the password for the authenticated doctor. Note: This action will revoke all current session tokens for security.'
+      tags:
+        - Doctor Profile
+      security:
+        - sanctum: []
+      requestBody:
+        required: true
+        content:
+          application/json:
             schema:
-              type: integer
-        requestBody:
-          required: true
+              type: object
+              required:
+                - current_password
+                - new_password
+                - new_password_confirmation
+              properties:
+                current_password:
+                  type: string
+                  format: password
+                  example: "old_password_123"
+                new_password:
+                  type: string
+                  format: password
+                  minLength: 8
+                  example: "new_secure_password_456"
+                new_password_confirmation:
+                  type: string
+                  format: password
+                  example: "new_secure_password_456"
+      responses:
+        200:
+          description: 'Password changed successfully'
           content:
             application/json:
               schema:
                 type: object
-                required:
-                  - name
-                properties:
-                  name:
-                    type: string
-                    example: "Dr. Layla M."
-                  specialization:
-                    type: string
-                    example: "Advanced Cardiology"
-        responses:
-          200:
-            description: 'Profile updated successfully'
-            content:
-              application/json:
-                schema:
-                  type: object
-                  example:
-                    success: true
-                    message: "Doctor Information Updated Successfully"
-                    data: null
-          422:
-            description: 'Validation Error'
-      delete:
-        summary: 'Delete Doctor Account'
-        operationId: deleteApiDoctorsDoctorId
-        description: 'Permanently deletes the doctor profile, user account, and revokes all active tokens. Requires password confirmation.'
-        tags:
-          - Doctor Profile
-        security:
-          - sanctum: []
-        parameters:
-          - in: path
-            name: doctorId
-            required: true
-            schema:
-              type: integer
-            example: 12
-        requestBody:
-          required: true
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - password
-                  - password_confirmation
-                properties:
-                  password:
-                    type: string
-                    format: password
-                    example: 'secure_password_123'
-                    description: 'The current account password.'
-                  password_confirmation:
-                    type: string
-                    format: password
-                    example: 'secure_password_123'
-                    description: 'Must match the password field.'
-        responses:
-          200:
-            description: 'Account deleted successfully'
-            content:
-              application/json:
-                schema:
-                  type: object
-                  example:
-                    success: true
-                    message: "Account Deleted Successfully"
-                    data: null
-          403:
-            description: 'Forbidden - You can only delete your own account'
-          422:
-            description: 'Validation Error - Wrong password or confirmation mismatch'
-          401:
-            $ref: '#/components/responses/Unauthorized'
-  '/api/change-password':
-      patch:
-        summary: 'Change Password'
-        operationId: patchApiChangePassword
-        description: 'Allows the authenticated user to change their account password.'
-        tags:
-          - Doctor Profile
-        security:
-          - sanctum: []
-        requestBody:
-          required: true
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - current_password
-                  - new_password
-                  - new_password_confirmation
-                properties:
-                  current_password:
-                    type: string
-                    format: password
-                    example: "old_password_123"
-                  new_password:
-                    type: string
-                    format: password
-                    minLength: 8
-                    example: "new_secure_password_456"
-                  new_password_confirmation:
-                    type: string
-                    format: password
-                    example: "new_secure_password_456"
-        responses:
-          200:
-            description: 'Password changed successfully'
-            content:
-              application/json:
-                schema:
-                  type: object
-                  example:
-                    success: true
-                    message: "Password Changed Successfully"
-                    data: null
-          422:
-            description: 'Validation Error - Current password incorrect or new password too short'
+                example:
+                  success: true
+                  message: "Password changed successfully"
+                  data: null
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        422:
+          description: 'Validation Error - Current password incorrect or confirmation mismatch'
   '/api/patients/{patientId}/comparative-analysis':
     get:
       summary: 'Get Comparative Analysis'

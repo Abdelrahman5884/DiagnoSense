@@ -61,6 +61,18 @@ function createUserWithType(string $type, string $contact): User
 
     return $user;
 }
+
+function createOtpInDatabase(string $contact, string $token, bool $expired = false): void
+{
+    DB::table('otps')->insert([
+        'identifier' => $contact,
+        'token' => $token,
+        'valid' => true,
+        'validity' => 10,
+        'created_at' => $expired ? now()->subMinutes(11) : now(),
+        'updated_at' => $expired ? now()->subMinutes(11) : now(),
+    ]);
+}
 function getDataSets(string $userType, $test): array
 {
     return array_values($test->validData[$userType]);
@@ -75,7 +87,7 @@ function validPatientData(): array
         'gender' => fake()->randomElement(['male', 'female']),
         'national_id' => (string) fake()->numberBetween(1000000000, 9999999999),
         'is_smoker' => fake()->boolean(),
-        'chronic_diseases' => ['diabetes', 'hypertension'],
+        'chronic_diseases' => ['diabetes','hypertension'],
         'previous_surgeries_name' => fake()->word(),
         'current_medications' => fake()->word(),
         'allergies' => fake()->word(),
@@ -107,30 +119,21 @@ function fakeAiResponse(): array
                 [
                     'title' => 'High Priority Alert 1',
                     'insight' => 'Insight 1',
-                    'evidence' => [
-                        'Evidence 1',
-                        'Evidence 2',
-                    ],
+                    'evidence' => ['Evidence 1','Evidence 2'],
                 ],
             ],
             'low_priority_alerts' => [
                 [
                     'title' => 'Low Priority Alert 1',
                     'insight' => 'Insight 1',
-                    'evidence' => [
-                        'Evidence 1',
-                        'Evidence 2',
-                    ],
+                    'evidence' => ['Evidence 1','Evidence 2'],
                 ],
             ],
             'medium_priority_alerts' => [
                 [
                     'title' => 'Medium Priority Alert 1',
                     'insight' => 'Insight 1',
-                    'evidence' => [
-                        'Evidence 1',
-                        'Evidence 2',
-                    ],
+                    'evidence' => ['Evidence 1','Evidence 2'],
                 ],
             ],
         ],

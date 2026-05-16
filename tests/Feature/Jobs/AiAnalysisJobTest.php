@@ -2,6 +2,7 @@
 
 use App\Jobs\AiAnalysisJob;
 use App\Models\AiAnalysisResult;
+use App\Models\KeyPoint;
 use App\Models\MedicalHistory;
 use App\Services\AiAnalysisBillingService;
 use Illuminate\Support\Facades\Http;
@@ -38,7 +39,20 @@ function assertDecisionSupportsStored(array $decisions): void
 function assertKeyPointsStored(array $keyPoints): void
 {
     foreach ($keyPoints as $keyPoint) {
-        test()->assertDatabaseHas('key_points', $keyPoint);
+
+        test()->assertDatabaseHas('key_points', [
+            'priority' => $keyPoint['priority'],
+            'title' => $keyPoint['title'],
+            'insight' => $keyPoint['insight'],
+        ]);
+
+        $storedKeyPoint = KeyPoint::where(
+            'title',
+            $keyPoint['title']
+        )->first();
+
+        expect($storedKeyPoint->evidence)
+            ->toBe($keyPoint['evidence']);
     }
 }
 
@@ -58,9 +72,9 @@ it('update analysis result when AI response successfully', function () {
         ['condition' => 'Condition 2', 'probability' => 0.6, 'status' => 'Negative', 'clinical_reasoning' => 'Clinical Reasons 2'],
     ]);
     assertKeyPointsStored([
-        ['priority' => 'high', 'title' => 'High Priority Alert 1', 'insight' => 'Insight 1', 'evidence' => json_encode(['Evidence 1', 'Evidence 2'])],
-        ['priority' => 'medium', 'title' => 'Medium Priority Alert 1', 'insight' => 'Insight 1', 'evidence' => json_encode(['Evidence 1', 'Evidence 2'])],
-        ['priority' => 'low', 'title' => 'Low Priority Alert 1', 'insight' => 'Insight 1', 'evidence' => json_encode(['Evidence 1', 'Evidence 2'])],
+        ['priority' => 'high', 'title' => 'High Priority Alert 1', 'insight' => 'Insight 1', 'evidence' => ['Evidence 1','Evidence 2']],
+        ['priority' => 'medium', 'title' => 'Medium Priority Alert 1', 'insight' => 'Insight 1', 'evidence' => ['Evidence 1','Evidence 2']],
+        ['priority' => 'low', 'title' => 'Low Priority Alert 1', 'insight' => 'Insight 1', 'evidence' => ['Evidence 1','Evidence 2']],
     ]);
 });
 
