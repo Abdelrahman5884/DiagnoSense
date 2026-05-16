@@ -14,7 +14,6 @@ use App\Http\Controllers\V1\MedicalFileController;
 use App\Http\Controllers\V1\NotificationController;
 use App\Http\Controllers\V1\PatientController;
 use App\Http\Controllers\V1\PaymobWebhookController;
-use App\Http\Controllers\V1\StripeWebhookController;
 use App\Http\Controllers\V1\SubscriptionController;
 use App\Http\Controllers\V1\SupportController;
 use App\Http\Controllers\V1\TaskController;
@@ -48,7 +47,7 @@ Route::prefix('v1')->group(function () {
 
     });
 
-    Route::controller(WalletController::class)->middleware('auth:sanctum')->prefix('wallets')->as('wallets')->group(function () {
+    Route::controller(WalletController::class)->middleware('auth:sanctum')->prefix('wallets')->as('wallets.')->group(function () {
         Route::post('charge', 'store')->name('charge');
         Route::get('transactions', 'index')->name('transactions');
     });
@@ -134,4 +133,4 @@ Route::get('/payment-redirect', function (Request $request) {
     }
 });
 
-Route::post('/paymob/webhook', [PaymobWebhookController::class, 'handle']);
+Route::post('/paymob/webhook', [PaymobWebhookController::class, 'handle'])->name('paymob.webhook');
