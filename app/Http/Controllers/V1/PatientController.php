@@ -56,8 +56,6 @@ class PatientController extends Controller
         }
     }
 
-
-
     public function getDecisionSupport(Patient $patient): JsonResponse
     {
         try {

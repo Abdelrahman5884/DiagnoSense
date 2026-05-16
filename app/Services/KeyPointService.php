@@ -14,6 +14,7 @@ class KeyPointService
     public function __construct(
         protected PatientService $patientService
     ) {}
+
     public function getPatientKeyInfo(Patient $patient): array
     {
         $allAnalyses = $this->fetchAnalysesWithKeyPoints($patient);
@@ -80,6 +81,7 @@ class KeyPointService
             'low' => KeyPointResource::collection($allKeyPoints->where('priority', 'low')),
         ];
     }
+
     public function storeManualNote(Patient $patient, array $data): KeyPoint
     {
         $latestAnalysis = $patient->latestAiAnalysisResult;
