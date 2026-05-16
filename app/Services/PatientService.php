@@ -193,31 +193,60 @@ class PatientService
 
     public function getPatientKeyInfo(Patient $patient): array
     {
-        $allAnalyses = $patient->aiAnalysisResults()->with('keyPoints')->latest()->get();
+        $allAnalyses = $this->fetchAnalysesWithKeyPoints($patient);
         $latestAnalysis = $allAnalyses->first();
-        $hasCurrentData = $latestAnalysis?->keyPoints->isNotEmpty() ?? false;
-        $hasOldData = $allAnalyses->where('id', '!=', $latestAnalysis?->id)->flatMap->keyPoints->isNotEmpty();
-        $isStillProcessing = $latestAnalysis?->status === 'processing';
-        $analysesWithData = $allAnalyses->filter(fn ($a) => $a->keyPoints->isNotEmpty());
+        $analysesWithData = $this->filterAnalysesWithData($allAnalyses);
 
-        $ocrFiles = $analysesWithData->map(function ($analysis) {
-            return $analysis->ocr_file_path
-                ? FileSystem::getTempUrl($analysis->ocr_file_path)
-                : null;
-        })->filter()->values()->all();
-        $allKeyPoints = $analysesWithData->flatMap->keyPoints->sortByDesc('created_at');
+        $hasCurrentData = $latestAnalysis?->keyPoints->isNotEmpty() ?? false;
+        $hasOldData = $this->hasHistoricalKeyPoints($allAnalyses, $latestAnalysis);
+        $isStillProcessing = $latestAnalysis?->status === 'processing';
+
+        $ocrFiles = $this->extractOcrTemporaryUrls($analysesWithData);
+        $allKeyPoints = $this->extractAndSortKeyPoints($analysesWithData);
 
         return [
             'message' => $this->determineStatusMessage($hasCurrentData, $hasOldData, $isStillProcessing, 'key points'),
             'data' => [
                 'still_processing' => $isStillProcessing && ! $hasCurrentData,
                 'ocr_files' => $ocrFiles,
-                'key_points' => [
-                    'high' => KeyPointResource::collection($allKeyPoints->where('priority', 'high')),
-                    'medium' => KeyPointResource::collection($allKeyPoints->where('priority', 'medium')),
-                    'low' => KeyPointResource::collection($allKeyPoints->where('priority', 'low')),
-                ],
+                'key_points' => $this->groupKeyPointsByPriority($allKeyPoints),
             ],
+        ];
+    }
+    private function fetchAnalysesWithKeyPoints(Patient $patient): Collection
+    {
+        return $patient->aiAnalysisResults()->with('keyPoints')->latest()->get();
+    }
+    private function filterAnalysesWithData(Collection $analyses): Collection
+    {
+        return $analyses->filter(fn ($analysis) => $analysis->keyPoints->isNotEmpty());
+    }
+    private function hasHistoricalKeyPoints(Collection $allAnalyses, ?AiAnalysisResult $latestAnalysis): bool
+    {
+        if (!$latestAnalysis) return false;
+
+        return $allAnalyses->where('id', '!=', $latestAnalysis->id)
+            ->flatMap->keyPoints
+            ->isNotEmpty();
+    }
+    private function extractOcrTemporaryUrls(Collection $analysesWithData): array
+    {
+        return $analysesWithData->map(function ($analysis) {
+            return $analysis->ocr_file_path
+                ? FileSystem::getTempUrl($analysis->ocr_file_path)
+                : null;
+        })->filter()->values()->all();
+    }
+    private function extractAndSortKeyPoints(Collection $analysesWithData): Collection
+    {
+        return $analysesWithData->flatMap->keyPoints->sortByDesc('created_at');
+    }
+    private function groupKeyPointsByPriority(Collection $allKeyPoints): array
+    {
+        return [
+            'high'   => KeyPointResource::collection($allAllKeyPoints ?? $allKeyPoints->where('priority', 'high')),
+            'medium' => KeyPointResource::collection($allKeyPoints->where('priority', 'medium')),
+            'low'    => KeyPointResource::collection($allKeyPoints->where('priority', 'low')),
         ];
     }
 
