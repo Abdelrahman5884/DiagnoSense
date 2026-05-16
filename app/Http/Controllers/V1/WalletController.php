@@ -2,56 +2,30 @@
 
 namespace App\Http\Controllers\V1;
 
+
+use App\Actions\GetTransactionHistoryAction;
 use App\Helpers\ApiResponse;
 use App\Http\Requests\ChargeWalletRequest;
-use App\Http\Resources\TransactionResource;
-use Stripe\Checkout\Session;
-use Stripe\Stripe;
+use App\Services\PaymobService;
+use Illuminate\Http\JsonResponse;
 
 class WalletController extends Controller
 {
-    public function index()
+    public function __construct(
+        public PaymobService  $paymobService,
+    ){}
+    public function index(GetTransactionHistoryAction $action) : JsonResponse
     {
         $currentDoctor = auth()->user()->doctor;
-        $transactions = $currentDoctor->transactions()->latest()->get();
-        $credits = $currentDoctor->wallet->balance;
-        $data = [
-            'credits' => (float) $credits ?? 0,
-            'transactions' => TransactionResource::collection($transactions),
-        ];
-
-        return ApiResponse::success(message: 'Wallet transactions retrieved successfully', data: $data, statusCode: 200);
+        $data = $action->execute($currentDoctor);
+        return ApiResponse::success(message: 'Wallet transactions retrieved successfully', data: $data);
     }
 
-    public function store(ChargeWalletRequest $request)
+    public function store(ChargeWalletRequest $request) : JsonResponse
     {
-        Stripe::setApiKey(config('services.stripe.secret'));
-
-        $session = Session::create([
-            'payment_method_types' => ['card'],
-            'line_items' => [[
-                'price_data' => [
-                    'currency' => 'egp',
-                    'product_data' => [
-                        'name' => 'Wallet Charge',
-                    ],
-                    'unit_amount' => $request->balance * 100,
-                ],
-                'quantity' => 1,
-            ]],
-            'mode' => 'payment',
-            'client_reference_id' => auth()->user()->doctor->id,
-            'metadata' => [
-                'doctor_id' => auth()->user()->doctor->id,
-                'amount' => $request->balance,
-            ],
-            'success_url' => 'http://localhost:5173/subscription?status=success',
-            'cancel_url' => 'http://localhost:5173/subscription?status=cancel',
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'checkout_url' => $session->url,
-        ]);
+        $currentUser = auth()->user();
+        $response = $this->paymobService->createIntention($currentUser,$request->validated());
+        $checkoutUrl= config('services.paymob.base_url') . 'unifiedcheckout/?publicKey='. config('services.paymob.public_key') . '&clientSecret='. $response['client_secret'];
+        return ApiResponse::success(message: 'Wallet charge initiated successfully', data: ['checkout_url' => $checkoutUrl]);
     }
 }
