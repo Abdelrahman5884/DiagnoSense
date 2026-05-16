@@ -13,6 +13,7 @@ use App\Models\MedicalHistory;
 use App\Models\Patient;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -149,7 +150,7 @@ class PatientService
             new AiAnalysisJob($analysisResult->id, $jobData),
         ];
         if (! empty($pathsForAI['lab'])) {
-            $chain[] = new ComparativeAnalysis($patient->id, $analysisResult->id);
+            $chain[] = new ComparativeAnalysis($patient, $analysisResult);
         }
         DB::afterCommit(function () use ($chain) {
             Bus::chain($chain)->dispatch();
@@ -211,6 +212,79 @@ class PatientService
                 'decisions' => DecisionSupportResource::collection($decisionsToReturn),
             ],
         ];
+    }
+
+    public function getPatientComparativeAnalysis(Patient $patient): array
+    {
+        $latestAnalysis = $patient->latestAiAnalysisResult;
+        $isProcessing = $latestAnalysis?->status === 'processing';
+        $allResults = $patient->labResults()->orderBy('created_at', 'asc')->get();
+
+        if ($allResults->isEmpty() && ! $isProcessing) {
+            return [];
+        }
+
+        $analysisResponse = $this->formatComparativeData($allResults->groupBy('standard_name'));
+
+        $message = 'Comparative analysis retrieved successfully.';
+        if ($latestAnalysis?->status === 'failed') {
+            $message = 'Note: The AI failed to extract data from the latest reports. Showing historical data only.';
+        }
+
+        return [
+            'message' => $message,
+            'data' => [
+                'still_processing' => $isProcessing,
+                'analysis' => $analysisResponse,
+            ],
+        ];
+    }
+
+    private function formatComparativeData(Collection $groupedResults): Collection
+    {
+        return $groupedResults->map(function ($testResults, $testName) {
+            $count = $testResults->count();
+            $currentRecord = $testResults->last();
+            $previousRecord = $count > 1 ? $testResults->get($count - 2) : $currentRecord;
+
+            $currentVal = (float) $currentRecord->numeric_value;
+            $previousVal = (float) $previousRecord->numeric_value;
+
+            $changeValue = round($currentVal - $previousVal, 2);
+            $percentage = $previousVal != 0 ? round(($changeValue / $previousVal) * 100, 1) : 0;
+
+            return [
+                'test_name' => $testName,
+                'category' => $currentRecord->category,
+                'unit' => $currentRecord->unit,
+                'comparison' => [
+                    'current_value' => $currentVal,
+                    'previous_value' => ($count > 1) ? $previousVal : 'Initial',
+                    'change_value' => $changeValue,
+                    'change_percentage' => $percentage,
+                    'trend' => $this->calculateTrend($currentVal, $previousVal),
+                    'status' => $currentRecord->status,
+                ],
+                'all_points' => $testResults->map(fn ($item, $index) => [
+                    'visit_label' => 'Visit #'.($index + 1),
+                    'value' => (float) $item->numeric_value,
+                    'status' => $item->status,
+                    'date' => $item->created_at->format('Y-m-d'),
+                ])->values(),
+            ];
+        })->values();
+    }
+
+    private function calculateTrend(float $current, float $previous): string
+    {
+        if ($current > $previous) {
+            return 'up';
+        }
+        if ($current < $previous) {
+            return 'down';
+        }
+
+        return 'stable';
     }
 
     private function determineStatusMessage(bool $hasCurrentData, bool $hasOldData, bool $isStillProcessing, string $label): string

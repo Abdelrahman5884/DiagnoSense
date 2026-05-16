@@ -51,8 +51,8 @@ Route::prefix('v1')->group(function () {
         Route::get('', 'index')->name('index');
         Route::post('', 'store')->name('store')->middleware('check-ai-access');
         Route::get('/{patient}/key-info', 'getKeyInfo')->name('key-info');
-        Route::get('{patient}/decision-support', 'getDecisionSupport')->name('decision-support');
-
+        Route::get('/{patient}/decision-support', 'getDecisionSupport')->name('decision-support');
+        Route::get('/{patient}/comparative-analysis', 'getComparativeAnalysis')->name('comparative-analysis');
     });
 
     Route::middleware('auth:sanctum')->group(function () {
@@ -102,6 +102,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/patients/{patientId}', [PatientController::class, 'update']);
     Route::get('/doctors/{doctorId}', [DoctorController::class, 'edit']);
     Route::delete('/doctors/{doctorId}', [DoctorController::class, 'destroy']);
+    Route::patch('/change-password', [DoctorController::class, 'changePassword']);
     Route::get('/patients/{patientId}/comparative-analysis', [PatientController::class, 'getComparativeAnalysis']);
 });
 
@@ -130,4 +131,3 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Broadcast::routes(['middleware' => ['auth:sanctum']]);
-
