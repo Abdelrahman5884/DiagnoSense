@@ -1,6 +1,7 @@
 <?php
 
 use App\Jobs\AiAnalysisJob;
+use App\Models\MedicalHistory;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
@@ -39,13 +40,20 @@ it('allow doctor to create patient successfully', function () {
     $this->assertDatabaseHas('medical_histories', [
         'patient_id' => $response->json('data.patient_id'),
         'is_smoker' => $this->validPatientData['is_smoker'],
-        'chronic_diseases' => json_encode($this->validPatientData['chronic_diseases']),
         'previous_surgeries_name' => $this->validPatientData['previous_surgeries_name'],
         'current_medications' => $this->validPatientData['current_medications'],
         'allergies' => $this->validPatientData['allergies'],
         'family_history' => $this->validPatientData['family_history'],
         'current_complaints' => $this->validPatientData['current_complaints'],
     ]);
+    $medicalHistory = MedicalHistory::where(
+        'patient_id',
+        $response->json('data.patient_id')
+    )->first();
+
+    expect($medicalHistory->chronic_diseases)
+        ->toBe($this->validPatientData['chronic_diseases']);
+
     foreach (['lab', 'radiology', 'medical_history'] as $reportType) {
         $this->assertDatabaseHas('reports', [
             'patient_id' => $response->json('data.patient_id'),
