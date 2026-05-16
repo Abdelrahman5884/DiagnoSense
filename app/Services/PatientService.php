@@ -213,22 +213,28 @@ class PatientService
             ],
         ];
     }
+
     private function fetchAnalysesWithKeyPoints(Patient $patient): Collection
     {
         return $patient->aiAnalysisResults()->with('keyPoints')->latest()->get();
     }
+
     private function filterAnalysesWithData(Collection $analyses): Collection
     {
         return $analyses->filter(fn ($analysis) => $analysis->keyPoints->isNotEmpty());
     }
+
     private function hasHistoricalKeyPoints(Collection $allAnalyses, ?AiAnalysisResult $latestAnalysis): bool
     {
-        if (!$latestAnalysis) return false;
+        if (! $latestAnalysis) {
+            return false;
+        }
 
         return $allAnalyses->where('id', '!=', $latestAnalysis->id)
             ->flatMap->keyPoints
             ->isNotEmpty();
     }
+
     private function extractOcrTemporaryUrls(Collection $analysesWithData): array
     {
         return $analysesWithData->map(function ($analysis) {
@@ -237,16 +243,18 @@ class PatientService
                 : null;
         })->filter()->values()->all();
     }
+
     private function extractAndSortKeyPoints(Collection $analysesWithData): Collection
     {
         return $analysesWithData->flatMap->keyPoints->sortByDesc('created_at');
     }
+
     private function groupKeyPointsByPriority(Collection $allKeyPoints): array
     {
         return [
-            'high'   => KeyPointResource::collection($allAllKeyPoints ?? $allKeyPoints->where('priority', 'high')),
+            'high' => KeyPointResource::collection($allAllKeyPoints ?? $allKeyPoints->where('priority', 'high')),
             'medium' => KeyPointResource::collection($allKeyPoints->where('priority', 'medium')),
-            'low'    => KeyPointResource::collection($allKeyPoints->where('priority', 'low')),
+            'low' => KeyPointResource::collection($allKeyPoints->where('priority', 'low')),
         ];
     }
 
