@@ -342,12 +342,12 @@ class PatientService
     {
         return DB::transaction(function () use ($patient, $data) {
             $userData = array_intersect_key($data, array_flip(['name', 'contact']));
-            if (!empty($userData)) {
+            if (! empty($userData)) {
                 $patient->user->update($userData);
             }
 
-            $patientData = array_intersect_key($data, array_flip(['gender', 'date_of_birth','national_id']));
-            if (!empty($patientData)) {
+            $patientData = array_intersect_key($data, array_flip(['gender', 'date_of_birth', 'national_id']));
+            if (! empty($patientData)) {
                 $patient->update($patientData);
             }
 
@@ -355,11 +355,11 @@ class PatientService
 
             $medicalHistoryKeys = [
                 'current_complaints', 'is_smoker', 'chronic_diseases',
-                'previous_surgeries_name', 'current_medications', 'allergies', 'family_history'
+                'previous_surgeries_name', 'current_medications', 'allergies', 'family_history',
             ];
             $medicalHistoryData = array_intersect_key($data, array_flip($medicalHistoryKeys));
-            
-            if (!empty($medicalHistoryData)) {
+
+            if (! empty($medicalHistoryData)) {
                 $medicalHistory = $patient->medicalHistory()->updateOrCreate(
                     ['patient_id' => $patient->id],
                     $medicalHistoryData
@@ -372,7 +372,7 @@ class PatientService
             $newPathsForAI = ['lab' => [], 'radiology' => [], 'medical_history' => []];
 
             $newPathsForAI = $this->reportService->getPathsForAI($reportsTypes, $data, $patient, $newPathsForAI);
-            $hasNewFiles = !empty(array_filter($newPathsForAI));
+            $hasNewFiles = ! empty(array_filter($newPathsForAI));
 
             if ($hasNewFiles || $complaintChanged) {
                 $this->runAiAnalysis($patient, $newPathsForAI);
