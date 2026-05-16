@@ -1,5 +1,4 @@
 <?php
-
 use App\Http\Controllers\V1\Auth\AuthenticatedController;
 use App\Http\Controllers\V1\Auth\ContactVerificationController;
 use App\Http\Controllers\V1\Auth\ForgetPasswordController;
@@ -14,6 +13,7 @@ use App\Http\Controllers\V1\KeyPointController;
 use App\Http\Controllers\V1\MedicalFileController;
 use App\Http\Controllers\V1\NotificationController;
 use App\Http\Controllers\V1\PatientController;
+use App\Http\Controllers\V1\PaymobWebhookController;
 use App\Http\Controllers\V1\StripeWebhookController;
 use App\Http\Controllers\V1\SubscriptionController;
 use App\Http\Controllers\V1\SupportController;
@@ -23,6 +23,7 @@ use App\Http\Controllers\V1\VisitItemController;
 use App\Http\Controllers\V1\WalletController;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 
 Route::prefix('v1')->group(function () {
     Route::prefix('auth')->group(function () {
@@ -47,6 +48,11 @@ Route::prefix('v1')->group(function () {
 
     });
 
+    Route::controller(WalletController::class)->middleware('auth:sanctum')->prefix('wallets')->as('wallets')->group(function () {
+        Route::post('charge', 'store')->name('charge');
+        Route::get('transactions', 'index')->name('transactions');
+    });
+
         Route::controller(PatientController::class)->middleware('auth:sanctum')->prefix('patients')->as('patients.')->group(function () {
             Route::get('','index')->name('index');
             Route::post('', 'store')->name('store')->middleware('check-ai-access');
@@ -69,8 +75,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/patients/{patientId}/key-info', [KeyPointController::class, 'store']);
     Route::get('/patients/{patientId}/decision-support', [PatientController::class, 'getDecisionSupport']);
     Route::delete('/patients/{patientId}', [PatientController::class, 'destroy']);
-    Route::post('/wallet/charge', [WalletController::class, 'store']);
-    Route::get('/transactions', [WalletController::class, 'index']);
     Route::post('/subscription/subscribe', [SubscriptionController::class, 'subscribe']);
     Route::post('/subscription/pay-per-use', [SubscriptionController::class, 'switchToPayPerUse']);
     Route::get('/subscription/plans', [SubscriptionController::class, 'index']);
@@ -123,3 +127,11 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Broadcast::routes(['middleware' => ['auth:sanctum']]);
+
+Route::get('/payment-redirect', function (Request $request) {
+    if ($request->query('success') === 'true') {
+        return redirect('http://localhost:5173/subscription?status=success');
+    }
+});
+
+Route::post('/paymob/webhook', [PaymobWebhookController::class, 'handle']);
