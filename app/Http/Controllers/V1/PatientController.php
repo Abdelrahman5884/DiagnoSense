@@ -31,7 +31,7 @@ class PatientController extends Controller
         } catch (\Exception $e) {
             \Log::error('Patient Index Error: '.$e->getMessage());
 
-            return ApiResponse::error(message: 'An error occurred while fetching patients.', data: null, status: 500);
+            return ApiResponse::error(message: 'An error occurred while fetching patients.', status: 500);
         }
     }
 
@@ -52,7 +52,7 @@ class PatientController extends Controller
         } catch (\Exception $e) {
             \Log::error('Patient Store Error: '.$e->getMessage());
 
-            return ApiResponse::error(message: 'An error occurred while creating patient.', data: null, status: 500);
+            return ApiResponse::error(message: 'An error occurred while creating patient.', status: 500);
         }
     }
 
@@ -70,7 +70,6 @@ class PatientController extends Controller
 
             return ApiResponse::error(
                 message: 'An error occurred while fetching key information.',
-                data: null,
                 status: 500
             );
         }
@@ -90,7 +89,6 @@ class PatientController extends Controller
 
             return ApiResponse::error(
                 message: 'An error occurred while fetching decision support information.',
-                data: null,
                 status: 500
             );
         }
@@ -103,7 +101,6 @@ class PatientController extends Controller
             if (empty($result)) {
                 return ApiResponse::success(
                     message: 'No comparative analysis data available for this patient.',
-                    data: null
                 );
             }
 
@@ -117,7 +114,6 @@ class PatientController extends Controller
 
             return ApiResponse::error(
                 message: 'An error occurred while fetching comparative analysis.',
-                data: null,
                 status: 500
             );
         }
