@@ -341,18 +341,38 @@ class PatientService
     public function update(Patient $patient, array $data): Patient
     {
         return DB::transaction(function () use ($patient, $data) {
-            $patient->user->update($data);
-            $patient->update($data);
-            $oldComplaint = $patient->medicalHistory->current_complaints;
-            $patient->medicalHistory->update($data);
+            $userData = array_intersect_key($data, array_flip(['name', 'contact']));
+            if (!empty($userData)) {
+                $patient->user->update($userData);
+            }
+
+            $patientData = array_intersect_key($data, array_flip(['gender', 'date_of_birth','national_id']));
+            if (!empty($patientData)) {
+                $patient->update($patientData);
+            }
+
+            $complaintChanged = false;
+
+            $medicalHistoryKeys = [
+                'current_complaints', 'is_smoker', 'chronic_diseases',
+                'previous_surgeries_name', 'current_medications', 'allergies', 'family_history'
+            ];
+            $medicalHistoryData = array_intersect_key($data, array_flip($medicalHistoryKeys));
+            
+            if (!empty($medicalHistoryData)) {
+                $medicalHistory = $patient->medicalHistory()->updateOrCreate(
+                    ['patient_id' => $patient->id],
+                    $medicalHistoryData
+                );
+
+                $complaintChanged = $medicalHistory->wasChanged('current_complaints');
+            }
 
             $reportsTypes = ['lab', 'radiology', 'medical_history'];
-            $newPathsForAI = [
-                'lab' => [], 'radiology' => [], 'medical_history' => [],
-            ];
+            $newPathsForAI = ['lab' => [], 'radiology' => [], 'medical_history' => []];
+
             $newPathsForAI = $this->reportService->getPathsForAI($reportsTypes, $data, $patient, $newPathsForAI);
-            $hasNewFiles = ! empty(array_filter($newPathsForAI));
-            $complaintChanged = isset($data['current_complaints']) && $data['current_complaints'] !== $oldComplaint;
+            $hasNewFiles = !empty(array_filter($newPathsForAI));
 
             if ($hasNewFiles || $complaintChanged) {
                 $this->runAiAnalysis($patient, $newPathsForAI);
