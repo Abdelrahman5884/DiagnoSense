@@ -18,7 +18,6 @@ class ContactVerificationController extends Controller
     {
         try {
             $data = $request->validated();
-
             $result = $this->authenticationService->verifyContact($data);
 
             if (! $result) {
@@ -33,6 +32,8 @@ class ContactVerificationController extends Controller
             );
 
         } catch (\Exception $e) {
+            \Log::error('Error verifying contact: '.$e->getMessage(), ['exception' => $e]);
+
             return ApiResponse::error(
                 message: 'Failed to verify contact, please try again later.',
                 status: 500
@@ -50,7 +51,7 @@ class ContactVerificationController extends Controller
             if (! $result) {
                 return ApiResponse::error(
                     message: 'User already verified.',
-                    status: 400
+                    status: 409
                 );
             }
 
@@ -59,6 +60,8 @@ class ContactVerificationController extends Controller
             );
 
         } catch (\Exception $e) {
+            \Log::error('Error resending OTP: '.$e->getMessage(), ['exception' => $e]);
+
             return ApiResponse::error(
                 message: 'Failed to resend OTP, please try again later.',
                 status: 500

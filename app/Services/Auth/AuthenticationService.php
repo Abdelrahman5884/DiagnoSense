@@ -3,10 +3,14 @@
 namespace App\Services\Auth;
 
 use App\Events\UserRegistered;
+use App\Exceptions\InvalidOtpException;
+use App\Exceptions\InvalidUserTypeException;
 use App\Helpers\Auth;
 use App\Mail\EmailVerificationMail;
+use App\Mail\ResetPasswordMail;
 use App\Models\User;
 use App\Notifications\EmailVerificationSMSNotification;
+use App\Notifications\ResetPasswordSMSNotification;
 use Ichtrojan\Otp\Otp;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -52,11 +56,6 @@ class AuthenticationService
         $user->currentAccessToken()->delete();
     }
 
-    private function generateOtp(string $contact): string
-    {
-        return $this->otp->generate($contact, 'numeric', 6, 10)->token;
-    }
-
     private function getUser(string $contact): ?User
     {
         return User::where('contact', $contact)->first();
@@ -72,15 +71,22 @@ class AuthenticationService
         return $user;
     }
 
-    private function sendOtp(User $user, string $otp): void
+    private function sendOtp(User $user, string $otp, bool $isPasswordReset = false): void
     {
-        if (filter_var($user->contact, FILTER_VALIDATE_EMAIL)) {
+        $isEmail = filter_var($user->contact, FILTER_VALIDATE_EMAIL);
 
-            Mail::to($user->contact)->send(
-                new EmailVerificationMail($user, $otp)
-            );
+        if ($isEmail) {
+            $mailable = $isPasswordReset
+                ? new ResetPasswordMail($user, $otp)
+                : new EmailVerificationMail($user, $otp);
+
+            Mail::to($user->contact)->send($mailable);
         } else {
-            $user->notify(new EmailVerificationSMSNotification($otp));
+            $notification = $isPasswordReset
+                ? new ResetPasswordSMSNotification($otp)
+                : new EmailVerificationSMSNotification($otp);
+
+            $user->notify($notification);
         }
     }
 
@@ -113,9 +119,24 @@ class AuthenticationService
             return false;
         }
 
-        $otpCode = $this->generateOtp($user->contact);
+        $otpCode = Auth::generateOtp($user->contact, $this->otp);
 
         $this->sendOtp($user, $otpCode);
+
+        return true;
+    }
+
+    public function forgotPassword(array $data, string $type): bool
+    {
+        $user = $this->getUser($data['contact']);
+
+        if (! $user) {
+            return false;
+        }
+
+        $otpCode = Auth::generateOtp($user->contact, $this->otp);
+
+        $this->sendOtp($user, $otpCode, isPasswordReset: true);
 
         return true;
     }
@@ -125,13 +146,13 @@ class AuthenticationService
         $user = $this->getUser($data['contact']);
 
         if (! $user || $user->type !== $type) {
-            return false;
+            throw new InvalidUserTypeException;
         }
 
         $result = $this->otp->validate($user->contact, $data['otp']);
 
         if (! $result->status) {
-            return false;
+            throw new InvalidOtpException;
         }
 
         $token = $user->createToken('password_reset_'.$user->id, ['reset-password'],
@@ -139,4 +160,5 @@ class AuthenticationService
 
         return $token;
     }
+
 }

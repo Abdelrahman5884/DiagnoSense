@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers\V1\Auth;
 
+use App\Actions\Doctor\ChangeDoctorPasswordAction;
+use App\Exceptions\InvalidOtpException;
+use App\Exceptions\InvalidUserTypeException;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\V1\Controller;
+use App\Http\Requests\Auth\ForgetPasswordRequest;
 use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Http\Requests\Auth\VerifyOtpRequest;
-use App\Models\User;
 use App\Services\Auth\AuthenticationService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 
 class ResetPasswordController extends Controller
 {
@@ -18,61 +19,64 @@ class ResetPasswordController extends Controller
         protected AuthenticationService $authenticationService
     ) {}
 
+    public function forgotPassword(ForgetPasswordRequest $request, string $type): JsonResponse
+    {
+        try {
+            $data = $request->validated();
+            $status = $this->authenticationService->forgotPassword($data, $type);
+
+            if (! $status) {
+                return ApiResponse::error(message: 'User not found with these credentials.', status: 404);
+            }
+
+            return ApiResponse::success(message: 'OTP has been sent to your registered contact.');
+        } catch (\Exception $e) {
+            \Log::error('Forget Password Error: '.$e->getMessage());
+
+            return ApiResponse::error(message: 'Failed to process request.', status: 500);
+        }
+    }
+
     public function verifyOtp(VerifyOtpRequest $request, string $type): JsonResponse
     {
         try {
             $data = $request->validated();
-
             $result = $this->authenticationService->verifyOtp($data, $type);
 
-            if (! $result) {
-                return ApiResponse::error(
-                    message: 'Invalid or expired OTP.',
-                    status: 400
-                );
-            }
-
             return ApiResponse::success(
-                message: 'OTP verified. Use this token to reset your password.',
+                message: 'OTP verified. You can now reset your password.',
                 data: ['reset_token' => $result]
             );
+        } catch (InvalidUserTypeException|InvalidOtpException $e) {
 
-        } catch (\Exception $e) {
             return ApiResponse::error(
-                message: 'Failed to verify OTP.',
+                message: $e->getMessage(),
+                status: $e->getCode()
+            );
+
+        } catch (\Throwable $e) {
+            \Log::error('Unexpected OTP Error: '.$e->getMessage(), ['exception' => $e]);
+
+            return ApiResponse::error(
+                message: 'An unexpected error occurred. Please try again later.',
                 status: 500
             );
         }
     }
 
-    public function resetPassword(ResetPasswordRequest $request, string $type)
+    public function resetPassword(ResetPasswordRequest $request, ChangeDoctorPasswordAction $action): JsonResponse
     {
-        $validated = $request->validated();
+        try {
+            $user = auth()->user();
+            $data = $request->validated();
 
-        $resetData = DB::table('password_reset_tokens')
-            ->where('token', $validated['reset_token'])
-            ->first();
+            $action->execute($user, $data['password']);
 
-        if (! $resetData || now()->subHours(1) > $resetData->created_at) {
-            return ApiResponse::error('Invalid or expired token.', null, 403);
+            return ApiResponse::success(message: 'Password has been reset successfully.');
+        } catch (\Exception $e) {
+            \Log::error('Password Reset Error: '.$e->getMessage());
+
+            return ApiResponse::error(message: 'Failed to reset password.', status: 500);
         }
-
-        $fieldType = filter_var($resetData->identity, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone';
-        $user = User::where($fieldType, $resetData->identity)
-            ->where('type', $type)
-            ->first();
-        if (! $user) {
-            return ApiResponse::error('Unauthorized attempt.', null, 403);
-        }
-
-        $user->update([
-            'password' => Hash::make($validated['password']),
-        ]);
-        DB::table('password_reset_tokens')->where('identity', $resetData->identity)->delete();
-
-        $user->tokens()->delete();
-
-        return ApiResponse::success('Password has been reset successfully.', null, 200);
-
     }
 }
