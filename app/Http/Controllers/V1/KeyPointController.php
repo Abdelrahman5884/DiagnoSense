@@ -16,6 +16,24 @@ class KeyPointController extends Controller
 {
     public function __construct(protected KeyPointService $keyPointService) {}
 
+    public function index(Patient $patient): JsonResponse
+    {
+        try {
+            $result = $this->keyPointService->getPatientKeyInfo($patient);
+
+            return ApiResponse::success(
+                message: $result['message'],
+                data: $result['data'],
+            );
+        } catch (\Exception $e) {
+            \Log::error("Error retrieving key info for Patient {$patient->id}: ".$e->getMessage());
+
+            return ApiResponse::error(
+                message: 'An error occurred while fetching key information.',
+                status: 500
+            );
+        }
+    }
     public function destroy(DestroyKeyPointRequest $request, $keyPointId)
     {
         $keyPoint = KeyPoint::findOrFail($keyPointId);
