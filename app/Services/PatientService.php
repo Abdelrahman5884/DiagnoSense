@@ -19,7 +19,8 @@ use Illuminate\Support\Str;
 class PatientService
 {
     public function __construct(
-        protected ReportService $reportService
+        protected ReportService $reportService,
+        protected SubscriptionService $subscriptionService
     ) {}
 
     public function getPaginatedPatients(int $doctorId, array $params): LengthAwarePaginator
@@ -125,7 +126,7 @@ class PatientService
     {
         $doctor = auth()->user()->doctor;
 
-        $this->checkBillingPlan($doctor);
+        $this->subscriptionService->validateAiAccess($doctor);
 
         if ($isReAnalysis) {
             $analysisResult = $patient->latestAiAnalysisResult;
@@ -382,18 +383,4 @@ class PatientService
         });
     }
 
-    private function checkBillingPlan(Doctor $doctor)
-    {
-        if (! $doctor->billing_mode) {
-            throw new \Exception('No billing mode found.');
-        }
-
-        if ($doctor->billing_mode == 'pay_per_use' && $doctor->wallet->balance < config('app.pay_per_use_cost')) {
-            throw new \Exception('Insufficient balance for AI analysis.');
-        }
-
-        if ($doctor->billing_mode == 'subscription' && ! $doctor->activeSubscription) {
-            throw new \Exception('No active subscription found.');
-        }
-    }
 }
