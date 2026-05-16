@@ -122,29 +122,39 @@ class PatientService
 
         return $medicalHistory;
     }
-        public function runAiAnalysis(Patient $patient, array $newPaths = []): AiAnalysisResult
+    public function runAiAnalysis(Patient $patient, array $newPaths = [],bool $isReAnalysis = false): AiAnalysisResult
     {
         $doctor = auth()->user()->doctor;
 
         $this->checkBillingPlan($doctor);
 
-        $analysisResult = $patient->latestAiAnalysisResult()->create([
-            'status' => 'processing',
-        ]);
+        if ($isReAnalysis) {
+            $analysisResult = $patient->latestAiAnalysisResult;
+
+            if (!$analysisResult) {
+                throw new \Exception('No existing analysis found to upgrade.', 422);
+            }
+
+            $analysisResult->update(['status' => 'processing']);
+        } else {
+            $analysisResult = $patient->latestAiAnalysisResult()->create([
+                'status' => 'processing',
+            ]);
+        }
 
         $allPaths = $newPaths;
         if (empty(array_filter($newPaths))) {
             $allPaths = $patient->reports->groupBy('type')->map(fn($group) => $group->pluck('file_path')->toArray())->toArray();
         }
 
-        $jobData = $this->getJobData($patient, $doctor, $patient->medicalHistory, $allPaths);
+        $jobData = $this->getJobData($patient, $doctor, $patient->medicalHistory, $allPaths, $isReAnalysis);
 
         $this->triggerAnalysisWorkflows($analysisResult, $jobData, $allPaths, $patient);
 
         return $analysisResult;
     }
 
-    private function getJobData(Patient $patient, Doctor $doctor, MedicalHistory $medicalHistory, array $pathsForAI): array
+    private function getJobData(Patient $patient, Doctor $doctor, MedicalHistory $medicalHistory, array $pathsForAI,bool $isReAnalysis = false): array
     {
         $jobData = [
             'patient_id' => $patient->id,
@@ -156,6 +166,7 @@ class PatientService
             'features' => [
                 'decision_support' => $doctor->hasFeature('Decision Support'),
             ],
+            'isReAnalysis' => $isReAnalysis,
         ];
 
         return $jobData;
@@ -170,7 +181,8 @@ class PatientService
         $chain = [
             new AiAnalysisJob($analysisResult->id, $jobData),
         ];
-        if (! empty($pathsForAI['lab'])) {
+        $isReAnalysis = $jobData['isReAnalysis'] ?? false;
+        if (! empty($pathsForAI['lab']) && ! $isReAnalysis) {
             $chain[] = new ComparativeAnalysis($patient, $analysisResult);
         }
         DB::afterCommit(function () use ($chain) {

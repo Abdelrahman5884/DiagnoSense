@@ -104,8 +104,10 @@ class AiAnalysisJob implements ShouldQueue
 
         unset($data['key_information']['ai_insight'], $data['key_information']['ai_summary']);
 
-        $this->storeKeyPoints($data['key_information'], $analysisRecord);
-
+        $isReAnalysis = $this->jobData['isReAnalysis'] ?? false;
+        if (!$isReAnalysis) {
+            $this->storeKeyPoints($data['key_information'], $analysisRecord);
+        }
         $doctor = $this->getDoctor();
 
         if ($doctor) {

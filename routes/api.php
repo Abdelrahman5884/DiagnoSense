@@ -54,7 +54,8 @@ Route::prefix('v1')->group(function () {
             Route::get('/{patient}/key-info', 'getKeyInfo')->name('key-info');
             Route::get('/{patient}/decision-support', 'getDecisionSupport')->name('decision-support');
             Route::get('/{patient}/comparative-analysis', 'getComparativeAnalysis')->name('comparative-analysis');
-            Route::put('/{patient}',  'update')->name('update');
+            Route::put('/{patient}','update')->name('update');
+            Route::post('/{patient}/re-analyze',  'triggerAiAnalysis')->name('re-analyze')->middleware('check-ai-access');
 
         });
         Route::controller(KeyPointController::class)->group(function () {
