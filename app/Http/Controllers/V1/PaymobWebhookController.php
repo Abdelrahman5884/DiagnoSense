@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Http\Controllers\V1;
+use App\Exceptions\InvalidHmacException;
+use App\Exceptions\MissingHmacException;
 use App\Models\Transactions;
 use App\Models\Wallet;
 use Illuminate\Http\JsonResponse;
@@ -24,11 +26,7 @@ class PaymobWebhookController extends Controller
             return $value ? 'true' : 'false';
         };
         $string = $this->createWebhookPayload($obj, $boolToString);
-
-        if(!$this->verifyHmac($request, $string)) {
-            \Log::error('Paymob Webhook: Invalid HMAC');
-            return response()->json(['error' => 'Invalid HMAC'], 400);
-        }
+       $this->verifyHmac($request, $string);
         if ($boolToString($obj['success']) === 'true') {
             $orderId = $obj['order']['id'];
             $amount = $obj['amount_cents'] / 100;
@@ -109,14 +107,14 @@ class PaymobWebhookController extends Controller
     {
         if (!$request->has('hmac')) {
             \Log::error('Paymob Webhook: Missing HMAC');
-            return false;
+            throw new MissingHmacException();
         }
         $hmacSecret = config('services.paymob.hmac_secret');
         $calculatedHmac = hash_hmac('sha512', $payload, $hmacSecret);
         $receivedHmac = $request->query('hmac');
         if (!hash_equals($calculatedHmac, $receivedHmac)) {
             \Log::error('Paymob HMAC Mismatch. Calculated: '.$calculatedHmac.' Received: '.$receivedHmac);
-            return false;
+           throw new InvalidHmacException();
         }
         return true;
     }
