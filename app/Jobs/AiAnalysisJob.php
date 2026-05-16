@@ -77,7 +77,7 @@ class AiAnalysisJob implements ShouldQueue
             'ai_insight' => $insight,
             'ai_summary' => $summary,
             'response' => $data,
-            'status' => $hasLabFiles ? 'processing' : 'completed',
+            'status' => $hasLabFiles && !$this->jobData['isReAnalysis'] ? 'processing' : 'completed',
             'ocr_file_path' => $ocr_file_path,
         ]);
     }
