@@ -252,21 +252,19 @@ class PatientService
 
     public function getPatientDecisionSupport(Patient $patient): array
     {
-        $latestAnalysis = $patient->latestAiAnalysisResult()->with('decisionSupports')->first();
+        $latestAnalysis = $this->fetchLatestAnalysisWithDecisions($patient);
+        $oldAnalysis = $this->fetchPreviousCompletedAnalysis($patient, $latestAnalysis?->id);
+
         $isStillProcessing = $latestAnalysis?->status === 'processing';
         $hasCurrentDecisions = $latestAnalysis?->decisionSupports->isNotEmpty() ?? false;
-        $oldAnalysis = $patient->aiAnalysisResults()
-            ->where('id', '!=', $latestAnalysis?->id)
-            ->where('status', 'completed')
-            ->latest()
-            ->first();
         $hasOldDecisions = $oldAnalysis?->decisionSupports->isNotEmpty() ?? false;
-        $decisionsToReturn = collect();
-        if ($hasCurrentDecisions) {
-            $decisionsToReturn = $latestAnalysis->decisionSupports;
-        } elseif ($hasOldDecisions) {
-            $decisionsToReturn = $oldAnalysis->decisionSupports;
-        }
+
+        $decisionsToReturn = $this->resolveDecisionsToReturn(
+            $hasCurrentDecisions,
+            $hasOldDecisions,
+            $latestAnalysis,
+            $oldAnalysis
+        );
 
         return [
             'message' => $this->determineStatusMessage($hasCurrentDecisions, $hasOldDecisions, $isStillProcessing, 'decision support'),
@@ -275,6 +273,37 @@ class PatientService
                 'decisions' => DecisionSupportResource::collection($decisionsToReturn),
             ],
         ];
+    }
+    private function fetchLatestAnalysisWithDecisions(Patient $patient): ?AiAnalysisResult
+    {
+        return $patient->latestAiAnalysisResult()->with('decisionSupports')->first();
+    }
+    private function fetchPreviousCompletedAnalysis(Patient $patient, ?int $excludeId): ?AiAnalysisResult
+    {
+        if (!$excludeId) return null;
+
+        return $patient->aiAnalysisResults()
+            ->with('decisionSupports')
+            ->where('id', '!=', $excludeId)
+            ->where('status', 'completed')
+            ->latest()
+            ->first();
+    }
+    private function resolveDecisionsToReturn(
+        bool $hasCurrent,
+        bool $hasOld,
+        ?AiAnalysisResult $latest,
+        ?AiAnalysisResult $old
+    ): Collection {
+        if ($hasCurrent) {
+            return $latest->decisionSupports;
+        }
+
+        if ($hasOld) {
+            return $old->decisionSupports;
+        }
+
+        return collect();
     }
 
     public function getPatientComparativeAnalysis(Patient $patient): array
