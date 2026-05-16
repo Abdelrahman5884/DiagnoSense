@@ -57,7 +57,7 @@ class SubscriptionService
     {
         $doctor->loadMissing(['wallet', 'activeSubscription.plan', 'latestSubscription.plan']);
 
-        if (!$doctor->billing_mode) {
+        if (! $doctor->billing_mode) {
             throw new BillingValidationException(__('No billing mode found. Please subscribe to a plan.'), 403);
         }
 
@@ -70,9 +70,9 @@ class SubscriptionService
 
     private function validatePayPerUse(Doctor $doctor): void
     {
-        if (!$doctor->wallet || $doctor->wallet->balance < Plan::PAY_PER_USE_PRICE) {
+        if (! $doctor->wallet || $doctor->wallet->balance < Plan::PAY_PER_USE_PRICE) {
             throw new BillingValidationException(
-                __("Insufficient credits. Please recharge to use Pay-Per-Use (E£" . Plan::PAY_PER_USE_PRICE . "/file)."),
+                __('Insufficient credits. Please recharge to use Pay-Per-Use (E£'.Plan::PAY_PER_USE_PRICE.'/file).'),
                 403
             );
         }
@@ -85,7 +85,7 @@ class SubscriptionService
         }
         $latestSub = $doctor->latestSubscription;
 
-        if (!$latestSub) {
+        if (! $latestSub) {
             throw new BillingValidationException(__('No active subscription found. Please subscribe to a plan.'), 403);
         }
 
