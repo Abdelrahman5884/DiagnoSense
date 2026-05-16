@@ -7,11 +7,15 @@ use App\Http\Requests\DestroyKeyPointRequest;
 use App\Http\Requests\StoreManualNoteRequest;
 use App\Http\Requests\UpdateKeyPointRequest;
 use App\Http\Resources\KeyPointResource;
-use App\Models\AiAnalysisResult;
 use App\Models\KeyPoint;
+use App\Models\Patient;
+use App\Services\KeyPointService;
+use Illuminate\Http\JsonResponse;
 
 class KeyPointController extends Controller
 {
+    public function __construct(protected KeyPointService $keyPointService) {}
+
     public function destroy(DestroyKeyPointRequest $request, $keyPointId)
     {
         $keyPoint = KeyPoint::findOrFail($keyPointId);
@@ -31,22 +35,20 @@ class KeyPointController extends Controller
         return ApiResponse::success('Key point updated successfully', ['id' => $keyPoint->id, 'insight' => $keyPoint->insight], 200);
     }
 
-    public function store(StoreManualNoteRequest $request, $patientId)
+    public function store(StoreManualNoteRequest $request, Patient $patient): JsonResponse
     {
-        $validated = $request->validated();
-        $latestAnalysis = AiAnalysisResult::where('patient_id', $patientId)
-            ->where('status', 'completed')
-            ->latest()
-            ->first();
-        if (! $latestAnalysis) {
-            return ApiResponse::error('Cannot add note: No completed Profile found for this patient.', null, 422);
-        }
-        $keyPoint = $latestAnalysis->keyPoints()->create([
-            'insight' => $validated['insight'],
-            'priority' => $validated['priority'],
-            'is_manual' => true,
-        ]);
+        try {
+            $keyPoint = $this->keyPointService->storeManualNote(patient: $patient, data: $request->validated());
 
-        return ApiResponse::success('Doctor Manual key point added successfully', new KeyPointResource($keyPoint), 201);
+            return ApiResponse::success(
+                message: 'Doctor Manual key point added successfully',
+                data: new KeyPointResource($keyPoint),
+                status: 201
+            );
+        } catch (\Exception $e) {
+            \Log::error('Error adding manual note: '.$e->getMessage());
+
+            return ApiResponse::error(message: 'Error while adding manual note', status: 500);
+        }
     }
 }
