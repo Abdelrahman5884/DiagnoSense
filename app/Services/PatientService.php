@@ -2,11 +2,24 @@
 
 namespace App\Services;
 
+use App\Jobs\AiAnalysisJob;
+use App\Jobs\ComparativeAnalysis;
+use App\Models\AiAnalysisResult;
+use App\Models\Doctor;
+use App\Models\MedicalHistory;
+use App\Models\Patient;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class PatientService
 {
+    public function __construct(
+        protected ReportService $reportService
+    ) {}
+
     public function getPaginatedPatients(int $doctorId, array $params): LengthAwarePaginator
     {
         $query = User::query()
@@ -19,7 +32,7 @@ class PatientService
             $term = $params['search'];
             $q->where(function ($sub) use ($term) {
                 if (is_numeric($term)) {
-                    $sub->where('patients.notional_id', 'LIKE', $term.'%');
+                    $sub->where('patients.national_id', 'LIKE', $term.'%');
                 } else {
                     $sub->where('users.name', 'LIKE', $term.'%');
                 }
@@ -31,12 +44,112 @@ class PatientService
         });
 
         return $query->with([
-            'patient:id,user_id,date_of_birth,status,created_at,notional_id',
+            'patient:id,user_id,date_of_birth,status,created_at,national_id',
             'patient.latestAiAnalysisResult:id,patient_id,ai_insight',
             'patient.latestVisit',
         ])
             ->latest('users.created_at')
             ->paginate(12)
             ->appends($params);
+    }
+
+    public function store(array $data): array
+    {
+        return DB::transaction(function () use ($data) {
+            $doctor = auth()->user()->doctor;
+            $user = $this->storeUser($data);
+            $patient = $this->storePatient($user, $data);
+            $patient->doctors()->attach($doctor->id);
+            $medicalHistory = $this->storeMedicalHistory($patient, $data);
+            $reportsTypes = ['lab', 'radiology', 'medical_history'];
+            $pathsForAI = [
+                'lab' => [],
+                'radiology' => [],
+                'medical_history' => [],
+            ];
+
+            $pathsForAI = $this->reportService->getPathsForAI($reportsTypes, $data, $patient, $pathsForAI);
+            $analysisResult = $patient->latestAiAnalysisResult()->create([
+                'status' => 'processing',
+            ]);
+
+            $jobData = $this->getJobData($patient, $doctor, $medicalHistory, $pathsForAI);
+
+            $this->triggerAnalysisWorkflows($analysisResult, $jobData, $pathsForAI, $patient);
+
+            return compact('patient', 'analysisResult');
+        });
+    }
+
+    private function storeUser(array $data): User
+    {
+        $user = User::create([
+            'name' => $data['name'],
+            'contact' => $data['contact'],
+            'type' => 'patient',
+            'password' => Str::random(10),
+        ]);
+
+        return $user;
+    }
+
+    private function storePatient(User $user, array $data): Patient
+    {
+        $patient = $user->patient()->create([
+            'date_of_birth' => $data['date_of_birth'],
+            'gender' => $data['gender'] ?? null,
+            'national_id' => $data['national_id'] ?? null,
+        ]);
+
+        return $patient;
+    }
+
+    private function storeMedicalHistory(Patient $patient, array $data): MedicalHistory
+    {
+        $medicalHistory = $patient->medicalHistory()->create([
+            'is_smoker' => $data['is_smoker'] ?? null,
+            'previous_surgeries_name' => $data['previous_surgeries_name'] ?? null,
+            'chronic_diseases' => $data['chronic_diseases'] ?? null,
+            'current_medications' => $data['current_medications'] ?? null,
+            'allergies' => $data['allergies'] ?? null,
+            'family_history' => $data['family_history'] ?? null,
+            'current_complaints' => $data['current_complaints'] ?? null,
+        ]);
+
+        return $medicalHistory;
+    }
+
+    private function getJobData(Patient $patient, Doctor $doctor, MedicalHistory $medicalHistory, array $pathsForAI): array
+    {
+        $jobData = [
+            'patient_id' => $patient->id,
+            'doctor_id' => $doctor->id,
+            'age' => $patient->age,
+            'gender' => $patient->gender,
+            'history' => $medicalHistory->toArray(),
+            'file_paths' => $pathsForAI,
+            'features' => [
+                'decision_support' => $doctor->hasFeature('Decision Support'),
+            ],
+        ];
+
+        return $jobData;
+    }
+
+    private function triggerAnalysisWorkflows(
+        AiAnalysisResult $analysisResult,
+        array $jobData,
+        array $pathsForAI,
+        Patient $patient
+    ): void {
+        $chain = [
+            new AiAnalysisJob($analysisResult->id, $jobData),
+        ];
+        if (! empty($pathsForAI['lab'])) {
+            $chain[] = new ComparativeAnalysis($patient->id, $analysisResult->id);
+        }
+        DB::afterCommit(function () use ($chain) {
+            Bus::chain($chain)->dispatch();
+        });
     }
 }

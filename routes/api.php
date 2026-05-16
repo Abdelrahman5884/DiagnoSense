@@ -41,13 +41,19 @@ Route::prefix('v1')->group(function () {
 
         Route::middleware('auth:sanctum')->group(function () {
             Route::post('/logout/{type}', [AuthenticatedController::class, 'logout'])->name('logout');
-            Route::post('/verify-contact', [ContactVerificationController::class, 'verifyContact'])->name('verify-contact');
-            Route::get('/resend-otp', [ContactVerificationController::class, 'resendOtp'])->name('resend-otp');
+            Route::post('/verify-contact', [ContactVerificationController::class, 'verifyContact']);
+            Route::get('/resend-otp', [ContactVerificationController::class, 'resendOtp']);
+        });
+
+    });
+
+    Route::controller(PatientController::class)->middleware('auth:sanctum')->prefix('patients')->as('patients.')->group(function () {
+        Route::get('', 'index')->name('index');
+        Route::post('', 'store')->name('store')->middleware('check-ai-access');
         });
 
     });
     Route::middleware('auth:sanctum')->group(function () {
-        Route::get('/patients', [PatientController::class, 'index'])->name('patients.index');
         Route::controller(NotificationController::class)->prefix('notifications')->as('notifications.')->group(function () {
             Route::get('/', 'index')->name('index');
             Route::get('/unread-count', 'unreadCount')->name('unreadCount');
@@ -64,7 +70,7 @@ Route::prefix('v1')->group(function () {
 });
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/patients', [PatientController::class, 'store'])->middleware('check-ai-access');
+
     Route::get('/patients/{patientId}/key-info', [PatientController::class, 'getKeyInfo']);
     Route::post('/visits', [VisitController::class, 'store']);
     Route::post('/visits/{visit}/items', [VisitItemController::class, 'store']);

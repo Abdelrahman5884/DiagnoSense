@@ -1,9 +1,5 @@
 <?php
 
-use App\Models\Doctor;
-use App\Models\Patient;
-use App\Models\User;
-
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\getJson;
 
@@ -19,7 +15,7 @@ describe('Patients Index: Validation', function () {
         getJson(route('patients.index', ['status' => 'invalid_status']))
             ->assertStatus(422)
             ->assertJsonFragment([
-                'status' => ['The selected status is invalid.']
+                'status' => ['The selected status is invalid.'],
             ]);
     });
 
@@ -38,24 +34,24 @@ describe('Patients Index: Functional Logic (Search & Filter)', function () {
         $assemUser = createUserWithType('patient', 'assem@test.com');
         $assemUser->update(['name' => 'Assem']);
         $assemUser->patient->update([
-            'notional_id' => '2990101001',
-            'status' => 'critical'
+            'national_id' => '2990101001',
+            'status' => 'critical',
         ]);
         $assem = $assemUser->patient;
 
         $asmaUser = createUserWithType('patient', 'asma@test.com');
         $asmaUser->update(['name' => 'Asma']);
         $asmaUser->patient->update([
-            'notional_id' => '2990102002',
-            'status' => 'stable'
+            'national_id' => '2990102002',
+            'status' => 'stable',
         ]);
         $asma = $asmaUser->patient;
 
         $ahmedUser = createUserWithType('patient', 'ahmed@test.com');
         $ahmedUser->update(['name' => 'Ahmed']);
         $ahmedUser->patient->update([
-            'notional_id' => '2990203003',
-            'status' => 'stable'
+            'national_id' => '2990203003',
+            'status' => 'stable',
         ]);
         $ahmed = $ahmedUser->patient;
 
@@ -64,8 +60,8 @@ describe('Patients Index: Functional Logic (Search & Filter)', function () {
         $aminaUser = createUserWithType('patient', 'amina@test.com');
         $aminaUser->update(['name' => 'Amina']);
         $aminaUser->patient->update([
-            'notional_id' => '3000101001',
-            'status' => 'critical'
+            'national_id' => '3000101001',
+            'status' => 'critical',
         ]);
         $amina = $aminaUser->patient;
         $saraDoctor->patients()->attach($amina->id);

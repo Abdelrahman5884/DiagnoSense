@@ -3,6 +3,7 @@
 use App\Models\Doctor;
 use App\Models\Patient;
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
 
 /*
 |--------------------------------------------------------------------------
@@ -75,4 +76,91 @@ function createOtpInDatabase(string $contact, string $token, bool $expired = fal
 function getDataSets(string $userType, $test): array
 {
     return array_values($test->validData[$userType]);
+}
+
+function validPatientData(): array
+{
+    return [
+        'name' => fake()->name(),
+        'contact' => fake()->unique()->safeEmail(),
+        'date_of_birth' => fake()->date(),
+        'gender' => fake()->randomElement(['male', 'female']),
+        'national_id' => (string) fake()->numberBetween(1000000000, 9999999999),
+        'is_smoker' => fake()->boolean(),
+        'chronic_diseases' => ['diabetes', 'hypertension'],
+        'previous_surgeries_name' => fake()->word(),
+        'current_medications' => fake()->word(),
+        'allergies' => fake()->word(),
+        'family_history' => fake()->word(),
+        'lab' => [UploadedFile::fake()->create('lab_results.pdf', 100, 'application/pdf')],
+        'radiology' => [UploadedFile::fake()->create('radiology_report.pdf', 100, 'application/pdf')],
+        'medical_history' => [UploadedFile::fake()->create('medical_history.pdf', 100, 'application/pdf')],
+        'current_complaints' => fake()->word(),
+    ];
+}
+
+function createDoctorWithBilling(string $billingMode = 'pay-per-use', int $balance = 100000): User
+{
+    $user = createUserWithType('doctor', fake()->unique()->safeEmail());
+    $user->doctor->billing_mode = $billingMode;
+    $user->doctor->save();
+    $user->doctor->wallet()->create(['balance' => $balance]);
+
+    return $user;
+}
+
+function fakeAiResponse(): array
+{
+    return [
+        'key_information' => [
+            'ai_insight' => 'Test AI Insight',
+            'ai_summary' => 'Test AI Summary',
+            'high_priority_alerts' => [
+                [
+                    'title' => 'High Priority Alert 1',
+                    'insight' => 'Insight 1',
+                    'evidence' => [
+                        'Evidence 1',
+                        'Evidence 2',
+                    ],
+                ],
+            ],
+            'low_priority_alerts' => [
+                [
+                    'title' => 'Low Priority Alert 1',
+                    'insight' => 'Insight 1',
+                    'evidence' => [
+                        'Evidence 1',
+                        'Evidence 2',
+                    ],
+                ],
+            ],
+            'medium_priority_alerts' => [
+                [
+                    'title' => 'Medium Priority Alert 1',
+                    'insight' => 'Insight 1',
+                    'evidence' => [
+                        'Evidence 1',
+                        'Evidence 2',
+                    ],
+                ],
+            ],
+        ],
+        'decision_support' => [
+            [
+                'condition' => 'Condition 1',
+                'probability' => 0.8,
+                'status' => 'Positive',
+                'clinical_reasoning' => 'Clinical Reasons 1',
+            ],
+            [
+                'condition' => 'Condition 2',
+                'probability' => 0.6,
+                'status' => 'Negative',
+                'clinical_reasoning' => 'Clinical Reasons 2',
+            ],
+        ],
+        'message' => 'Analysis completed successfully',
+        'pdf_path' => 'path/to/ocr/report.pdf',
+    ];
 }
