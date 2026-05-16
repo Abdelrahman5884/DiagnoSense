@@ -282,13 +282,17 @@ class PatientService
             ],
         ];
     }
+
     private function fetchLatestAnalysisWithDecisions(Patient $patient): ?AiAnalysisResult
     {
         return $patient->latestAiAnalysisResult()->with('decisionSupports')->first();
     }
+
     private function fetchPreviousCompletedAnalysis(Patient $patient, ?int $excludeId): ?AiAnalysisResult
     {
-        if (!$excludeId) return null;
+        if (! $excludeId) {
+            return null;
+        }
 
         return $patient->aiAnalysisResults()
             ->with('decisionSupports')
@@ -297,6 +301,7 @@ class PatientService
             ->latest()
             ->first();
     }
+
     private function resolveDecisionsToReturn(
         bool $hasCurrent,
         bool $hasOld,
