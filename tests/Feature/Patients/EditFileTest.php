@@ -1,10 +1,10 @@
 <?php
 
-use App\Models\Patient;
-use App\Models\AiAnalysisResult;
-use App\Models\MedicalHistory;
 use App\Jobs\AiAnalysisJob;
 use App\Jobs\ComparativeAnalysis;
+use App\Models\AiAnalysisResult;
+use App\Models\MedicalHistory;
+use App\Models\Patient;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Storage;
 
@@ -17,12 +17,11 @@ beforeEach(function () {
     $this->patient->doctors()->attach($this->doctor->id);
     $this->medicalHistory = MedicalHistory::factory()->create([
         'patient_id' => $this->patient->id,
-        'current_complaints' => 'Old complaint description'
+        'current_complaints' => 'Old complaint description',
     ]);
 
     $this->actingAs($this->doctorUser);
 });
-
 
 it('updates patient profile details successfully without triggering AI when data is basic', function () {
     $payload = [
@@ -59,17 +58,16 @@ it('triggers AI analysis during update if the current complaints field changes',
 
     $this->assertDatabaseHas('ai_analysis_results', [
         'patient_id' => $this->patient->id,
-        'status' => 'processing'
+        'status' => 'processing',
     ]);
 
     Bus::assertDispatched(AiAnalysisJob::class);
 });
 
-
 it('upgrades and re-analyzes patient successfully when an old analysis exists', function () {
     $existingAnalysis = AiAnalysisResult::factory()->create([
         'patient_id' => $this->patient->id,
-        'status' => 'completed'
+        'status' => 'completed',
     ]);
 
     $response = $this->postJson(route('patients.re-analyze', $this->patient));
@@ -84,4 +82,3 @@ it('upgrades and re-analyzes patient successfully when an old analysis exists', 
     Bus::assertDispatched(AiAnalysisJob::class);
     Bus::assertNotDispatched(ComparativeAnalysis::class);
 });
-
