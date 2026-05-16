@@ -122,7 +122,8 @@ class PatientService
 
         return $medicalHistory;
     }
-    public function runAiAnalysis(Patient $patient, array $newPaths = [],bool $isReAnalysis = false): AiAnalysisResult
+
+    public function runAiAnalysis(Patient $patient, array $newPaths = [], bool $isReAnalysis = false): AiAnalysisResult
     {
         $doctor = auth()->user()->doctor;
 
@@ -131,7 +132,7 @@ class PatientService
         if ($isReAnalysis) {
             $analysisResult = $patient->latestAiAnalysisResult;
 
-            if (!$analysisResult) {
+            if (! $analysisResult) {
                 throw new \Exception('No existing analysis found to upgrade.', 422);
             }
 
@@ -154,7 +155,7 @@ class PatientService
         return $analysisResult;
     }
 
-    private function getJobData(Patient $patient, Doctor $doctor, MedicalHistory $medicalHistory, array $pathsForAI,bool $isReAnalysis = false): array
+    private function getJobData(Patient $patient, Doctor $doctor, MedicalHistory $medicalHistory, array $pathsForAI, bool $isReAnalysis = false): array
     {
         $jobData = [
             'patient_id' => $patient->id,

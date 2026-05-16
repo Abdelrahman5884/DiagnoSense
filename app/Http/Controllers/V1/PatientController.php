@@ -135,15 +135,18 @@ class PatientController extends Controller
             return ApiResponse::error(message: 'Update failed: '.$e->getMessage(), status: 500);
         }
     }
+
     public function triggerAiAnalysis(Patient $patient): JsonResponse
     {
         try {
             $analysis = $this->patientService->runAiAnalysis($patient, [], true);
+
             return ApiResponse::success(message: 'AI Is Processing Now Due To Upgrade', data: [
-                'analysis_id' => $analysis->id
+                'analysis_id' => $analysis->id,
             ]);
         } catch (\Exception $e) {
             \Log::error('AI Analysis Trigger Error: '.$e->getMessage());
+
             return ApiResponse::error(message: 'AI Analysis Trigger failed: '.$e->getMessage(), status: 500);
         }
     }
