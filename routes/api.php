@@ -51,7 +51,7 @@ Route::prefix('v1')->group(function () {
                     Route::get('','index')->name('index');
                     Route::post('', 'store')->name('store')->middleware('check-ai-access');
                 });
-                Route::apiResource('patients.visits', VisitController::class)->only(['show', 'store'])->shallow();
+                Route::apiResource('patients.visits', VisitController::class)->only(['index', 'store'])->shallow();
                 Route::apiResource('visits.medications', MedicationController::class)->only(['store', 'destroy'])->shallow();
                 Route::apiResource('visits.tasks', TaskController::class)->only(['store', 'destroy'])->shallow();
             });
