@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\NextVisit;
 
 
+use Illuminate\Auth\Access\Gate;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreTaskRequest extends FormRequest
@@ -12,7 +13,9 @@ class StoreTaskRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->can('manage', $this->route('visit'));
+        $visit = $this->route('visit');
+        Gate::authorize('manage', $visit);
+        return true;
     }
 
     /**

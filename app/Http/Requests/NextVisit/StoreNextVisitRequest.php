@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\NextVisit;
 
 use App\Models\Visit;
+use Illuminate\Auth\Access\Gate;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreNextVisitRequest extends FormRequest
@@ -12,7 +13,9 @@ class StoreNextVisitRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->can('store', [Visit::class, $this->route('patient')]);
+        $patient = $this->route('patient');
+        Gate::authorize('store', [Visit::class, $patient]);
+        return true;
     }
 
     /**

@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\NextVisit;
 
+use App\Models\Visit;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 
 class GetNextVisitDetailsRequest extends FormRequest
 {
@@ -11,7 +13,9 @@ class GetNextVisitDetailsRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->can('manage', $this->route('visit'));
+        $patient = $this->route('patient');
+        Gate::authorize('view', [Visit::class, $patient]);
+        return true;
     }
 
 }

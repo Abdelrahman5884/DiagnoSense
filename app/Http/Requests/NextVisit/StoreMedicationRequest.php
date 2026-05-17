@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\NextVisit;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 
 class StoreMedicationRequest extends FormRequest
 {
@@ -12,7 +13,9 @@ class StoreMedicationRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->can('manage', $this->route('visit'));
+        $visit = $this->route('visit');
+        Gate::authorize('manage', $visit);
+        return true;
     }
 
     /**
