@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\V1;
 
 use App\Helpers\ApiResponse;
-use App\Http\Requests\PatientListRequest;
 use App\Http\Resources\PatientOverviewResource;
 use App\Http\Requests\Patient\PatientListRequest;
 use App\Http\Requests\Patient\StorePatientRequest;
@@ -60,6 +59,10 @@ class PatientController extends Controller
 
             return ApiResponse::error(
                 message: 'Failed to retrieve patient data.',
+                status: 500
+            );
+        }
+    }
     public function store(StorePatientRequest $request): JsonResponse
     {
         try {
@@ -111,7 +114,7 @@ class PatientController extends Controller
                     message: 'Patient not found or could not be deleted.',
                     status: 404);
             }
-    
+
 
             return ApiResponse::success(
                 message: 'Patient deleted successfully.'
@@ -125,9 +128,9 @@ class PatientController extends Controller
                 status: 500
             );}
     }
-                
-          
-          public function getComparativeAnalysis(Patient $patient): JsonResponse
+
+
+    public function getComparativeAnalysis(Patient $patient): JsonResponse
     {
         try {
             $result = $this->patientService->getPatientComparativeAnalysis($patient);
@@ -136,7 +139,7 @@ class PatientController extends Controller
                     message: 'No comparative analysis data available for this patient.',
                 );
             }
-          return ApiResponse::success(
+            return ApiResponse::success(
                 message: $result['message'],
                 data: $result['data']
             );

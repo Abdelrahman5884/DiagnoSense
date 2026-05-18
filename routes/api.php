@@ -66,7 +66,6 @@ Route::prefix('v1')->group(function () {
     });
 
     Route::middleware('auth:sanctum')->group(function () {
-        Route::get('/patients', [PatientController::class, 'index'])->name('patients.index');
         Route::get('/patients/{patientId}/overview', [PatientController::class, 'overview'])->name('patients.overview');
         Route::delete('/patients/{patientId}', [PatientController::class, 'destroy'])->name('patients.destroy');
         Route::controller(NotificationController::class)->prefix('notifications')->as('notifications.')->group(function () {

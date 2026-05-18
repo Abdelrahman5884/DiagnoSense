@@ -11,14 +11,9 @@ use App\Http\Resources\DecisionSupportResource;
 use App\Jobs\AiAnalysisJob;
 use App\Jobs\ComparativeAnalysis;
 use App\Models\AiAnalysisResult;
-use App\Models\Doctor;
 use App\Models\MedicalHistory;
-use App\Models\Patient;
-use App\Models\User;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Bus;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class PatientService
@@ -80,6 +75,8 @@ class PatientService
             }
 
             return (bool) $patient->delete();
+        });
+    }
     public function store(array $data): array
     {
         return DB::transaction(function () use ($data) {
