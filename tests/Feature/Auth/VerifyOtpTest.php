@@ -54,7 +54,7 @@ describe('Verify OTP (Password Reset)', function () {
             $token = '123456';
             createOtpInDatabase($contact, $token, expired: false);
 
-            $response = $this->postJson(route('verify-otp', ['type' => $userType]), [
+            $response = $this->postJson(route('password.verify', ['type' => $userType]), [
                 'contact' => $contact,
                 'otp' => $token,
             ]);
@@ -76,7 +76,7 @@ describe('Verify OTP (Password Reset)', function () {
             $token = '123456';
             createOtpInDatabase($contact, $token, expired: true);
 
-            $response = $this->postJson(route('verify-otp', ['type' => $userType]), [
+            $response = $this->postJson(route('password.verify', ['type' => $userType]), [
                 'contact' => $contact,
                 'otp' => $token,
             ]);
@@ -92,7 +92,7 @@ describe('Verify OTP (Password Reset)', function () {
         $contacts = [$this->contacts[$userType]['email'], $this->contacts[$userType]['phone']];
 
         foreach ($contacts as $contact) {
-            $response = $this->postJson(route('verify-otp', ['type' => $userType]), [
+            $response = $this->postJson(route('password.verify', ['type' => $userType]), [
                 'contact' => $contact,
                 'otp' => '999999',
             ]);
@@ -108,7 +108,7 @@ describe('Verify OTP (Password Reset)', function () {
         $contacts = [$this->contacts[$userType]['email'], $this->contacts[$userType]['phone']];
 
         foreach ($contacts as $contact) {
-            $response = $this->postJson(route('verify-otp', ['type' => $userType]), $invalidData);
+            $response = $this->postJson(route('password.verify', ['type' => $userType]), $invalidData);
 
             $response->assertStatus(422)
                 ->assertJson([

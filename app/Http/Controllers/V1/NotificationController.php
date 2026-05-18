@@ -3,46 +3,87 @@
 namespace App\Http\Controllers\V1;
 
 use App\Helpers\ApiResponse;
+use App\Http\Requests\MarkNotificationAsReadRequest;
 use App\Http\Resources\NotificationResource;
+use App\Services\Notifications\WebNotificationService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Notifications\DatabaseNotification;
 
 class NotificationController extends Controller
 {
-    public function index(Request $request)
-    {
-        $notifications = $request->user()->doctor
-            ->notifications()
-            ->cursorPaginate(10);
+    public function __construct(
+        protected WebNotificationService $notificationService
+    ) {}
 
-        return NotificationResource::collection($notifications);
+    public function index(Request $request): JsonResponse
+    {
+        try {
+            $notifications = $this->notificationService->getPaginatedUserNotifications($request->user()->doctor);
+
+            return ApiResponse::success(
+                message: 'Notifications retrieved successfully.',
+                data: NotificationResource::collection($notifications)->response()->getData(true)
+            );
+        } catch (\Exception $e) {
+            \Log::error('Failed to fetch notifications: '.$e->getMessage());
+
+            return ApiResponse::error(message: 'Could not load notifications at the moment.', status: 500);
+        }
     }
 
-    public function unreadCount(Request $request)
+    public function unreadCount(Request $request): JsonResponse
     {
-        return ApiResponse::success('Unread notifications count retrieved successfully', [
-            'unread_count' => $request->user()->doctor->unreadNotifications()->count(),
-        ], 200);
+        try {
+            $count = $this->notificationService->getUnreadCount($request->user()->doctor);
+
+            return ApiResponse::success(
+                message: 'Unread notifications count retrieved successfully.',
+                data: ['unread_count' => $count]
+            );
+        } catch (\Exception $e) {
+            \Log::error('Failed to count notifications: '.$e->getMessage());
+
+            return ApiResponse::error(message: 'Could not retrieve unread count.', status: 500);
+        }
     }
 
-    public function markAsRead(Request $request, $id)
+    public function read(MarkNotificationAsReadRequest $request, Databasenotification $notification): JsonResponse
     {
-        $notification = $request->user()->doctor->notifications()->findOrFail($id);
-        $notification->markAsRead();
+        try {
+            $this->notificationService->read($notification);
 
-        return ApiResponse::success('Notification marked as read', null, 200);
+            return ApiResponse::success(message: 'Notification marked as read');
+        } catch (\Exception $e) {
+            \Log::error('Failed to mark notification as read: '.$e->getMessage());
+
+            return ApiResponse::error(message: 'Could not mark notification as read.', status: 500);
+        }
     }
 
-    public function markAllAsRead(Request $request)
+    public function readAll(Request $request): JsonResponse
     {
-        $request->user()->doctor->unreadNotifications->markAsRead();
+        try {
+            $this->notificationService->readAll($request->user()->doctor);
 
-        return ApiResponse::success('All notifications marked as read', null, 200);
+            return ApiResponse::success(message: 'All notifications marked as read');
+        } catch (\Exception $e) {
+            \Log::error('Failed to mark all notifications as read: '.$e->getMessage());
+
+            return ApiResponse::error(message: 'Could not mark all notifications as read.', status: 500);
+        }
     }
 
-    public function clearAll(Request $request)
+    public function clearAll(Request $request): JsonResponse
     {
-        $request->user()->doctor->notifications()->delete();
+        try {
+            $this->notificationService->clearAll($request->user()->doctor);
 
-        return ApiResponse::success('All notifications deleted', null, 200);
+            return ApiResponse::success(message: 'All notifications deleted successfully');
+        } catch (\Exception $e) {
+            \Log::error('Failed to clear all notifications: '.$e->getMessage(), ['exception' => $e]);
+
+            return ApiResponse::error(message: 'Could not clear notifications at the moment.', status: 500);
+        }
     }
 }

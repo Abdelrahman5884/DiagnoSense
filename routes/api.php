@@ -2,12 +2,12 @@
 
 use App\Http\Controllers\V1\Auth\AuthenticatedController;
 use App\Http\Controllers\V1\Auth\ContactVerificationController;
-use App\Http\Controllers\V1\Auth\ForgetPasswordController;
 use App\Http\Controllers\V1\Auth\RegisterController;
 use App\Http\Controllers\V1\Auth\ResetPasswordController;
 use App\Http\Controllers\V1\Auth\SocialAuthController;
 use App\Http\Controllers\V1\ChatbotController;
 use App\Http\Controllers\V1\DashboardController;
+use App\Http\Controllers\V1\Doctor\DoctorProfileController;
 use App\Http\Controllers\V1\DoctorController;
 use App\Http\Controllers\V1\FlutterNotificationController;
 use App\Http\Controllers\V1\KeyPointController;
@@ -34,9 +34,9 @@ Route::prefix('v1')->group(function () {
 
         Route::middleware('check-user-type')->group(function () {
             Route::post('/login/{type}', [AuthenticatedController::class, 'login'])->middleware('throttle:login')->name('login');
-            Route::post('/forget-password/{type}', [ForgetPasswordController::class, 'forgetPassword']);
-            Route::post('/verify-otp/{type}', [ResetPasswordController::class, 'verifyOtp'])->name('verify-otp');
-            Route::post('/reset-password/{type}', [ResetPasswordController::class, 'resetPassword']);
+            Route::post('/forget-password/{type}', [ResetPasswordController::class, 'forgotPassword'])->name('password.forgot');
+            Route::post('/verify-otp/{type}', [ResetPasswordController::class, 'verifyOtp'])->name('password.verify');
+            Route::post('/reset-password/{type}', [ResetPasswordController::class, 'resetPassword'])->name('password.reset')->middleware(['auth:sanctum', 'abilities:reset-password']);
         });
 
         Route::middleware('auth:sanctum')->group(function () {
@@ -46,16 +46,45 @@ Route::prefix('v1')->group(function () {
         });
 
     });
+
+    Route::middleware('auth:sanctum')->prefix('patients')->as('patients.')->group(function () {
+        Route::controller(PatientController::class)->group(function () {
+            Route::get('', 'index')->name('index');
+            Route::post('', 'store')->name('store')->middleware('check-ai-access');
+            Route::middleware('can:view,patient')->group(function () {
+                Route::get('/{patient}/decision-support', 'getDecisionSupport')->name('decision-support');
+                Route::get('/{patient}/comparative-analysis', 'getComparativeAnalysis')->name('comparative-analysis');
+            });
+            Route::patch('/{patient}', 'update')->name('update');
+            Route::post('/{patient}/re-analyze', 'triggerAiAnalysis')->name('re-analyze')->middleware('check-ai-access');
+
+        });
+        Route::controller(KeyPointController::class)->group(function () {
+            Route::get('/{patient}/key-info', 'index')->name('key-info')->middleware('can:view,patient');
+            Route::post('/{patient}/key-info', 'store')->name('add-note');
+        });
+    });
+
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/patients', [PatientController::class, 'index'])->name('patients.index');
         Route::get('/patients/{patientId}/overview', [PatientController::class, 'overview'])->name('patients.overview');
         Route::delete('/patients/{patientId}', [PatientController::class, 'destroy'])->name('patients.destroy');
+        Route::controller(NotificationController::class)->prefix('notifications')->as('notifications.')->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('/unread-count', 'unreadCount')->name('unreadCount');
+            Route::patch('/{notification}/read', 'read')->name('read');
+            Route::patch('/read-all', 'readAll')->name('readAll');
+            Route::delete('/clear-all', 'clearAll')->name('clearAll');
+        });
+        Route::prefix('doctors')->group(function () {
+            Route::patch('/profile', [DoctorProfileController::class, 'update'])->name('doctor.profile.update');
+            Route::patch('/change-password', [DoctorProfileController::class, 'changePassword'])->name('doctor.password.update');
+        });
+        Route::post('/support', SupportController::class)->name('support.create');
     });
 });
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/patients', [PatientController::class, 'store'])->middleware('check-ai-access');
-    Route::get('/patients/{patientId}/key-info', [PatientController::class, 'getKeyInfo']);
     Route::post('/visits', [VisitController::class, 'store']);
     Route::post('/visits/{visit}/items', [VisitItemController::class, 'store']);
     Route::get('/patients/{patient}/items', [VisitItemController::class, 'index']);
@@ -67,6 +96,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/key-points/{keyPointId}', [KeyPointController::class, 'update']);
     Route::post('/patients/{patientId}/key-info', [KeyPointController::class, 'store']);
     Route::get('/patients/{patientId}/decision-support', [PatientController::class, 'getDecisionSupport']);
+    Route::delete('/patients/{patientId}', [PatientController::class, 'destroy']);
     Route::post('/wallet/charge', [WalletController::class, 'store']);
     Route::get('/transactions', [WalletController::class, 'index']);
     Route::post('/subscription/subscribe', [SubscriptionController::class, 'subscribe']);
@@ -75,11 +105,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/subscription/current', [SubscriptionController::class, 'current']);
     Route::post('/subscription/cancel', [SubscriptionController::class, 'cancel']);
     Route::get('/patient/next-visit', [PatientController::class, 'nextVisit']);
-    Route::get('/notifications', [NotificationController::class, 'index']);
-    Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
-    Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
-    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead']);
-    Route::delete('/notifications/clear-all', [NotificationController::class, 'clearAll']);
     Route::post('/chatbot/{patientId}', [ChatbotController::class, 'store'])->middleware('check-ai-access');
     Route::get('/dashboard/summary', [DashboardController::class, 'summary']);
     Route::get('/dashboard/status-distribution', [DashboardController::class, 'statusDistribution']);
@@ -87,10 +112,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/dashboard/today-visits', [DashboardController::class, 'todayVisits']);
     Route::patch('/dashboard/{patientId}/attend', [DashboardController::class, 'markAttended']);
     Route::get('/patients/{patientId}', [PatientController::class, 'edit']);
-    Route::put('/patients/{patientId}', [PatientController::class, 'update']);
     Route::post('/support', [SupportController::class, 'store']);
+    Route::put('/patients/{patientId}', [PatientController::class, 'update']);
     Route::get('/doctors/{doctorId}', [DoctorController::class, 'edit']);
-    Route::put('/doctors/{doctorId}', [DoctorController::class, 'update']);
     Route::delete('/doctors/{doctorId}', [DoctorController::class, 'destroy']);
     Route::patch('/change-password', [DoctorController::class, 'changePassword']);
     Route::get('/patients/{patientId}/comparative-analysis', [PatientController::class, 'getComparativeAnalysis']);

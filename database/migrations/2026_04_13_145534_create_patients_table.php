@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->date('date_of_birth');
             $table->enum('gender', ['male', 'female'])->nullable();
-            $table->string('notional_id')->unique()->index()->nullable();
+            $table->string('national_id')->unique()->index()->nullable();
             $table->enum('status', ['under review', 'critical', 'stable'])->default('under review');
             $table->timestamps();
             $table->softDeletes();

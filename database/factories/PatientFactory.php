@@ -19,7 +19,7 @@ class PatientFactory extends Factory
     {
         return [
             'user_id' => User::factory()->patient(),
-            'notional_id' => fake()->unique()->numerify('##############'),
+            'national_id' => fake()->unique()->numerify('##############'),
             'date_of_birth' => fake()->date(),
             'status' => 'stable',
         ];

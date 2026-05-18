@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Subscriptions extends Model
+class Subscription extends Model
 {
     protected $table = 'subscriptions';
 
@@ -15,8 +15,6 @@ class Subscriptions extends Model
         'started_at',
         'expires_at',
         'used_summaries',
-        'usage_warning_sent',
-        'expiring_soon_sent',
     ];
 
     protected $casts = [

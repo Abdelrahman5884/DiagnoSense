@@ -21,12 +21,9 @@ class Patient extends Model
     protected $fillable = [
         'id',
         'user_id',
-        'name',
-        'email',
-        'phone',
-        'age',
+        'date_of_birth',
         'gender',
-        'notional_id',
+        'national_id',
         'status',
         'last_visit_date',
         'next_visit_date',
@@ -107,5 +104,10 @@ class Patient extends Model
                 'next_visit_date' => $newDate,
             ]);
         }
+    }
+
+    public function labResults(): HasMany
+    {
+        return $this->hasMany(PatientLabResult::class);
     }
 }

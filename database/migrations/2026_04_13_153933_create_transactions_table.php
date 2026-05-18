@@ -18,7 +18,7 @@ return new class extends Migration
             $table->enum('status', ['pending', 'completed', 'failed'])->default('pending');
             $table->enum('type', ['charge', 'subscription', 'usage', 'refund']);
             $table->morphs('sourceable');
-            $table->string('payment_id');
+            $table->string('payment_id')->nullable();
             $table->text('description')->nullable();
             $table->timestamps();
         });

@@ -1,5 +1,7 @@
 <?php
 
+use App\Exceptions\InvalidOtpException;
+use App\Exceptions\InvalidUserTypeException;
 use App\Helpers\ApiResponse;
 use App\Http\Middleware\CheckAiAccess;
 use App\Http\Middleware\CheckUserType;
@@ -45,6 +47,12 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($request->is('api/*')) {
                 return ApiResponse::error('Unauthorized access: You do not have permission for this action.', null, 403);
             }
+        });
+        $exceptions->render(function (InvalidUserTypeException $e, $request) {
+            return ApiResponse::error($e->getMessage(), null, 403);
+        });
+        $exceptions->render(function (InvalidOtpException $e, $request) {
+            return ApiResponse::error($e->getMessage(), null, 401);
         });
         $exceptions->render(function (NotFoundHttpException $e, $request) {
             if ($request->is('api/*')) {

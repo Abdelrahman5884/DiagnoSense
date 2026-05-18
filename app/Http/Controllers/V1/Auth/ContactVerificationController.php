@@ -18,7 +18,6 @@ class ContactVerificationController extends Controller
     {
         try {
             $data = $request->validated();
-
             $result = $this->authenticationService->verifyContact($data);
 
             if (! $result) {

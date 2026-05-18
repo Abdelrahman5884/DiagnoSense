@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Subscriptions;
+use App\Models\Subscription;
 use Illuminate\Console\Command;
 
 class UpdateExpiredSubscriptions extends Command
@@ -26,7 +26,7 @@ class UpdateExpiredSubscriptions extends Command
      */
     public function handle()
     {
-        $affected = Subscriptions::whereIn('status', ['active', 'cancelled'])
+        $affected = Subscription::whereIn('status', ['active', 'cancelled'])
             ->where('expires_at', '<', now())
             ->update(['status' => 'expired']);
 
