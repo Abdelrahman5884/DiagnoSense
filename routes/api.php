@@ -65,7 +65,7 @@ Route::prefix('v1')->group(function () {
             Route::post('/{patient}/key-info', 'store')->name('add-note');
         });
     });
-  
+
     Route::controller(WalletController::class)->middleware('auth:sanctum')->prefix('wallets')->as('wallets.')->group(function () {
         Route::post('charge', 'store')->name('charge');
         Route::get('transactions', 'index')->name('transactions');
