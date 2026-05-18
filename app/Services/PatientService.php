@@ -2,6 +2,11 @@
 
 namespace App\Services;
 
+use App\Models\Doctor;
+use App\Models\Patient;
+use App\Models\User;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 use App\Http\Resources\DecisionSupportResource;
 use App\Jobs\AiAnalysisJob;
 use App\Jobs\ComparativeAnalysis;
@@ -56,6 +61,25 @@ class PatientService
             ->appends($params);
     }
 
+    public function getPatientOverview(Doctor $doctor, int $patientId): ?Patient
+    {
+        return $doctor->patients()->with([
+            'user',
+            'medicalHistory',
+            'latestAiAnalysisResult',
+        ])->find($patientId);
+    }
+
+    public function deletePatient(Doctor $doctor, int $patientId): bool
+    {
+        return DB::transaction(function () use ($doctor, $patientId) {
+            $patient = $doctor->patients()->find($patientId);
+
+            if (! $patient) {
+                return false;
+            }
+
+            return (bool) $patient->delete();
     public function store(array $data): array
     {
         return DB::transaction(function () use ($data) {
