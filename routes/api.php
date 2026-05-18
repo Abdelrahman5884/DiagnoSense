@@ -14,13 +14,14 @@ use App\Http\Controllers\V1\KeyPointController;
 use App\Http\Controllers\V1\MedicalFileController;
 use App\Http\Controllers\V1\NotificationController;
 use App\Http\Controllers\V1\PatientController;
-use App\Http\Controllers\V1\StripeWebhookController;
+use App\Http\Controllers\V1\PaymobWebhookController;
 use App\Http\Controllers\V1\SubscriptionController;
 use App\Http\Controllers\V1\SupportController;
 use App\Http\Controllers\V1\TaskController;
 use App\Http\Controllers\V1\VisitController;
 use App\Http\Controllers\V1\VisitItemController;
 use App\Http\Controllers\V1\WalletController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
 
@@ -65,6 +66,11 @@ Route::prefix('v1')->group(function () {
         });
     });
 
+    Route::controller(WalletController::class)->middleware('auth:sanctum')->prefix('wallets')->as('wallets.')->group(function () {
+        Route::post('charge', 'store')->name('charge');
+        Route::get('transactions', 'index')->name('transactions');
+    });
+
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/patients/{patientId}/overview', [PatientController::class, 'overview'])->name('patients.overview');
         Route::delete('/patients/{patientId}', [PatientController::class, 'destroy'])->name('patients.destroy');
@@ -96,8 +102,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/patients/{patientId}/key-info', [KeyPointController::class, 'store']);
     Route::get('/patients/{patientId}/decision-support', [PatientController::class, 'getDecisionSupport']);
     Route::delete('/patients/{patientId}', [PatientController::class, 'destroy']);
-    Route::post('/wallet/charge', [WalletController::class, 'store']);
-    Route::get('/transactions', [WalletController::class, 'index']);
     Route::post('/subscription/subscribe', [SubscriptionController::class, 'subscribe']);
     Route::post('/subscription/pay-per-use', [SubscriptionController::class, 'switchToPayPerUse']);
     Route::get('/subscription/plans', [SubscriptionController::class, 'index']);
@@ -144,3 +148,11 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Broadcast::routes(['middleware' => ['auth:sanctum']]);
+
+Route::get('/payment-redirect', function (Request $request) {
+    if ($request->query('success') === 'true') {
+        return redirect('http://localhost:5173/subscription?status=success');
+    }
+});
+
+Route::post('/paymob/webhook', [PaymobWebhookController::class, 'handle'])->name('paymob.webhook');
