@@ -26,9 +26,9 @@ class PatientOverviewResource extends JsonResource
             'age' => $this->age,
             'smoker' => $history?->is_smoker ? 'Yes' : 'No',
             'chronicDiseases' => $history?->chronic_diseases ?? 'N/A',
-            'previousSurgeries' => $history?->previous_surgeries ? $history->previous_surgeries_name : 'N/A',
+            'previousSurgeries' => $history?->previous_surgeries_name ? $history->previous_surgeries_name : 'N/A',
             'allergies' => $history?->allergies ?? 'N/A',
-            'medications' => $history?->medications ?? 'N/A',
+            'medications' => $history?->current_medications ?? 'N/A',
             'familyHistory' => $history?->family_history ?? 'N/A',
             'status' => $this->status,
         ];
