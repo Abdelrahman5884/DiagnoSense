@@ -119,7 +119,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/patients/{patientId}', [PatientController::class, 'edit']);
     Route::post('/support', [SupportController::class, 'store']);
     Route::put('/patients/{patientId}', [PatientController::class, 'update']);
-    Route::patch('/change-password', [DoctorController::class, 'changePassword']);
     Route::get('/patients/{patientId}/comparative-analysis', [PatientController::class, 'getComparativeAnalysis']);
 });
 
