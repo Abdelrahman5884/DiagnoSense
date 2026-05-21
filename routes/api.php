@@ -56,6 +56,7 @@ Route::prefix('v1')->group(function () {
             Route::get('','index')->name('index');
             Route::post('', 'store')->name('store')->middleware('check-ai-access');
         });
+        Route::post('/patients/{patient}/chatbot/ask', ChatbotController::class)->middleware('check-ai-access')->name('patients.chatbot.ask');
 });
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -85,7 +86,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
     Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead']);
     Route::delete('/notifications/clear-all', [NotificationController::class, 'clearAll']);
-    Route::post('/chatbot/{patientId}', [ChatbotController::class, 'store'])->middleware('check-ai-access');
     Route::get('/dashboard/summary', [DashboardController::class, 'summary']);
     Route::get('/dashboard/status-distribution', [DashboardController::class, 'statusDistribution']);
     Route::get('/dashboard/top-diseases', [DashboardController::class, 'topDiseases']);
