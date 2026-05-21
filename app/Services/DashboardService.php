@@ -83,7 +83,7 @@ class DashboardService
             ->count();
     }
 
-    private function getPatientStats(Collection $patients,Carbon $currentMonthStart,Carbon $previousMonthStart,Carbon $previousMonthEnd
+    private function getPatientStats(Collection $patients, Carbon $currentMonthStart, Carbon $previousMonthStart, Carbon $previousMonthEnd
     ): array {
 
         return [
@@ -102,7 +102,8 @@ class DashboardService
         ];
     }
 
-    private function calculateGrowthPercentage(int $patientsThisMonth,int $patientsLastMonth): float {
+    private function calculateGrowthPercentage(int $patientsThisMonth, int $patientsLastMonth): float
+    {
 
         $diff = $patientsThisMonth - $patientsLastMonth;
 
