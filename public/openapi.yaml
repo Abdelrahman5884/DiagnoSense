@@ -2080,6 +2080,98 @@ paths:
                   success: false
                   message: "An error occurred while cancelling your subscription."
                   data: null
+  '/api/v1/dashboard/status-distribution':
+    get:
+      summary: 'Get Patient Status Distribution'
+      operationId: getApiV1DashboardStatusDistribution
+      description: 'Retrieves the total number of registered patients for the authenticated doctor along with a distribution breakdown by health status (stable, critical, under review) formatted specifically for Pie Chart visualization.'
+      tags:
+        - Dashboard
+      security:
+        - sanctum: []
+      responses:
+        200:
+          description: 'Patient status distribution data retrieved successfully.'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Status distribution retrieved successfully"
+                  data:
+                    type: object
+                    properties:
+                      total_registered_patients:
+                        type: integer
+                        description: 'The aggregate sum of all patients assigned to this doctor.'
+                        example: 248
+                      pie_chart_data:
+                        type: array
+                        description: 'Array of state distribution metrics mapping directly to frontend charting components.'
+                        items:
+                          type: object
+                          properties:
+                            status:
+                              type: string
+                              example: "stable"
+                            value:
+                              type: integer
+                              example: 148
+                            percentage:
+                              type: integer
+                              example: 60
+              examples:
+                StandardDistribution:
+                  summary: 'Complete Distribution Record'
+                  description: 'Example response when the doctor has patients registered under all active medical statuses.'
+                  value:
+                    success: true
+                    message: "Status distribution retrieved successfully"
+                    data:
+                      total_registered_patients: 248
+                      pie_chart_data:
+                        - { status: "critical", value: 62, percentage: 25 }
+                        - { status: "stable", value: 150, percentage: 60 }
+                        - { status: "under review", value: 36, percentage: 15 }
+                NoPatientsDistribution:
+                  summary: 'Empty Dashboard State'
+                  description: 'Fallback layout response when a newly registered doctor has zero patients in their clinic list.'
+                  value:
+                    success: true
+                    message: "Status distribution retrieved successfully"
+                    data:
+                      total_registered_patients: 0
+                      pie_chart_data:
+                        - { status: "critical", value: 0, percentage: 0 }
+                        - { status: "stable", value: 0, percentage: 0 }
+                        - { status: "under review", value: 0, percentage: 0 }
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          description: 'Not Found - Authenticated user is not linked to a valid doctor profile'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: "Doctor not found"
+                  data: null
+        500:
+          description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: "Failed to retrieve status distribution"
+                  data: null
 
 
 components:
