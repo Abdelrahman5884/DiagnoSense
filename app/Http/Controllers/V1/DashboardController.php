@@ -19,10 +19,6 @@ class DashboardController extends Controller
         try {
             $doctor = $request->user()->doctor;
 
-            if (! $doctor) {
-                return ApiResponse::error(message: 'Unauthorized', status: 403);
-            }
-
             $stats = $this->dashboardService->getSummary($doctor);
 
             return ApiResponse::success(
