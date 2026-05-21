@@ -56,7 +56,7 @@ Route::prefix('v1')->group(function () {
             Route::get('','index')->name('index');
             Route::post('', 'store')->name('store')->middleware('check-ai-access');
         });
-        Route::post('/patients/{patient}/chatbot/ask', ChatbotController::class)->middleware('check-ai-access')->name('patients.chatbot.ask');
+        Route::post('/patients/{patient}/chatbot/ask', ChatbotController::class)->middleware(['auth:sanctum', 'check-ai-access'])->name('patients.chatbot.ask');
 });
 
 Route::middleware('auth:sanctum')->group(function () {
