@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Visit;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 
 class DeleteMedicationRequest extends FormRequest
 {
@@ -11,6 +13,7 @@ class DeleteMedicationRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->can('deleteMedication', $this->route('medication'));
+        Gate::authorize('deleteMedication', [Visit::class, $this->route('medication')]);
+        return true;
     }
 }
