@@ -12,13 +12,12 @@ class ChatbotService
         private AIGatewayService $aiGatewayService
     ) {}
 
-    public function ask($question, $patientId)
+    public function ask(string $question, Patient $patient): array
     {
-        $patient = Patient::query()->findOrFail($patientId);
         $reports = $patient->reports;
         $hash = hash('sha256', $reports->pluck('file_path')->sort()->implode(','));
-        if (! $this->isIngested($patientId, $hash)) {
-            dispatch(new IngestPatientJob($patientId, auth()->user()->doctor->id, $hash, $question));
+        if (! $this->isIngested($patient, $hash)) {
+            dispatch(new IngestPatientJob($patient, auth()->user()->doctor->id, $hash, $question));
 
             return [
                 'message' => 'Preparing patient data...',
@@ -26,7 +25,7 @@ class ChatbotService
             ];
         }
 
-        $answer = $this->aiGatewayService->answer($patientId, $question);
+        $answer = $this->aiGatewayService->answer($patient, $question);
 
         return [
             'message' => $answer,
@@ -34,17 +33,16 @@ class ChatbotService
         ];
     }
 
-    private function isIngested($patientId, $hash)
+    private function isIngested(Patient $patient, string $hash): bool
     {
         $lastIngestion = PatientIngestion::query()
-            ->where('patient_id', $patientId)
+            ->where('patient_id', $patient->id)
             ->where('status', 'completed')
             ->latest()
             ->first();
         if (! $lastIngestion || ! hash_equals($lastIngestion->files_hash, $hash)) {
             return false;
         }
-
         return true;
     }
 }
