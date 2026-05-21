@@ -1833,6 +1833,82 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         500:
           description: 'Internal Server Error'
+  '/api/v1/subscriptions/subscribe':
+    post:
+      summary: 'Subscribe to a Plan'
+      operationId: postApiV1SubscriptionsSubscribe
+      description: 'Deducts the plan price from the authenticated doctor wallet, updates their billing mode to subscription, creates or updates an active subscription record, and logs a billing transaction. Emits verification and budget alert notifications.'
+      tags:
+        - Subscriptions
+      security:
+        - sanctum: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - plan_id
+              properties:
+                plan_id:
+                  type: integer
+                  description: 'The unique structural database ID of the plan to subscribe to.'
+                  example: 17
+      responses:
+        201:
+          description: 'Successfully subscribed to the plan!'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: "Successfully subscribed to the plan!"
+                  data: null
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          description: 'Billing Validation Conflict - Already has an active subscription or insufficient wallet credits balance.'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: "Insufficient credits. Please recharge E£45 to your wallet to subscribe to this plan."
+                  data: null
+        404:
+          description: 'Not Found - Doctor profile associated with the token does not exist'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: "Doctor profile not found."
+                  data: null
+        422:
+          description: 'Validation Error - Plan ID field is missing, not an integer, or does not exist in the plans database table'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: "The given data was invalid."
+                  errors:
+                    plan_id: ["The selected plan is invalid."]
+        500:
+          description: 'Internal Server Error - Operational database transaction rollback'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: "An error occurred while processing your subscription. Please try again later."
+                  data: null
 
 
 components:
