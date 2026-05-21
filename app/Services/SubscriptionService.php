@@ -25,9 +25,11 @@ class SubscriptionService
             DB::afterCommit(function () use ($doctorWithLock, $plan) {
                 $this->dispatchSubscriptionNotifications($doctorWithLock, $plan);
             });
+
             return $subscription;
         });
     }
+
     private function validateDoctorCanSubscribe(Doctor $doctor, Plan $plan): void
     {
         if ($doctor->activeSubscription && $doctor->activeSubscription->status === 'active') {
@@ -40,40 +42,44 @@ class SubscriptionService
             throw new BillingValidationException(__("Insufficient credits. Please recharge EGP{$needed} to your wallet to subscribe to this plan."));
         }
     }
+
     private function deductSubscriptionFees(Doctor $doctor, Plan $plan): void
     {
         $doctor->wallet->decrement('balance', $plan->price);
         $doctor->update(['billing_mode' => 'subscription']);
     }
+
     private function processSubscriptionRecord(Doctor $doctor, Plan $plan): Subscription
     {
         return $doctor->subscriptions()->updateOrCreate(
             ['status' => 'active'],
             [
-                'plan_id'         => $plan->id,
-                'started_at'      => now(),
-                'expires_at'      => now()->addDays($plan->duration_days),
-                'used_summaries'  => 0,
+                'plan_id' => $plan->id,
+                'started_at' => now(),
+                'expires_at' => now()->addDays($plan->duration_days),
+                'used_summaries' => 0,
             ]
         );
     }
+
     private function recordBillingTransaction(Doctor $doctor, Plan $plan): void
     {
         $doctor->transactions()->create([
-            'amount'      => $plan->price,
-            'type'        => 'subscription',
-            'status'      => 'completed',
+            'amount' => $plan->price,
+            'type' => 'subscription',
+            'status' => 'completed',
             'sourceable_type' => get_class($plan),
-            'sourceable_id'   => $plan->id,
+            'sourceable_id' => $plan->id,
             'description' => "Subscribed to {$plan->name} Plan",
         ]);
     }
+
     private function dispatchSubscriptionNotifications(Doctor $doctor, Plan $plan): void
     {
         $doctor->user->notify(new PlanSubscribed($plan->name));
 
         if ($doctor->wallet->refresh()->balance <= 0) {
-            $doctor->user->notify(new CreditsExhausted());
+            $doctor->user->notify(new CreditsExhausted);
         }
     }
 

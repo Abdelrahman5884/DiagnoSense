@@ -8,39 +8,40 @@ use App\Http\Requests\SubscribePlanRequest;
 use App\Http\Resources\CurrentSubscriptionResource;
 use App\Http\Resources\PlanResource;
 use App\Models\Plan;
-use App\Notifications\CreditsExhausted;
 use App\Notifications\PayPerUseActivated;
-use App\Notifications\PlanSubscribed;
 use App\Notifications\SubscriptionCancelled;
 use App\Services\SubscriptionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-
 class SubscriptionController extends Controller
 {
-        public function __construct(
-            protected SubscriptionService $subscriptionService
-        ) {}
+    public function __construct(
+        protected SubscriptionService $subscriptionService
+    ) {}
 
     public function subscribe(SubscribePlanRequest $request): JsonResponse
     {
-        try{
+        try {
             $doctor = $request->user()->doctor;
-            if(!$doctor) return ApiResponse::error(message: 'Doctor profile not found.', status: 404);
+            if (! $doctor) {
+                return ApiResponse::error(message: 'Doctor profile not found.', status: 404);
+            }
             $this->subscriptionService->subscribeDoctorToPlan(
                 doctor: $doctor,
                 planId: $request->validated()['plan_id']
             );
+
             return ApiResponse::success(
                 message: 'Successfully subscribed to the plan!',
                 status: 201
             );
 
-        }catch (BillingValidationException $e) {
+        } catch (BillingValidationException $e) {
             return ApiResponse::error(message: $e->getMessage(), status: $e->getStatusCode());
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
             \Log::error('Subscription Error: '.$e->getMessage(), ['plan_id' => $request->input('plan_id')]);
+
             return ApiResponse::error(
                 message: 'An error occurred while processing your subscription. Please try again later.',
                 status: 500
