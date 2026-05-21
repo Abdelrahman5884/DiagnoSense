@@ -1909,6 +1909,107 @@ paths:
                   success: false
                   message: "An error occurred while processing your subscription. Please try again later."
                   data: null
+  '/api/v1/subscriptions/current':
+    get:
+      summary: 'Get Current Subscription and Billing Details'
+      operationId: getApiV1SubscriptionsCurrent
+      description: 'Retrieves the dynamic billing status and subscription information for the authenticated doctor. The response structure adapts polymorphic data based on whether the billing mode is "pay-per-use" or "subscription" (active or expired).'
+      tags:
+        - Subscriptions
+      security:
+        - sanctum: []
+      responses:
+        200:
+          description: 'Current billing details retrieved successfully.'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Current billing mode retrieved successfully"
+                  data:
+                    type: object
+                    required: [billing_mode, balance]
+                    properties:
+                      billing_mode:
+                        type: string
+                        enum: [pay-per-use, subscription]
+                        example: "subscription"
+                      balance:
+                        type: number
+                        format: float
+                        example: 250.50
+              examples:
+                ActiveSubscriptionMode:
+                  summary: 'Doctor is under an Active Fixed Plan Subscription'
+                  value:
+                    success: true
+                    message: "Current billing mode retrieved successfully"
+                    data:
+                      billing_mode: "subscription"
+                      balance: 450.00
+                      plan_name: "Premium Clinic Plan"
+                      status: "active"
+                      usage:
+                        used: 12
+                        total: 50
+                        remaining: 38
+                        percentage: 24.00
+                      starts_at: "Fri, May 01, 2026"
+                      expires_at: "Sun, May 31, 2026"
+                      features:
+                        - "Unlimited Patient Records"
+                        - "Decision Support Assistance"
+                        - "Advanced PDF Comparative Reports"
+                PayPerUseMode:
+                  summary: 'Doctor is under Pay-Per-Use Billing Mode'
+                  value:
+                    success: true
+                    message: "Current billing mode retrieved successfully"
+                    data:
+                      billing_mode: "pay-per-use"
+                      balance: 85.00
+                      price_per_file: 20.00
+                      features:
+                        - "All features included"
+                ExpiredSubscriptionFallback:
+                  summary: 'Subscription Expired but Billing Mode is still flagged'
+                  value:
+                    success: true
+                    message: "Current billing mode retrieved successfully"
+                    data:
+                      billing_mode: "subscription"
+                      balance: 0.00
+                      plan_name: "Basic Starter Plan"
+                      status: "expired"
+                      usage:
+                        used: 20
+                        total: 20
+                        remaining: 0
+                        percentage: 100.00
+                      starts_at: "Tue, April 07, 2026"
+                      expires_at: "Thu, May 07, 2026"
+                      features:
+                        - "Basic OCR Extraction"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          description: 'Not Found - The doctor profile does not have an active billing mode established yet'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: "No active subscription or billing mode found."
+                  data: null
+        500:
+          description: 'Internal Server Error'
 
 
 components:
