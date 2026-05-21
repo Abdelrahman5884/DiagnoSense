@@ -2010,6 +2010,76 @@ paths:
                   data: null
         500:
           description: 'Internal Server Error'
+  '/api/v1/subscriptions/cancel':
+    post:
+      summary: 'Cancel Subscription or Billing Mode'
+      operationId: postApiV1SubscriptionsCancel
+      description: 'Cancels the authenticated doctor’s active subscription or disables their pay-per-use billing mode. If a subscription is cancelled before expiration, it informs the user about their grace period and remaining summaries.'
+      tags:
+        - Subscriptions
+      security:
+        - sanctum: []
+      responses:
+        200:
+          description: 'Cancellation request processed successfully.'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    nullable: true
+                    example: null
+              examples:
+                CancelledWithGracePeriod:
+                  summary: 'Subscription Cancelled with Remaining Credits'
+                  description: 'Triggered when the doctor cancels the subscription but still has remaining summaries left to use until the expiration date.'
+                  value:
+                    success: true
+                    message: "Subscription cancelled. You can still use your remaining 38 summaries until Sun, May 31, 2026"
+                    data: null
+                CancelledLimitReached:
+                  summary: 'Subscription Cancelled with Limit Reached'
+                  description: 'Triggered when the doctor cancels the subscription and has already consumed 100% of the allowed summaries limit.'
+                  value:
+                    success: true
+                    message: "Subscription cancelled. Note: You have already reached your limit of 50 summaries."
+                    data: null
+                DisabledPayPerUse:
+                  summary: 'Pay-Per-Use Mode Disabled'
+                  description: 'Triggered when a doctor on pay-per-use cancels their billing style, reverting the doctor billing_mode back to null.'
+                  value:
+                    success: true
+                    message: "Pay-Per-Use mode has been disabled. Please subscribe to a plan to continue."
+                    data: null
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          description: 'Billing Validation Conflict - No active subscription or billing mode found to cancel.'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: "No active subscription or billing mode found to cancel."
+                  data: null
+        500:
+          description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: "An error occurred while cancelling your subscription."
+                  data: null
 
 
 components:
