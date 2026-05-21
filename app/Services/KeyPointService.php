@@ -95,26 +95,27 @@ class KeyPointService
             'is_ai_generated' => false,
         ]);
     }
+
     public function deleteKeyPoint(KeyPoint $keyPointId): void
     {
-       $isAuthorized = $keyPointId->aiAnalysisResult
-          ->patient
-          ->doctors()
-          ->where('doctor_id', auth()->user()->doctor->id)
-          ->exists();
+        $isAuthorized = $keyPointId->aiAnalysisResult
+            ->patient
+            ->doctors()
+            ->where('doctor_id', auth()->user()->doctor->id)
+            ->exists();
 
-     if (! $isAuthorized) {
+        if (! $isAuthorized) {
 
-        throw new \Exception(
-            'Unauthorized access: You do not have permission for this action.',
-            403
-        );
-    }
+            throw new \Exception(
+                'Unauthorized access: You do not have permission for this action.',
+                403
+            );
+        }
 
         $keyPointId->delete();
     }
 
-    public function updateKeyPoint(KeyPoint $keyPointId,array $data): array 
+    public function updateKeyPoint(KeyPoint $keyPointId, array $data): array
     {
 
         $isAuthorized = $keyPointId->aiAnalysisResult
@@ -125,17 +126,17 @@ class KeyPointService
 
         if (! $isAuthorized) {
 
-        throw new \Exception(
-            'Unauthorized access: You do not have permission for this action.',
-             403
-        );
+            throw new \Exception(
+                'Unauthorized access: You do not have permission for this action.',
+                403
+            );
         }
-  
-        $keyPointId->update(['insight' => $data['insight'],]);
 
-         return [
-           'id' => $keyPointId->id,
-           'insight' => $keyPointId->insight,
+        $keyPointId->update(['insight' => $data['insight']]);
+
+        return [
+            'id' => $keyPointId->id,
+            'insight' => $keyPointId->insight,
         ];
     }
 }

@@ -33,26 +33,29 @@ class KeyPointController extends Controller
             );
         }
     }
+
     public function destroy(KeyPoint $keyPointId): JsonResponse
     {
         try {
             $this->keyPointService->deleteKeyPoint($keyPointId);
+
             return ApiResponse::success(
-              message: 'Key point deleted successfully',
-              status: 200
+                message: 'Key point deleted successfully',
+                status: 200
             );
         } catch (\Exception $e) {
-            \Log::error('Error deleting key point: '.$e->getMessage(),['id' => $keyPointId->id,]);
+            \Log::error('Error deleting key point: '.$e->getMessage(), ['id' => $keyPointId->id]);
 
-            return ApiResponse::error(message: $e->getMessage(),status: $e->getCode() ?: 500
+            return ApiResponse::error(message: $e->getMessage(), status: $e->getCode() ?: 500
             );
         }
     }
-   public function update(UpdateKeyPointRequest $request,KeyPoint $keyPointId): JsonResponse 
-   {
+
+    public function update(UpdateKeyPointRequest $request, KeyPoint $keyPointId): JsonResponse
+    {
         try {
-            $data = $this->keyPointService->updateKeyPoint($keyPointId,$request->validated());
- 
+            $data = $this->keyPointService->updateKeyPoint($keyPointId, $request->validated());
+
             return ApiResponse::success(
                 message: 'Key point updated successfully',
                 data: $data,
@@ -60,11 +63,11 @@ class KeyPointController extends Controller
             );
 
         } catch (\Exception $e) {
-            \Log::error('Error updating key point: '.$e->getMessage(),['id' => $keyPointId->id,]
+            \Log::error('Error updating key point: '.$e->getMessage(), ['id' => $keyPointId->id]
             );
 
             return ApiResponse::error(
-            message: $e->getMessage(),status: $e->getCode() ?: 500);
+                message: $e->getMessage(), status: $e->getCode() ?: 500);
         }
     }
 

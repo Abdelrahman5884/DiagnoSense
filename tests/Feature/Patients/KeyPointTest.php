@@ -297,4 +297,3 @@ it('returns 403 when updating key point for unauthorized doctor', function () {
             'Unauthorized access: You do not have permission for this action.'
         );
 });
-
