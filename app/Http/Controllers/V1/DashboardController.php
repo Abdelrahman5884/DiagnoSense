@@ -4,17 +4,22 @@ namespace App\Http\Controllers\V1;
 
 use App\Helpers\ApiResponse;
 use App\Http\Resources\CurrentVisitDashboardResource;
+use App\Http\Resources\DashboardStatusResource;
 use App\Http\Resources\QueueDashboardResource;
 use App\Http\Resources\WidgetsDashboardResource;
 use App\Models\AiAnalysisResult;
 use App\Models\MedicalHistory;
 use App\Models\Patient;
+use App\Services\DashboardService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
+    public function __construct(
+        protected DashboardService $dashboardService
+    ) {}
     public function summary(Request $request)
     {
         $doctor = $request->user()->doctor;
@@ -75,39 +80,18 @@ class DashboardController extends Controller
 
     public function statusDistribution(Request $request)
     {
-        $doctor = $request->user()->doctor;
-
-        if (! $doctor) {
-            return ApiResponse::error('Unauthorized', null, 403);
+        try{
+            $doctor = $request->user()->doctor;
+            if(!$doctor) return ApiResponse::error(message:'Doctor not found', status:404);
+            $distribution = $this->dashboardService->getPatientStatusDistribution($doctor);
+            return ApiResponse::success(
+                message: 'Status distribution retrieved successfully',
+                data: new DashboardStatusResource($distribution)
+            );
+        } catch (\Exception $e) {
+            \Log::error('Error retrieving status distribution: '.$e->getMessage());
+            return ApiResponse::error(message:'Failed to retrieve status distribution',status: 500);
         }
-
-        $distribution = $doctor->patients()
-            ->select('status', DB::raw('count(*) as total'))
-            ->groupBy('status')
-            ->pluck('total', 'status');
-
-        $totalPatients = $distribution->sum();
-
-        $statuses = ['critical', 'stable', 'under review'];
-
-        $result = collect($statuses)->map(function ($status) use ($distribution, $totalPatients) {
-            $count = $distribution[$status] ?? 0;
-
-            return [
-                'status' => $status,
-                'value' => $count,
-                'percentage' => $totalPatients > 0 ? round(($count / $totalPatients) * 100) : 0,
-            ];
-        })->values();
-
-        return ApiResponse::success(
-            'Status distribution retrieved successfully',
-            [
-                'total_registered_patients' => $totalPatients,
-                'pie_chart_data' => $result,
-            ],
-            200
-        );
     }
 
     public function topDiseases(Request $request)
