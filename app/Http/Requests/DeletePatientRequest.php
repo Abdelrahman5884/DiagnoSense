@@ -12,7 +12,7 @@ class DeletePatientRequest extends FormRequest
      */
     public function authorize(): bool
     {
-         $patient = $this->route('patient');
+        $patient = $this->route('patient');
 
         return $patient->doctors()
             ->where('doctor_id', auth()->user()->doctor->id)

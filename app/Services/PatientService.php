@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\Doctor;
 use App\Models\Patient;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -44,19 +43,19 @@ class PatientService
     }
 
     public function getPatientOverview(Patient $patient): Patient
-   {
+    {
         return $patient->load([
-           'user',
-           'medicalHistory',
-           'latestAiAnalysisResult',
+            'user',
+            'medicalHistory',
+            'latestAiAnalysisResult',
         ]);
     }
 
     public function deletePatient(Patient $patient): bool
     {
-       return DB::transaction(function () use ($patient) {
+        return DB::transaction(function () use ($patient) {
 
-          return (bool) $patient->delete();
+            return (bool) $patient->delete();
         });
     }
 }
