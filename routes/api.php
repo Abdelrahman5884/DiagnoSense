@@ -84,6 +84,7 @@ Route::prefix('v1')->group(function () {
         Route::prefix('doctors')->group(function () {
             Route::get('/profile/edit', [DoctorProfileController::class, 'edit'])->name('doctor.profile.edit');
             Route::patch('/profile', [DoctorProfileController::class, 'update'])->name('doctor.profile.update');
+            Route::delete('/profile', [DoctorProfileController::class, 'destroy'])->name('doctor.profile.destroy');
             Route::patch('/change-password', [DoctorProfileController::class, 'changePassword'])->name('doctor.password.update');
         });
         Route::post('/support', SupportController::class)->name('support.create');
@@ -118,8 +119,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/patients/{patientId}', [PatientController::class, 'edit']);
     Route::post('/support', [SupportController::class, 'store']);
     Route::put('/patients/{patientId}', [PatientController::class, 'update']);
-    Route::get('/doctors/{doctorId}', [DoctorController::class, 'edit']);
-    Route::delete('/doctors/{doctorId}', [DoctorController::class, 'destroy']);
     Route::patch('/change-password', [DoctorController::class, 'changePassword']);
     Route::get('/patients/{patientId}/comparative-analysis', [PatientController::class, 'getComparativeAnalysis']);
 });
