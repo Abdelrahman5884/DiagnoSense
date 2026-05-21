@@ -6,54 +6,110 @@ use App\Models\AiAnalysisResult;
 use App\Models\Doctor;
 use App\Models\Visit;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 
 class DashboardService
 {
     public function getSummary(Doctor $doctor): array
     {
-        $now = Carbon::now();
-        $currentMonthStart = $now->copy()->startOfMonth();
-        $previousMonthStart = $now->copy()->subMonth()->startOfMonth();
-        $previousMonthEnd = $now->copy()->subMonth()->endOfMonth();
+        $doctor->loadMissing('user');
 
-        $patientIds = $doctor->patients()->pluck('patients.id');
+        $dates = $this->getDateRanges();
 
-        $totalPatients = $patientIds->count();
+        $patients = $this->getPatients($doctor);
 
-        $todayVisits = Visit::where('doctor_id', $doctor->id)
-            ->whereDate('next_visit_date', today())
-            ->count();
+        $patientStats = $this->getPatientStats(
+            $patients,
+            $dates['currentMonthStart'],
+            $dates['previousMonthStart'],
+            $dates['previousMonthEnd']
+        );
 
-        $reportsAnalyzed = AiAnalysisResult::whereIn('patient_id', $patientIds)
-            ->where('status', 'completed')
-            ->count();
+        $reportsAnalyzed = $this->getReportsAnalyzed($patients);
 
-        $patientsThisMonth = $doctor->patients()
-            ->where('patients.created_at', '>=', $currentMonthStart)
-            ->count();
+        $todayVisits = $this->getTodayVisits($doctor);
 
-        $patientsLastMonth = $doctor->patients()
-            ->whereBetween('patients.created_at', [$previousMonthStart, $previousMonthEnd])
-            ->count();
+        $diff = $patientStats['this_month'] - $patientStats['last_month'];
 
-        $diff = $patientsThisMonth - $patientsLastMonth;
-        $growthPercentage = 0;
-
-        if ($patientsLastMonth > 0) {
-            $growthPercentage = round(($diff / $patientsLastMonth) * 100, 2);
-        } elseif ($patientsThisMonth > 0) {
-            $growthPercentage = 100;
-        }
+        $growthPercentage = $this->calculateGrowthPercentage(
+            $patientStats['this_month'],
+            $patientStats['last_month'],
+        );
 
         return [
             'doctor_name' => $doctor->user->name,
-            'total_patients' => $totalPatients,
+            'total_patients' => $patientStats['total'],
             'today_appointments' => $todayVisits,
             'reports_analyzed' => $reportsAnalyzed,
-            'last_month_count' => $patientsLastMonth,
-            'this_month_count' => $patientsThisMonth,
+            'last_month_count' => $patientStats['last_month'],
+            'this_month_count' => $patientStats['this_month'],
             'diff' => $diff,
             'growth_percentage' => $growthPercentage,
         ];
+    }
+
+    private function getDateRanges(): array
+    {
+        $now = Carbon::now();
+
+        return [
+            'currentMonthStart' => $now->copy()->startOfMonth(),
+            'previousMonthStart' => $now->copy()->subMonth()->startOfMonth(),
+            'previousMonthEnd' => $now->copy()->subMonth()->endOfMonth(),
+        ];
+    }
+
+    private function getPatients(Doctor $doctor): Collection
+    {
+        return $doctor->patients()
+            ->select('patients.id', 'patients.created_at')
+            ->get();
+    }
+
+    private function getTodayVisits(Doctor $doctor): int
+    {
+        return Visit::where('doctor_id', $doctor->id)
+            ->whereDate('next_visit_date', today())
+            ->count();
+    }
+
+    private function getReportsAnalyzed(Collection $patients): int
+    {
+        return AiAnalysisResult::whereIn(
+            'patient_id',
+            $patients->pluck('id')
+        )
+            ->where('status', 'completed')
+            ->count();
+    }
+
+    private function getPatientStats(Collection $patients,Carbon $currentMonthStart,Carbon $previousMonthStart,Carbon $previousMonthEnd
+    ): array {
+
+        return [
+            'total' => $patients->count(),
+
+            'this_month' => $patients
+                ->where('created_at', '>=', $currentMonthStart)
+                ->count(),
+
+            'last_month' => $patients
+                ->whereBetween(
+                    'created_at',
+                    [$previousMonthStart, $previousMonthEnd]
+                )
+                ->count(),
+        ];
+    }
+
+    private function calculateGrowthPercentage(int $patientsThisMonth,int $patientsLastMonth): float {
+
+        $diff = $patientsThisMonth - $patientsLastMonth;
+
+        if ($patientsLastMonth > 0) {
+            return round(($diff / $patientsLastMonth) * 100, 2);
+        }
+
+        return $patientsThisMonth > 0 ? 100 : 0;
     }
 }
