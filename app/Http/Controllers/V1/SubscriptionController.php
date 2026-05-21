@@ -77,14 +77,14 @@ class SubscriptionController extends Controller
         $doctor = $request->user()->doctor->loadMissing(['activeSubscription.plan', 'latestSubscription.plan', 'wallet']);
         if (! $doctor->billing_mode) {
             return ApiResponse::error(
-                message:'No active subscription or billing mode found.',
+                message: 'No active subscription or billing mode found.',
                 status: 404
             );
         }
 
         return ApiResponse::success(
-            message:'Current billing mode retrieved successfully',
-            data:new CurrentSubscriptionResource($doctor),
+            message: 'Current billing mode retrieved successfully',
+            data: new CurrentSubscriptionResource($doctor),
         );
     }
 
