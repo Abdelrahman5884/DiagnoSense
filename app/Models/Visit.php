@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Visit extends Model
 {
-    use LogsActivity;
+    //use LogsActivity;
 
     protected $fillable = [
         'next_visit_date',
