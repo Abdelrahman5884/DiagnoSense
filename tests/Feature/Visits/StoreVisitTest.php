@@ -13,7 +13,7 @@ beforeEach(function () {
 
 it('allow doctor to create visit successfully', function () {
     $date = now()->addDays(7)->toDateTimeString();
-    $response = $this->postJson(route('patients.visits.store', ['patient' => $this->patient->id]), [
+    $response = $this->post(route('patients.visits.store', ['patient' => $this->patient->id]), [
         'has_next_visit' => true,
         'next_visit_date' => $date,
         'action' => 'save',
@@ -42,7 +42,7 @@ it('allow doctor to create visit successfully', function () {
 
 it('prevents doctor from creating visit for unassigned patient', function () {
     $otherDoctor = createUserWithType('doctor', fake()->unique()->safeEmail());
-    $response = actingAs($otherDoctor)->postJson(route('patients.visits.store', ['patient' => $this->patient->id]), [
+    $response = actingAs($otherDoctor)->post(route('patients.visits.store', ['patient' => $this->patient->id]), [
         'has_next_visit' => true,
         'next_visit_date' => now()->addDays(7)->toDateTimeString(),
         'action' => 'save',
