@@ -1,9 +1,10 @@
 <?php
 
 use App\Models\Plan;
+
 use function Pest\Laravel\actingAs;
-use function Pest\Laravel\postJson;
 use function Pest\Laravel\getJson;
+use function Pest\Laravel\postJson;
 
 beforeEach(function () {
     $this->plan = Plan::factory()->create([

@@ -8,7 +8,8 @@ use Stripe\Subscription;
 
 class Plan extends Model
 {
-    use HasFactory ;
+    use HasFactory;
+
     const PAY_PER_USE_PRICE = 20.00;
 
     protected $fillable = [
