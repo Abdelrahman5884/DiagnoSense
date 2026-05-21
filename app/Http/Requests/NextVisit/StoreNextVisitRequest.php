@@ -3,7 +3,7 @@
 namespace App\Http\Requests\NextVisit;
 
 use App\Models\Visit;
-use Illuminate\Auth\Access\Gate;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
