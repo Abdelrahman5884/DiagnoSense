@@ -9,7 +9,6 @@ use App\Http\Resources\CurrentSubscriptionResource;
 use App\Http\Resources\PlanResource;
 use App\Models\Plan;
 use App\Notifications\PayPerUseActivated;
-use App\Notifications\SubscriptionCancelled;
 use App\Services\SubscriptionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -88,35 +87,19 @@ class SubscriptionController extends Controller
         );
     }
 
-    public function cancel(Request $request)
+    public function cancel(Request $request): JsonResponse
     {
-        $doctor = $request->user()->doctor;
-        $mode = $doctor->billing_mode;
+        try {
+            $doctor = $request->user()->doctor;
+            $doctor->loadMissing(['activeSubscription.plan']);
+            $message = $this->subscriptionService->cancelDoctorSubscription($doctor);
+            return ApiResponse::success(message: $message);
 
-        if ($mode === 'pay_per_use') {
-            $doctor->update(['billing_mode' => null]);
-
-            return ApiResponse::success('Pay-Per-Use mode has been disabled. Please subscribe to a plan to continue.', null, 200);
+        } catch (BillingValidationException $e) {
+            return ApiResponse::error(message: $e->getMessage(), status: $e->getStatusCode());
+        } catch (\Exception $e) {
+            \Log::error('Subscription Cancellation Error: ' . $e->getMessage());
+            return ApiResponse::error(message: 'An error occurred while cancelling your subscription.', status: 500);
         }
-
-        $subscription = $doctor->activeSubscription;
-
-        if (! $subscription || $mode === null) {
-            return ApiResponse::error('No active subscription or billing mode found to cancel.', null, 404);
-        }
-
-        $limitReached = $subscription->used_summaries >= $subscription->plan->summaries_limit;
-
-        $subscription->update(['status' => 'cancelled']);
-
-        if ($limitReached) {
-            $message = "Subscription cancelled. Note: You have already reached your limit of {$subscription->plan->summaries_limit} summaries.";
-        } else {
-            $remaining = $subscription->plan->summaries_limit - $subscription->used_summaries;
-            $message = "Subscription cancelled. You can still use your remaining {$remaining} summaries until ".$subscription->expires_at->format('D, F j, Y');
-        }
-        $doctor->notify(new SubscriptionCancelled($subscription->plan->name));
-
-        return ApiResponse::success($message, null, 200);
     }
 }

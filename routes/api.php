@@ -73,6 +73,7 @@ Route::prefix('v1')->group(function () {
     Route::controller(SubscriptionController::class)->middleware('auth:sanctum')->prefix('subscriptions')->as('subscriptions.')->group(function () {
         Route::post('/subscribe', 'subscribe')->name('subscribe');
         Route::get('/current', 'current')->name('current');
+        Route::post('/cancel', 'cancel')->name('cancel');
     });
 
     Route::middleware('auth:sanctum')->group(function () {
@@ -108,7 +109,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/patients/{patientId}', [PatientController::class, 'destroy']);
     Route::post('/subscription/pay-per-use', [SubscriptionController::class, 'switchToPayPerUse']);
     Route::get('/subscription/plans', [SubscriptionController::class, 'index']);
-    Route::post('/subscription/cancel', [SubscriptionController::class, 'cancel']);
     Route::get('/patient/next-visit', [PatientController::class, 'nextVisit']);
     Route::post('/chatbot/{patientId}', [ChatbotController::class, 'store'])->middleware('check-ai-access');
     Route::get('/dashboard/summary', [DashboardController::class, 'summary']);
