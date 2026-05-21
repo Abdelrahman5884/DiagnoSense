@@ -139,6 +139,7 @@ class SubscriptionService
         }
         throw new BillingValidationException(__('No active subscription found. Please subscribe to a plan.'), 403);
     }
+
     public function cancelDoctorSubscription(Doctor $doctor): string
     {
         $mode = $doctor->billing_mode;
@@ -155,11 +156,13 @@ class SubscriptionService
 
         return $this->handleSubscriptionCancellation($doctor, $subscription);
     }
+
     private function handlePayPerUseCancellation(Doctor $doctor): string
     {
         DB::transaction(function () use ($doctor) {
             $doctor->update(['billing_mode' => null]);
         });
+
         return __('Pay-Per-Use mode has been disabled. Please subscribe to a plan to continue.');
     }
 
@@ -173,26 +176,25 @@ class SubscriptionService
                 $doctor->user->notify(new SubscriptionCancelled($plan->name));
             });
         });
+
         return $this->buildCancellationMessage($subscription, $plan);
     }
-
 
     private function buildCancellationMessage(Subscription $subscription, Plan $plan): string
     {
         $limitReached = $subscription->used_summaries >= $plan->summaries_limit;
 
         if ($limitReached) {
-            return __("Subscription cancelled. Note: You have already reached your limit of :limit summaries.", [
-                'limit' => $plan->summaries_limit
+            return __('Subscription cancelled. Note: You have already reached your limit of :limit summaries.', [
+                'limit' => $plan->summaries_limit,
             ]);
         }
 
         $remaining = max(0, $plan->summaries_limit - $subscription->used_summaries);
 
-        return __("Subscription cancelled. You can still use your remaining :remaining summaries until :date", [
+        return __('Subscription cancelled. You can still use your remaining :remaining summaries until :date', [
             'remaining' => $remaining,
-            'date' => $subscription->expires_at->format('D, F j, Y')
+            'date' => $subscription->expires_at->format('D, F j, Y'),
         ]);
     }
-
 }

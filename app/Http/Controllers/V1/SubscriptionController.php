@@ -93,12 +93,14 @@ class SubscriptionController extends Controller
             $doctor = $request->user()->doctor;
             $doctor->loadMissing(['activeSubscription.plan']);
             $message = $this->subscriptionService->cancelDoctorSubscription($doctor);
+
             return ApiResponse::success(message: $message);
 
         } catch (BillingValidationException $e) {
             return ApiResponse::error(message: $e->getMessage(), status: $e->getStatusCode());
         } catch (\Exception $e) {
-            \Log::error('Subscription Cancellation Error: ' . $e->getMessage());
+            \Log::error('Subscription Cancellation Error: '.$e->getMessage());
+
             return ApiResponse::error(message: 'An error occurred while cancelling your subscription.', status: 500);
         }
     }
