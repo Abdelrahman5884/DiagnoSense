@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\V1;
 
 use App\Helpers\ApiResponse;
-use App\Http\Requests\DestroyKeyPointRequest;
 use App\Http\Requests\StoreManualNoteRequest;
 use App\Http\Requests\UpdateKeyPointRequest;
 use App\Http\Resources\KeyPointResource;
@@ -34,24 +33,39 @@ class KeyPointController extends Controller
             );
         }
     }
-
-    public function destroy(DestroyKeyPointRequest $request, $keyPointId)
+    public function destroy(KeyPoint $keyPointId): JsonResponse
     {
-        $keyPoint = KeyPoint::findOrFail($keyPointId);
-        $keyPoint->delete();
+        try {
+            $this->keyPointService->deleteKeyPoint($keyPointId);
+            return ApiResponse::success(
+              message: 'Key point deleted successfully',
+              status: 200
+            );
+        } catch (\Exception $e) {
+            \Log::error('Error deleting key point: '.$e->getMessage(),['id' => $keyPointId->id,]);
 
-        return ApiResponse::success('Key point deleted successfully', null, 200);
+            return ApiResponse::error(message: $e->getMessage(),status: $e->getCode() ?: 500
+            );
+        }
     }
+   public function update(UpdateKeyPointRequest $request,KeyPoint $keyPointId): JsonResponse 
+   {
+        try {
+            $data = $this->keyPointService->updateKeyPoint($keyPointId,$request->validated());
+ 
+            return ApiResponse::success(
+                message: 'Key point updated successfully',
+                data: $data,
+                status: 200
+            );
 
-    public function update(UpdateKeyPointRequest $request, $keyPointId)
-    {
-        $keyPoint = KeyPoint::findOrFail($keyPointId);
-        $validated = $request->validated();
-        $keyPoint->update([
-            'insight' => $validated['insight'],
-        ]);
+        } catch (\Exception $e) {
+            \Log::error('Error updating key point: '.$e->getMessage(),['id' => $keyPointId->id,]
+            );
 
-        return ApiResponse::success('Key point updated successfully', ['id' => $keyPoint->id, 'insight' => $keyPoint->insight], 200);
+            return ApiResponse::error(
+            message: $e->getMessage(),status: $e->getCode() ?: 500);
+        }
     }
 
     public function store(StoreManualNoteRequest $request, Patient $patient): JsonResponse

@@ -75,6 +75,9 @@ Route::prefix('v1')->group(function () {
         Route::get('/patients/{patientId}/overview', [PatientController::class, 'overview'])->name('patients.overview');
         Route::delete('/patients/{patientId}', [PatientController::class, 'destroy'])->name('patients.destroy');
         Route::get('/patients/{patientId}', [PatientController::class, 'edit'])->name('patients.edit');
+        Route::delete('/key-points/{keyPointId}', [KeyPointController::class, 'destroy'])->name('key-points.destroy');
+        Route::patch('/key-points/{keyPointId}', [KeyPointController::class, 'update'])->name('key-points.update');
+
         Route::patch('/patients/{patient}/status', [PatientController::class, 'updateStatus'])->name('patients.update-status');
         Route::controller(NotificationController::class)->prefix('notifications')->as('notifications.')->group(function () {
             Route::get('/', 'index')->name('index');
@@ -97,10 +100,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/patients/{patient}/items', [VisitItemController::class, 'index']);
     Route::delete('/patients/{patient}/medications/{medication}', [VisitItemController::class, 'destroyMedication']);
     Route::delete('/patients/{patient}/tasks/{task}', [VisitItemController::class, 'destroyTask']);
-    Route::patch('/patients/{patient}/status', [PatientController::class, 'updateStatus']);
-    Route::delete('/key-points/{keyPointId}', [KeyPointController::class, 'destroy']);
     Route::get('/patients/{patient}/activities', [PatientController::class, 'activityHistory']);
-    Route::patch('/key-points/{keyPointId}', [KeyPointController::class, 'update']);
     Route::post('/patients/{patientId}/key-info', [KeyPointController::class, 'store']);
     Route::get('/patients/{patientId}/decision-support', [PatientController::class, 'getDecisionSupport']);
     Route::delete('/patients/{patientId}', [PatientController::class, 'destroy']);
