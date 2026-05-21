@@ -9,7 +9,6 @@ use App\Http\Resources\QueueDashboardResource;
 use App\Http\Resources\TopDiseaseResource;
 use App\Http\Resources\WidgetsDashboardResource;
 use App\Models\AiAnalysisResult;
-use App\Models\MedicalHistory;
 use App\Models\Patient;
 use App\Services\DashboardService;
 use Carbon\Carbon;
@@ -102,16 +101,20 @@ class DashboardController extends Controller
 
     public function topDiseases(Request $request): JsonResponse
     {
-        try{
+        try {
             $doctor = $request->user()->doctor;
-            if (!$doctor) return ApiResponse::error(message: 'Doctor not found', status: 404);
+            if (! $doctor) {
+                return ApiResponse::error(message: 'Doctor not found', status: 404);
+            }
             $topDiseases = $this->dashboardService->getTopChronicDiseases($doctor);
+
             return ApiResponse::success(
                 message: 'Top 5 chronic diseases retrieved successfully',
                 data: TopDiseaseResource::collection($topDiseases)
             );
-        }catch (\Exception $e) {
-            \Log::error('Error retrieving top diseases: ' . $e->getMessage());
+        } catch (\Exception $e) {
+            \Log::error('Error retrieving top diseases: '.$e->getMessage());
+
             return ApiResponse::error(message: 'Failed to retrieve top diseases', status: 500);
         }
     }

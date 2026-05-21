@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
@@ -13,11 +14,12 @@ class TopDiseaseResource extends JsonResource
             'value' => (int) $this['value'],
         ];
     }
+
     public static function collection($resource)
     {
-        $formatted = collect($resource)->map(fn($count, $name) => [
+        $formatted = collect($resource)->map(fn ($count, $name) => [
             'label' => $name,
-            'value' => $count
+            'value' => $count,
         ])->values()->all();
 
         return parent::collection($formatted);
