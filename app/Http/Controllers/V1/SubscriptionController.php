@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\V1;
 
+use App\Exceptions\BillingValidationException;
 use App\Helpers\ApiResponse;
 use App\Http\Requests\SubscribePlanRequest;
 use App\Http\Resources\CurrentSubscriptionResource;
@@ -12,59 +13,39 @@ use App\Notifications\PayPerUseActivated;
 use App\Notifications\PlanSubscribed;
 use App\Notifications\SubscriptionCancelled;
 use App\Services\SubscriptionService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+
 
 class SubscriptionController extends Controller
 {
-    protected $subscriptionService;
+        public function __construct(
+            protected SubscriptionService $subscriptionService
+        ) {}
 
-    public function __construct(SubscriptionService $service)
+    public function subscribe(SubscribePlanRequest $request): JsonResponse
     {
-        $this->subscriptionService = $service;
-    }
+        try{
+            $doctor = $request->user()->doctor;
+            if(!$doctor) return ApiResponse::error(message: 'Doctor profile not found.', status: 404);
+            $this->subscriptionService->subscribeDoctorToPlan(
+                doctor: $doctor,
+                planId: $request->validated()['plan_id']
+            );
+            return ApiResponse::success(
+                message: 'Successfully subscribed to the plan!',
+                status: 201
+            );
 
-    public function subscribe(SubscribePlanRequest $request)
-    {
-        $validated = $request->validated();
-        $doctor = $request->user()->doctor;
-        if (! $doctor) {
-            return ApiResponse::error('Doctor profile not found.', null, 404);
-        }
-        $currentSubscription = $doctor->activeSubscription;
-        if ($currentSubscription && $currentSubscription->status === 'active') {
+        }catch (BillingValidationException $e) {
+            return ApiResponse::error(message: $e->getMessage(), status: $e->getStatusCode());
+        }catch (\Exception $e) {
+            \Log::error('Subscription Error: '.$e->getMessage(), ['plan_id' => $request->input('plan_id')]);
             return ApiResponse::error(
-                'You already have an active subscription. Please cancel it before subscribing to a new plan.',
-                null,
-                400
+                message: 'An error occurred while processing your subscription. Please try again later.',
+                status: 500
             );
         }
-        $current_balance = $doctor->wallet ? $doctor->wallet->balance : 0;
-        $plan_cost = Plan::find($validated['plan_id'])->price;
-        if ($current_balance < $plan_cost) {
-            $needed = $plan_cost - $current_balance;
-
-            return ApiResponse::error(
-                "Insufficient balance. Please recharge $needed E£ to your wallet to subscribe to this plan.",
-                null,
-                400
-            );
-        }
-        $subscription = $this->subscriptionService->subscribeDoctorToPlan($doctor, $validated['plan_id']);
-        if (! $subscription) {
-            return ApiResponse::error('Failed to process the subscription. Please try again later.', null, 500);
-        }
-        $doctor->wallet->refresh();
-        $request->user()->doctor->notify(new PlanSubscribed($subscription->plan->name));
-        if ($doctor->wallet->balance <= 0) {
-            $doctor->notify(new CreditsExhausted);
-        }
-
-        return ApiResponse::success(
-            'Successfully subscribed to the plan!',
-            null,
-            201
-        );
-
     }
 
     public function switchToPayPerUse(Request $request)
