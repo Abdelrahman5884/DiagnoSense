@@ -75,6 +75,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/patients/{patientId}/overview', [PatientController::class, 'overview'])->name('patients.overview');
         Route::delete('/patients/{patientId}', [PatientController::class, 'destroy'])->name('patients.destroy');
         Route::get('/patients/{patientId}', [PatientController::class, 'edit'])->name('patients.edit');
+        Route::patch('/patients/{patient}/status', [PatientController::class, 'updateStatus'])->name('patients.update-status');
         Route::controller(NotificationController::class)->prefix('notifications')->as('notifications.')->group(function () {
             Route::get('/', 'index')->name('index');
             Route::get('/unread-count', 'unreadCount')->name('unreadCount');

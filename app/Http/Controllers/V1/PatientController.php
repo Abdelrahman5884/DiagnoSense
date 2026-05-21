@@ -7,6 +7,7 @@ use App\Http\Resources\PatientOverviewResource;
 use App\Http\Resources\PatientEditResource;
 use App\Http\Requests\Patient\PatientListRequest;
 use App\Http\Requests\Patient\StorePatientRequest;
+use App\Http\Requests\UpdatePatientStatusRequest;
 use App\Http\Requests\UpdatePatientRequest;
 use App\Http\Resources\PatientResource;
 use App\Models\Patient;
@@ -182,7 +183,7 @@ class PatientController extends Controller
             return ApiResponse::error(message: 'AI Analysis Trigger failed: '.$e->getMessage(), status: 500);
         }
     }
-       public function edit(int $patientId): JsonResponse
+    public function edit(int $patientId): JsonResponse
         {
             try {
               $doctorId = auth()->user()->doctor->id;
@@ -200,4 +201,26 @@ class PatientController extends Controller
             return ApiResponse::error(message: 'Failed to retrieve patient data.'.$e->getMessage(),status: 500);
           }
         }
+    public function updateStatus(UpdatePatientStatusRequest $request,Patient $patient): JsonResponse {
+
+        try {
+
+            $doctorId = auth()->user()->doctor->id;
+
+            $data = $this->patientService->updatePatientStatus($doctorId,$patient,$request->validated()['status']);
+
+        return ApiResponse::success(
+            message: 'Patient status updated successfully',
+            data: $data,
+            status: 200
+         );
+
+    } catch (\Exception $e) {
+
+        \Log::error('Patient Status Update Error: '.$e->getMessage(),['id' => $patient->id,]);
+
+        return ApiResponse::error(message: $e->getMessage(),status: $e->getCode() ?: 500);
+       }
+    }
+    
 }

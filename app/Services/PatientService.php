@@ -417,5 +417,18 @@ class PatientService
              ])
               ->first();
     }
+    public function updatePatientStatus(int $doctorId,Patient $patient,string $status): array {
 
+        $isAuthorized = $patient->doctors()
+            ->where('doctor_id', $doctorId)
+            ->exists();
+
+     if (! $isAuthorized) {
+        throw new \Exception('Unauthorized access.',403);
+    }
+
+     $patient->update(['status' => $status,]);
+
+     return ['status' => $patient->status,];
+    }
 }
