@@ -14,7 +14,7 @@ class AskChatbotRequest extends FormRequest
     {
         $currentDoctor = auth()->user()->doctor;
         $patient = $this->route('patient');
-        return $currentDoctor->patients()->where('patients.id', $patient)->exists();
+        return $currentDoctor->patients()->where('patients.id', $patient->id)->exists();
     }
 
     /**
