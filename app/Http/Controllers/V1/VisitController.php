@@ -24,9 +24,9 @@ class VisitController extends Controller
         try {
             $visitDetails = $this->visitService->getVisitDetails($patient);
             $data = [
-                'tasks' => TaskResource::collection($visitDetails->tasks),
-                'medications' => MedicationResource::collection($visitDetails->medications),
-                'next_visit_date' => $visitDetails->next_visit_date ? Carbon::parse($visitDetails->next_visit_date)->toDateString() : null,
+                'tasks' => TaskResource::collection($visitDetails->flatMap->tasks),
+                'medications' => MedicationResource::collection($visitDetails->flatMap->medications),
+                'next_visit_date' => $visitDetails->first()?->next_visit_date ? Carbon::parse($visitDetails->first()->next_visit_date)->toDateString() : null,
             ];
 
             return ApiResponse::success(message: 'Visit details retrieved successfully.', data: $data);

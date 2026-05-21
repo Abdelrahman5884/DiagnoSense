@@ -5,15 +5,17 @@ namespace App\Services;
 use App\Models\Doctor;
 use App\Models\Patient;
 use App\Models\Visit;
+use Illuminate\Support\Collection;
 
 class VisitService
 {
-    public function getVisitDetails(Patient $patient): Visit
+    public function getVisitDetails(Patient $patient): Collection
     {
-        return Visit::with(['tasks', 'medications'])
-            ->where('patient_id', $patient->id)
+        return Visit::query()
+            ->whereBelongsTo($patient)
+            ->with(['tasks', 'medications'])
             ->latest()
-            ->firstOrFail();
+            ->get();
     }
 
     public function store(array $data, Patient $patient, Doctor $doctor): Visit
