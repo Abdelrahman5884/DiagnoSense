@@ -44,6 +44,9 @@ it('allows doctor to view today\'s visits successfully', function () {
                         'age',
                         'gender',
                         'appointment_time',
+                        'ai_insight' => [
+                            'summary',
+                        ],
                         'status_tag',
                 ]
             ],
