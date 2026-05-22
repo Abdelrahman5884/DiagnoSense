@@ -1,9 +1,10 @@
 <?php
 
 use App\Models\Task;
+
 use function Pest\Laravel\actingAs;
 
-beforeEach(function (){
+beforeEach(function () {
     $this->doctor = createUserWithType('doctor', fake()->safeEmail());
     $this->patient = createUserWithType('patient', fake()->safeEmail());
     actingAs($this->patient);
@@ -21,7 +22,7 @@ beforeEach(function (){
     ]);
 });
 
-it('allows patient to view their tasks', function (){
+it('allows patient to view their tasks', function () {
     $response = $this->get(route('tasks.index'));
     $response->assertStatus(200);
     $response->assertJsonStructure([
@@ -47,12 +48,12 @@ it('allows patient to view their tasks', function (){
                 ],
                 'created_at',
                 'updated_at',
-            ]
-        ]
+            ],
+        ],
     ]);
 });
 
-it('allows patient to view task details', function (){
+it('allows patient to view task details', function () {
     $response = $this->get(route('tasks.show', ['task' => $this->task1->id]));
     $response->assertStatus(200);
     $response->assertJsonStructure([
@@ -77,17 +78,17 @@ it('allows patient to view task details', function (){
             ],
             'created_at',
             'updated_at',
-        ]
+        ],
     ]);
 });
 
-it('prevents patient from viewing task details that are not assigned to them', function (){
+it('prevents patient from viewing task details that are not assigned to them', function () {
     $otherPatient = createUserWithType('patient', fake()->unique()->safeEmail());
     $response = actingAs($otherPatient)->get(route('tasks.show', ['task' => $this->task1->id]));
     $response->assertStatus(403);
 });
 
-it('allows patient to mark task as completed', function (){
+it('allows patient to mark task as completed', function () {
     $response = $this->patch(route('tasks.complete', ['task' => $this->task1->id]));
     $response->assertStatus(200);
     $response->assertJson([

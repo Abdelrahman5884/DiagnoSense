@@ -54,17 +54,18 @@ class VisitController extends Controller
 
     public function show(): JsonResponse
     {
-        try{
+        try {
             $patient = auth()->user()->patient;
             $nextVisit = $this->visitService->getNextVisit($patient);
-            if(!$nextVisit){
+            if (! $nextVisit) {
                 return ApiResponse::success(message: 'No upcoming visit.', status: 200);
             }
+
             return ApiResponse::success(
                 message: 'Next visit retrieved successfully.',
                 data: new NextVisitResource($nextVisit)
             );
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
             \Log::error('Show nest visit Error: '.$e->getMessage());
 
             return ApiResponse::error(message: 'An error occurred while fetching next visit.', status: 500);

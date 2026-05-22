@@ -24,6 +24,6 @@ it('returns next visit date', function () {
             'specialization',
             'date',
             'time',
-        ]
+        ],
     ]);
 });

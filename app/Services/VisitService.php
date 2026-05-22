@@ -26,6 +26,7 @@ class VisitService
             ->with('doctor.user')
             ->orderBy('next_visit_date')
             ->first();
+
         return $nextVisit;
     }
 

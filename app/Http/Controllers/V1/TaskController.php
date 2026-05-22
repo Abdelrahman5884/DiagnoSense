@@ -21,14 +21,15 @@ class TaskController extends Controller
 
     public function index()
     {
-        try{
+        try {
             $patient = auth()->user()->patient;
             $tasks = $this->taskService->getTasks($patient);
+
             return ApiResponse::success(
                 message: 'Tasks retrieved successfully',
                 data: TaskResource::collection($tasks),
             );
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
             \Log::error('Error fetching tasks: '.$e->getMessage(), ['exception' => $e]);
 
             return ApiResponse::error(message: 'Failed to retrieve tasks, please try again later.', status: 500);
@@ -67,14 +68,16 @@ class TaskController extends Controller
 
     public function show(GetTaskDetailsRequest $request, Task $task)
     {
-        try{
+        try {
             $task->load('visit');
+
             return ApiResponse::success(
                 message: 'Task details retrieved successfully',
                 data: new TaskResource($task),
             );
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
             \Log::error('Error fetching task details: '.$e->getMessage(), ['exception' => $e]);
+
             return ApiResponse::error(message: 'Failed to fetch task details, please try again later.', status: 500);
         }
     }
@@ -85,6 +88,7 @@ class TaskController extends Controller
             'is_completed' => ! $task->is_completed,
         ]);
         $task->load('visit');
+
         return ApiResponse::success(
             message: $task->is_completed
                ? 'Task marked as completed'
