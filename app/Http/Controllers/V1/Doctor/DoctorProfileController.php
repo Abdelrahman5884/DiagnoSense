@@ -20,15 +20,18 @@ class DoctorProfileController extends Controller
 
     public function edit(): JsonResponse
     {
-        try{
+        try {
             $user = auth()->user();
             $user = $this->doctorService->getDoctorProfileData($user);
+
             return ApiResponse::success(message: 'Doctor Information', data: new DoctorResource($user));
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             \Log::error('Doctor Profile Error: '.$e->getMessage());
+
             return ApiResponse::error(message: 'Failed to fetch doctor profile', status: 500);
         }
     }
+
     public function update(UpdateDoctorProfileRequest $request): JsonResponse
     {
         try {
@@ -50,9 +53,11 @@ class DoctorProfileController extends Controller
     {
         try {
             $this->doctorService->deleteDoctorAccount(auth()->user());
+
             return ApiResponse::success(message: 'Account deleted successfully');
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             \Log::error('Doctor Profile Error: '.$e->getMessage());
+
             return ApiResponse::error(message: 'Failed to fetch doctor profile', status: 500);
         }
 

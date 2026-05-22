@@ -2,13 +2,11 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Doctor;
 use App\Rules\CheckOldPasswordRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class DeleteDoctorAccountRequest extends FormRequest
 {
-
     /**
      * Get the validation rules that apply to the request.
      *

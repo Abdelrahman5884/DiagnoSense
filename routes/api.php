@@ -8,7 +8,6 @@ use App\Http\Controllers\V1\Auth\SocialAuthController;
 use App\Http\Controllers\V1\ChatbotController;
 use App\Http\Controllers\V1\DashboardController;
 use App\Http\Controllers\V1\Doctor\DoctorProfileController;
-use App\Http\Controllers\V1\DoctorController;
 use App\Http\Controllers\V1\FlutterNotificationController;
 use App\Http\Controllers\V1\KeyPointController;
 use App\Http\Controllers\V1\MedicalFileController;
@@ -83,7 +82,7 @@ Route::prefix('v1')->group(function () {
         });
         Route::controller(DoctorProfileController::class)->prefix('doctors')->group(function () {
             Route::get('/profile/edit', 'edit')->name('doctor.profile.edit');
-            Route::patch('/profile','update')->name('doctor.profile.update');
+            Route::patch('/profile', 'update')->name('doctor.profile.update');
             Route::delete('/profile', 'destroy')->name('doctor.profile.destroy');
             Route::patch('/change-password', 'changePassword')->name('doctor.password.update');
         });

@@ -11,8 +11,10 @@ class DoctorService
     public function getDoctorProfileData(User $user): User
     {
         $user['specialization'] = $user->doctor->specialization;
+
         return $user;
     }
+
     public function updateProfile(Doctor $doctor, array $data): void
     {
         DB::transaction(function () use ($doctor, $data) {
@@ -27,7 +29,7 @@ class DoctorService
         });
     }
 
-    public function deleteDoctorAccount(User $user) : void
+    public function deleteDoctorAccount(User $user): void
     {
         $user->doctor()->delete();
         $user->tokens()->delete();
