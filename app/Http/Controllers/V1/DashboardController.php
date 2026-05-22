@@ -21,12 +21,6 @@ class DashboardController extends Controller
         protected DashboardService $dashboardService
     ) {}
 
-    public function summary(Request $request)
-    {
-        $doctor = $request->user()->doctor;
-        if (! $doctor) {
-            return ApiResponse::error('Unauthorized', null, 403);
-        }
 
     public function summary(Request $request): JsonResponse
     {
