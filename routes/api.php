@@ -127,12 +127,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/patients/{patientId}/comparative-analysis', [PatientController::class, 'getComparativeAnalysis']);
 });
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/patient/tasks', [TaskController::class, 'index']);
-    Route::get('/patient/tasks/{task}', [TaskController::class, 'show']);
-    Route::patch('/patient/tasks/{task}/complete', [TaskController::class, 'complete']);
-});
-
 Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);
 Route::get('/payment-success', function () {
     return response()->json(['message' => 'Payment successful! You can close this tab.']);
