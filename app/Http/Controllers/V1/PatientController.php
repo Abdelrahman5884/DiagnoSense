@@ -11,7 +11,6 @@ use App\Http\Resources\ActivityLogResource;
 use App\Http\Resources\PatientEditResource;
 use App\Http\Resources\PatientOverviewResource;
 use App\Http\Resources\PatientResource;
-use App\Models\ActivityLog;
 use App\Models\Patient;
 use App\Services\PatientService;
 use Illuminate\Http\JsonResponse;
@@ -230,24 +229,24 @@ class PatientController extends Controller
         }
     }
 
-    public function activityHistory(Request $request,Patient $patient): JsonResponse {
+    public function activityHistory(Request $request, Patient $patient): JsonResponse
+    {
 
         try {
             $doctorId = auth()->user()->doctor->id;
- 
-            $logs = $this->patientService->getPatientActivities($doctorId,$patient);
+
+            $logs = $this->patientService->getPatientActivities($doctorId, $patient);
 
             return ApiResponse::success(
-               message: 'Activity history retrieved successfully',
-               data: ActivityLogResource::collection($logs),
-               status: 200
-           );
+                message: 'Activity history retrieved successfully',
+                data: ActivityLogResource::collection($logs),
+                status: 200
+            );
 
         } catch (\Exception $e) {
-            \Log::error('Error retrieving patient activities: '.$e->getMessage(),['patient_id' => $patient->id,]);
+            \Log::error('Error retrieving patient activities: '.$e->getMessage(), ['patient_id' => $patient->id]);
 
-        return ApiResponse::error(message: 'An error occurred while retrieving patient activities.'.$e->getMessage(), status: $e->getCode() ?: 500);
+            return ApiResponse::error(message: 'An error occurred while retrieving patient activities.'.$e->getMessage(), status: $e->getCode() ?: 500);
         }
     }
-
 }

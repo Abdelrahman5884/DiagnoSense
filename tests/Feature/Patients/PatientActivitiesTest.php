@@ -63,48 +63,48 @@ describe('Patient Activities', function () {
 
     it('returns activities ordered by latest first', function () {
 
-     $first = ActivityLog::create([
-        'doctor_id' => $this->doctor->id,
-        'patient_id' => $this->patient->id,
-        'changeable_type' => 'KeyPoint',
-        'changeable_id' => 1,
-        'action' => 'keypoint_created',
-        'description' => 'Created activity',
-        'created_at' => now()->subMinutes(2),
-        'updated_at' => now()->subMinutes(2),
-    ]);
+        ActivityLog::create([
+            'doctor_id' => $this->doctor->id,
+            'patient_id' => $this->patient->id,
+            'changeable_type' => 'KeyPoint',
+            'changeable_id' => 1,
+            'action' => 'keypoint_created',
+            'description' => 'Created activity',
+            'created_at' => now()->subMinutes(2),
+            'updated_at' => now()->subMinutes(2),
+        ]);
 
-    $second = ActivityLog::create([
-        'doctor_id' => $this->doctor->id,
-        'patient_id' => $this->patient->id,
-        'changeable_type' => 'KeyPoint',
-        'changeable_id' => 2,
-        'action' => 'keypoint_updated',
-        'description' => 'Updated activity',
-        'created_at' => now()->subMinute(),
-        'updated_at' => now()->subMinute(),
-    ]);
+        ActivityLog::create([
+            'doctor_id' => $this->doctor->id,
+            'patient_id' => $this->patient->id,
+            'changeable_type' => 'KeyPoint',
+            'changeable_id' => 2,
+            'action' => 'keypoint_updated',
+            'description' => 'Updated activity',
+            'created_at' => now()->subMinute(),
+            'updated_at' => now()->subMinute(),
+        ]);
 
-    $third = ActivityLog::create([
-        'doctor_id' => $this->doctor->id,
-        'patient_id' => $this->patient->id,
-        'changeable_type' => 'KeyPoint',
-        'changeable_id' => 3,
-        'action' => 'keypoint_deleted',
-        'description' => 'Deleted activity',
-        'created_at' => now(),
-        'updated_at' => now(),
-    ]);
+        ActivityLog::create([
+            'doctor_id' => $this->doctor->id,
+            'patient_id' => $this->patient->id,
+            'changeable_type' => 'KeyPoint',
+            'changeable_id' => 3,
+            'action' => 'keypoint_deleted',
+            'description' => 'Deleted activity',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
 
-    $response = $this->getJson(
-        route('patients.activities', [
-            'patient' => $this->patient->id,
-        ])
-    );
+        $response = $this->getJson(
+            route('patients.activities', [
+                'patient' => $this->patient->id,
+            ])
+        );
 
-    $response->assertStatus(200)
-        ->assertJsonCount(3, 'data');
-});
+        $response->assertStatus(200)
+            ->assertJsonCount(3, 'data');
+    });
 
     it('returns 403 when doctor tries to access unauthorized patient activities', function () {
 
