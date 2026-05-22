@@ -71,12 +71,12 @@ Route::prefix('v1')->group(function () {
     });
     Route::controller(SubscriptionController::class)->middleware('auth:sanctum')->prefix('subscription')->as('subscription.')->group(function () {
         Route::post('subscribe', 'subscribe');
-        Route::post('pay-per-use',  'switchToPayPerUse')->name('pay-per-use');
-        Route::get('plans',  'index')->name('plans');
-        Route::get('current',  'current');
-        Route::post('cancel','cancel');
+        Route::post('pay-per-use', 'switchToPayPerUse')->name('pay-per-use');
+        Route::get('plans', 'index')->name('plans');
+        Route::get('current', 'current');
+        Route::post('cancel', 'cancel');
     });
-    
+
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/patients/{patient}/overview', [PatientController::class, 'overview'])->name('patients.overview');
         Route::delete('/patients/{patient}', [PatientController::class, 'destroy'])->name('patients.destroy');

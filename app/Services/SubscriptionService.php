@@ -5,10 +5,9 @@ namespace App\Services;
 use App\Exceptions\BillingValidationException;
 use App\Models\Doctor;
 use App\Models\Plan;
-use Illuminate\Support\Facades\DB;
+use App\Notifications\PayPerUseActivated;
 use Illuminate\Database\Eloquent\Collection;
- use App\Notifications\PayPerUseActivated;
-
+use Illuminate\Support\Facades\DB;
 
 class SubscriptionService
 {
@@ -49,11 +48,11 @@ class SubscriptionService
         });
     }
 
+    public function switchToPayPerUseMode(Doctor $doctor): string
+    {
 
-    public function switchToPayPerUseMode(Doctor $doctor): string {
+        $doctor->update(['billing_mode' => 'pay-per-use']);
 
-        $doctor->update(['billing_mode' => 'pay-per-use',]);
- 
         $doctor->subscriptions()->update([
             'status' => 'cancelled',
         ]);
@@ -62,6 +61,7 @@ class SubscriptionService
 
         return 'Switched to Pay-Per-Use mode. E£ 25 will be charged per file.';
     }
+
     public function validateAiAccess(Doctor $doctor): void
     {
         $doctor->loadMissing(['wallet', 'activeSubscription.plan', 'latestSubscription.plan']);
@@ -113,6 +113,6 @@ class SubscriptionService
 
     public function getAllPlans(): Collection
     {
-         return Plan::all();
+        return Plan::all();
     }
 }

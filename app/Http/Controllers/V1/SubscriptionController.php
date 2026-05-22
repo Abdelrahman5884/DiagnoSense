@@ -72,24 +72,24 @@ class SubscriptionController extends Controller
         try {
 
             $doctor = auth()->user()->doctor;
- 
-            $message = $this->subscriptionService
-               ->switchToPayPerUseMode($doctor);
 
-        return ApiResponse::success(
-            message: $message,
-            status: 200
-        );
+            $message = $this->subscriptionService
+                ->switchToPayPerUseMode($doctor);
+
+            return ApiResponse::success(
+                message: $message,
+                status: 200
+            );
 
         } catch (\Exception $e) {
-           \Log::error('Error switching to pay per use mode: '.$e->getMessage(),['doctor_id' => auth()->user()->doctor->id,]);
+            \Log::error('Error switching to pay per use mode: '.$e->getMessage(), ['doctor_id' => auth()->user()->doctor->id]);
 
-           return ApiResponse::error(message: 'An error occurred while switching to pay-per-use mode.', status: 500);
+            return ApiResponse::error(message: 'An error occurred while switching to pay-per-use mode.', status: 500);
         }
     }
 
-   public function index(): JsonResponse
-   {
+    public function index(): JsonResponse
+    {
         try {
             $plans = $this->subscriptionService->getAllPlans();
 
@@ -97,7 +97,7 @@ class SubscriptionController extends Controller
                 message: 'Available plans retrieved successfully',
                 data: PlanResource::collection($plans),
                 status: 200
-           );
+            );
 
         } catch (\Exception $e) {
             \Log::error('Error retrieving plans: '.$e->getMessage());
@@ -106,8 +106,9 @@ class SubscriptionController extends Controller
                 message: 'An error occurred while retrieving plans.',
                 status: 500
             );
-        }  
+        }
     }
+
     public function current(Request $request)
     {
         $doctor = $request->user()->doctor->load(['subscriptions.plan']);
