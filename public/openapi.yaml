@@ -1833,6 +1833,441 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         500:
           description: 'Internal Server Error'
+  '/api/v1/dashboard/summary':
+    get:
+      summary: 'Retrieve Dashboard Widgets Summary'
+      operationId: getApiV1DashboardSummary
+      description: 'Fetches core doctor statistics including total active patients, todays scheduled appointments, total completed AI analyzed reports, and dynamic monthly growth tracking metrics.'
+      tags:
+        - Dashboard
+      security:
+        - sanctum: []
+      responses:
+        200:
+          description: 'Dashboard widgets data retrieved successfully.'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Dashboard summary retrieved successfully"
+                  data:
+                    type: object
+                    properties:
+                      doctor_name:
+                        type: string
+                        example: "Dr. Menna Baligh"
+                      widgets:
+                        type: object
+                        properties:
+                          total_patients:
+                            type: string
+                            example: "248"
+                          today_appointments:
+                            type: integer
+                            example: 8
+                          reports_analyzed:
+                            type: string
+                            example: "1,340"
+                          monthly_growth:
+                            type: object
+                            properties:
+                              details:
+                                type: object
+                                properties:
+                                  last_month:
+                                    type: integer
+                                    example: 34
+                                  this_month:
+                                    type: integer
+                                    example: 45
+                                  difference:
+                                    type: string
+                                    example: "+11"
+                                  growth_rate:
+                                    type: string
+                                    example: "32.35%"
+                                  trend:
+                                    type: string
+                                    enum: [up, down, stable]
+                                    example: "up"
+              examples:
+                PositiveGrowthSummary:
+                  summary: 'Active Metric Growth State'
+                  description: 'Example response when metrics display positive growth compared to the previous month.'
+                  value:
+                    success: true
+                    message: "Dashboard summary retrieved successfully"
+                    data:
+                      doctor_name: "Dr. Menna Baligh"
+                      widgets:
+                        total_patients: "248"
+                        today_appointments: 8
+                        reports_analyzed: "1,340"
+                        monthly_growth:
+                          details:
+                            last_month: 34
+                            this_month: 45
+                            difference: "+11"
+                            growth_rate: "32.35%"
+                            trend: "up"
+                StableZeroState:
+                  summary: 'Neutral Zero Growth State'
+                  description: 'Example response when there is no change or a newly opened profile with zero comparative history metrics.'
+                  value:
+                    success: true
+                    message: "Dashboard summary retrieved successfully"
+                    data:
+                      doctor_name: "Dr. Menna Baligh"
+                      widgets:
+                        total_patients: "0"
+                        today_appointments: 0
+                        reports_analyzed: "0"
+                        monthly_growth:
+                          details:
+                            last_month: 0
+                            this_month: 0
+                            difference: "0"
+                            growth_rate: "0%"
+                            trend: "stable"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        500:
+          description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: "Failed to retrieve dashboard summary, please try again later."
+                  data: null
+
+  '/api/v1/patients/{patientId}/visits':
+    get:
+      summary: 'Get Patient Visit History Details'
+      operationId: getApiV1PatientsVisitsIndex
+      description: 'Retrieves all historical visits for a specific patient, flattening all attached medical tasks, active medications, and extracting the latest scheduled next visit date constraint.'
+      tags:
+        - Tasks & Medications
+      security:
+        - sanctum: []
+      parameters:
+        - in: path
+          name: patientId
+          required: true
+          description: 'The row database ID of the target patient.'
+          schema:
+            type: integer
+          example: 48
+      responses:
+        200:
+          description: 'Visit history details collection retrieved successfully.'
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                SuccessVisitDetails:
+                  summary: 'Complete Visit Medical Records'
+                  value:
+                    success: true
+                    message: "Visit details retrieved successfully."
+                    data:
+                      tasks:
+                        - id: 301
+                          title: "Check Fasting Blood Sugar"
+                          description: "Daily before breakfast monitoring"
+                          notes: "Notify if reading exceeds 140 mg/dL"
+                          is_completed: false
+                          action: "save"
+                          due_date: "2026-06-15"
+                          created_at: "2026-05-22"
+                          updated_at: "2026-05-22"
+                      medications:
+                        - id: 401
+                          name: "Metformin 500mg"
+                          dosage: "1 tablet"
+                          frequency: "Twice daily"
+                          duration: "30 days"
+                          action: "save"
+                          created_at: "2026-05-22"
+                          updated_at: "2026-05-22"
+                      next_visit_date: "2026-06-15"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        500:
+          description: 'Internal Server Error'
+
+    post:
+      summary: 'Create New Patient Visit Session'
+      operationId: postApiV1PatientsVisitsStore
+      description: 'Initiates a new visit session linked to the authenticated doctor. If the action payload is "save", status sets to completed, else it saves as a draft.'
+      tags:
+        - Tasks & Medications
+      security:
+        - sanctum: []
+      parameters:
+        - in: path
+          name: patientId
+          required: true
+          schema:
+            type: integer
+          example: 48
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                required:
+                - has_next_visit
+                - action
+              properties:
+                has_next_visit:
+                  type: boolean
+                  description: 'Indicates if the patient has a scheduled upcoming next visit appointment.'
+                  example: true
+                next_visit_date:
+                  type: string
+                  format: date-time
+                  description: 'The scheduled timestamp for the next appointment. Mandatory to provide if has_next_visit is set to true.'
+                  example: "2026-06-15 10:00:00"
+                action:
+                  type: string
+                  enum: [save, next]
+                  example: "save"
+      responses:
+        201:
+          description: 'Visit record established successfully'
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                VisitCreatedSuccess:
+                  summary: 'Completed Visit Execution Payload'
+                  value:
+                    success: true
+                    message: "Visit created successfully."
+                    data:
+                      id: 88
+                      next_visit_date: "2026-06-15"
+                      status: "completed"
+                      doctor_name: "Dr. Menna Baligh"
+                      specialization: "Cardiology"
+                      date: "15 Jun, 2026"
+                      time: "10:00 AM"
+        422:
+          description: 'Validation Error'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+
+  '/api/v1/visits/{visitId}/medications':
+    post:
+      summary: 'Add Medication to a Visit'
+      operationId: postApiV1VisitsMedicationsStore
+      description: 'Appends a new prescription entry to an active visit record structure using the nested shallow route mapping framework.'
+      tags:
+        - Tasks & Medications
+      security:
+        - sanctum: []
+      parameters:
+        - in: path
+          name: visitId
+          required: true
+          schema:
+            type: integer
+          example: 88
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, dosage, frequency, action]
+              properties:
+                name:
+                  type: string
+                  example: "Concor 5mg"
+                dosage:
+                  type: string
+                  example: "Half tablet"
+                next_visit_date:
+                  type: string
+                  format: date-time
+                  description: 'Optional next visit date constraint for this medication. If provided, it must be a valid future timestamp.'
+                  example: "2026-06-15 10:00:00"
+                frequency:
+                  type: string
+                  example: "Once every morning"
+                duration:
+                  type: string
+                  example: "3 months"
+                  nullable: true
+                action:
+                  type: string
+                  example: "save"
+      responses:
+        201:
+          description: 'Medication assigned successfully.'
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                MedicationCreated:
+                  summary: 'Prescription Resource Payload'
+                  value:
+                    success: true
+                    message: "Medication created successfully"
+                    data:
+                      id: 402
+                      name: "Concor 5mg"
+                      dosage: "Half tablet"
+                      frequency: "Once every morning"
+                      duration: "3 months"
+                      action: "save"
+                      created_at: "2026-05-22"
+                      updated_at: "2026-05-22"
+        422:
+          description: 'Validation Mismatch'
+
+  '/api/v1/medications/{medicationId}':
+    delete:
+      summary: 'Delete Single Medication Entry'
+      operationId: deleteApiV1MedicationsDestroy
+      description: 'Removes a medical prescription assignment permanently via its shallow route row ID identifier.'
+      tags:
+        - Tasks & Medications
+      security:
+        - sanctum: []
+      parameters:
+        - in: path
+          name: medicationId
+          required: true
+          schema:
+            type: integer
+          example: 402
+      responses:
+        200:
+          description: 'Prescription severed successfully.'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: "Medication deleted successfully"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+
+  '/api/v1/visits/{visitId}/tasks':
+    post:
+      summary: 'Add Care Task to a Visit'
+      operationId: postApiV1VisitsTasksStore
+      description: 'Appends a patient care monitoring milestone assignment task to the visit. Requires a valid next visit date to validate due limits successfully.'
+      tags:
+        - Tasks & Medications
+      security:
+        - sanctum: []
+      parameters:
+        - in: path
+          name: visitId
+          required: true
+          schema:
+            type: integer
+          example: 88
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, action]
+              properties:
+                title:
+                  type: string
+                  example: "Low Salt Diet Plan"
+                description:
+                  type: string
+                  example: "Restrict sodium intake below 2g daily"
+                notes:
+                  type: string
+                  example: "Monitor ankle swelling records closely"
+                action:
+                  type: string
+                  example: "save"
+                next_visit_date:
+                  type: string
+                  format: date-time
+                  description: 'Optional next visit date constraint for this task. If provided, it must be a valid future timestamp.'
+                  example: "2026-06-15 10:00:00"
+      responses:
+        201:
+          description: 'Task item mapped successfully.'
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                TaskCreated:
+                  summary: 'Task Resource Payload'
+                  value:
+                    success: true
+                    message: "Task created successfully"
+                    data:
+                      id: 302
+                      title: "Low Salt Diet Plan"
+                      description: "Restrict sodium intake below 2g daily"
+                      notes: "Monitor ankle swelling records closely"
+                      is_completed: false
+                      action: "save"
+                      due_date: "2026-06-15"
+                      created_at: "2026-05-22"
+                      updated_at: "2026-05-22"
+        422:
+          description: 'Unprocessable Entity - Next visit date is required for tasks.'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: "Next visit date is required for tasks."
+
+  '/api/v1/tasks/{taskId}':
+    delete:
+      summary: 'Delete Care Task Item'
+      operationId: deleteApiV1TasksDestroy
+      description: 'Permanently destroys an action task milestone target row via shallow binding route mapping parameters.'
+      tags:
+        - Tasks & Medications
+      security:
+        - sanctum: []
+      parameters:
+        - in: path
+          name: taskId
+          required: true
+          schema:
+            type: integer
+          example: 302
+      responses:
+        200:
+          description: 'Task removed successfully.'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: "Task deleted successfully"
   '/api/v1/subscriptions/subscribe':
     post:
       summary: 'Subscribe to a Plan'

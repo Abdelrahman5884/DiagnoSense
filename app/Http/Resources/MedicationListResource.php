@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class MedicationListResource extends JsonResource
@@ -34,7 +35,7 @@ class MedicationListResource extends JsonResource
             $days = 1;
         }
 
-        $endDate = \Carbon\Carbon::parse($this->created_at)->addDays($days);
+        $endDate = Carbon::parse($this->created_at)->addDays($days);
 
         return now()->gte($endDate) ? 'COMPLETED' : 'ACTIVE';
     }

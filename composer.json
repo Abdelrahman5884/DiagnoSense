@@ -17,7 +17,7 @@
         "laravel/reverb": "^1.0",
         "laravel/sanctum": "^4.0",
         "laravel/socialite": "^5.23",
-        "laravel/telescope": "^5.18",
+        "laravel/telescope": "^5.20",
         "laravel/tinker": "^2.10.1",
         "laravel/vonage-notification-channel": "^3.3",
         "league/flysystem-azure-blob-storage": "^3.31",

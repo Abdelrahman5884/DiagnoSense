@@ -23,9 +23,6 @@ class SubscriptionController extends Controller
     {
         try {
             $doctor = $request->user()->doctor;
-            if (! $doctor) {
-                return ApiResponse::error(message: 'Doctor profile not found.', status: 404);
-            }
             $this->subscriptionService->subscribeDoctorToPlan(
                 doctor: $doctor,
                 planId: $request->validated()['plan_id']
