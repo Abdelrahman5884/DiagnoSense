@@ -55,10 +55,11 @@ class VisitController extends Controller
 
     public function attend(Visit $visit)
     {
-        try{
+        try {
             $this->visitService->attend($visit);
+
             return ApiResponse::success(message: 'Visit attended successfully.');
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
             \Log::error('Attend Visit Error: '.$e->getMessage());
 
             return ApiResponse::error(message: 'An error occurred while attending visit.', status: 500);

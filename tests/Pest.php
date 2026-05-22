@@ -160,7 +160,7 @@ function fakeAiResponse(): array
     ];
 }
 
-function createVisit(Doctor $doctor, Patient $patient,  ?Carbon $nextVisitDate = null)
+function createVisit(Doctor $doctor, Patient $patient, ?Carbon $nextVisitDate = null)
 {
     return Visit::create([
         'next_visit_date' => $nextVisitDate ?? now()->addDays(7),

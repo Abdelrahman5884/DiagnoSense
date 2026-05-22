@@ -116,7 +116,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/dashboard/status-distribution', [DashboardController::class, 'statusDistribution']);
     Route::get('/dashboard/top-diseases', [DashboardController::class, 'topDiseases']);
 
-
     Route::get('/patients/{patientId}', [PatientController::class, 'edit']);
     Route::post('/support', [SupportController::class, 'store']);
     Route::put('/patients/{patientId}', [PatientController::class, 'update']);

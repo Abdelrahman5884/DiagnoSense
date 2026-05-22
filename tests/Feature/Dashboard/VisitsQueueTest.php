@@ -3,11 +3,11 @@
 use function Pest\Laravel\actingAs;
 
 beforeEach(function () {
-  $this->user = createUserWithType('doctor', fake()->unique()->safeEmail());
+    $this->user = createUserWithType('doctor', fake()->unique()->safeEmail());
     $patient1 = createUserWithType('patient', fake()->unique()->safeEmail());
     $patient2 = createUserWithType('patient', fake()->unique()->safeEmail());
     $patient3 = createUserWithType('patient', fake()->unique()->safeEmail());
-  actingAs($this->user);
+    actingAs($this->user);
     $this->user->doctor->patients()->attach([
         $patient1->patient->id,
         $patient2->patient->id,
@@ -34,21 +34,21 @@ it('allows doctor to view today\'s visits successfully', function () {
                 'appointment_time',
                 'ai_insight' => [
                     'summary',
-                ]
+                ],
             ],
             'full_queue_list' => [
-                "*" => [
-                        'id',
-                        'patient_id',
-                        'name',
-                        'age',
-                        'gender',
-                        'appointment_time',
-                        'status_tag',
-                ]
+                '*' => [
+                    'id',
+                    'patient_id',
+                    'name',
+                    'age',
+                    'gender',
+                    'appointment_time',
+                    'status_tag',
+                ],
             ],
-            'remaining_count_label'
-        ]
+            'remaining_count_label',
+        ],
     ]);
 });
 
