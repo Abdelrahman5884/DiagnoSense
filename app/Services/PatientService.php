@@ -4,10 +4,7 @@ namespace App\Services;
 
 use App\Http\Resources\DecisionSupportResource;
 use App\Jobs\AiAnalysisJob;
-use App\Jobs\AiAnalysisJob;
 use App\Jobs\ComparativeAnalysis;
-use App\Jobs\ComparativeAnalysis;
-use App\Models\AiAnalysisResult;
 use App\Models\AiAnalysisResult;
 use App\Models\Doctor;
 use App\Models\MedicalHistory;
