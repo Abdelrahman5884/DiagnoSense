@@ -21,6 +21,7 @@ class TaskService
         return (new StoreTaskAction)->execute($visit, $data);
     }
 
+
     public function delete(Task $task): void
     {
         $task->delete();
