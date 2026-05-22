@@ -22,7 +22,7 @@ class MedicationResource extends JsonResource
             'duration' => $this->duration ?? null,
             'action' => $this->action,
             'visit' => new NextVisitResource($this->whenLoaded('visit')),
-            'create_at' => $this->created_at->format('Y-m-d'),
+            'created_at' => $this->created_at->format('Y-m-d'),
             'updated_at' => $this->updated_at->format('Y-m-d'),
         ];
     }

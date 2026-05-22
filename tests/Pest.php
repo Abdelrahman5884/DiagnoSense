@@ -3,7 +3,10 @@
 use App\Models\Doctor;
 use App\Models\Patient;
 use App\Models\User;
+use App\Models\Visit;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Tests\TestCase;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,8 +19,8 @@ use Illuminate\Http\UploadedFile;
 |
 */
 
-pest()->extend(Tests\TestCase::class)
-    ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
+pest()->extend(TestCase::class)
+    ->use(RefreshDatabase::class)
     ->in('Feature');
 
 /*
@@ -87,7 +90,7 @@ function validPatientData(): array
         'gender' => fake()->randomElement(['male', 'female']),
         'national_id' => fake()->numerify('##############'),
         'is_smoker' => fake()->boolean(),
-        'chronic_diseases' => ['diabetes','hypertension'],
+        'chronic_diseases' => ['diabetes', 'hypertension'],
         'previous_surgeries_name' => fake()->word(),
         'current_medications' => fake()->word(),
         'allergies' => fake()->word(),
@@ -119,21 +122,21 @@ function fakeAiResponse(): array
                 [
                     'title' => 'High Priority Alert 1',
                     'insight' => 'Insight 1',
-                    'evidence' => ['Evidence 1','Evidence 2'],
+                    'evidence' => ['Evidence 1', 'Evidence 2'],
                 ],
             ],
             'low_priority_alerts' => [
                 [
                     'title' => 'Low Priority Alert 1',
                     'insight' => 'Insight 1',
-                    'evidence' => ['Evidence 1','Evidence 2'],
+                    'evidence' => ['Evidence 1', 'Evidence 2'],
                 ],
             ],
             'medium_priority_alerts' => [
                 [
                     'title' => 'Medium Priority Alert 1',
                     'insight' => 'Insight 1',
-                    'evidence' => ['Evidence 1','Evidence 2'],
+                    'evidence' => ['Evidence 1', 'Evidence 2'],
                 ],
             ],
         ],
@@ -154,4 +157,14 @@ function fakeAiResponse(): array
         'message' => 'Analysis completed successfully',
         'pdf_path' => 'path/to/ocr/report.pdf',
     ];
+}
+
+function createVisit(Doctor $doctor, Patient $patient)
+{
+    return Visit::create([
+        'next_visit_date' => now()->addDays(7),
+        'doctor_id' => $doctor->id,
+        'patient_id' => $patient->id,
+        'status' => 'draft',
+    ]);
 }

@@ -8,6 +8,7 @@ use App\Models\Medication;
 use App\Models\Patient;
 use App\Models\Task;
 use App\Models\Visit;
+use Carbon\Carbon;
 
 trait LogsActivity
 {
@@ -96,7 +97,7 @@ trait LogsActivity
         $modelName = class_basename($this);
 
         $displayName = match (true) {
-            $this instanceof Visit => 'Visit on '.\Carbon\Carbon::parse($this->next_visit_date)->format('M d, Y'),
+            $this instanceof Visit => 'Visit on '.Carbon::parse($this->next_visit_date)->format('M d, Y'),
             $this instanceof Patient => $this->user?->name,
             $this instanceof KeyPoint => ($this->is_manual ? 'Doctor Note' : 'Key Point') ,
             $this instanceof Task => "Task: '{$this->title}'",
@@ -123,7 +124,7 @@ trait LogsActivity
                     $messages[] = "{$field} changed from '{$values['old']}' to '{$values['new']}'";
                 } else {
                     if ($field === 'next_visit_date') {
-                        $values['new'] = \Carbon\Carbon::parse($values['new'])->format('D, F j, Y');
+                        $values['new'] = Carbon::parse($values['new'])->format('D, F j, Y');
                         $field = 'next visit date';
                     }
                     $messages[] = "updated {$field} to '{$values['new']}'";

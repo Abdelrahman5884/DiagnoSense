@@ -7,15 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class Task extends Model
 {
-    use LogsActivity;
+    // use LogsActivity;
 
     protected $fillable = [
         'title',
         'description',
         'notes',
         'visit_id',
-        'patient_id',
-        'doctor_id',
         'is_completed',
     ];
 

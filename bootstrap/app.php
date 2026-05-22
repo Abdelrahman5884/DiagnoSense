@@ -45,7 +45,9 @@ return Application::configure(basePath: dirname(__DIR__))
         });
         $exceptions->render(function (AccessDeniedHttpException $e, $request) {
             if ($request->is('api/*')) {
-                return ApiResponse::error('Unauthorized access: You do not have permission for this action.', null, 403);
+                $message = $e->getMessage() ?: 'Unauthorized access: You do not have permission for this action.';
+
+                return ApiResponse::error(message: $message, status: 403);
             }
         });
         $exceptions->render(function (InvalidUserTypeException $e, $request) {

@@ -3,21 +3,22 @@
 namespace App\Services\Auth;
 
 use App\Events\UserRegistered;
+use App\Helpers\Auth;
 use App\Models\User;
 use App\Models\UserSocialAccount;
+use Ichtrojan\Otp\Otp;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Contracts\User as SocialiteUser;
 use Laravel\Socialite\Socialite;
-use App\Helpers\Auth;
-use Ichtrojan\Otp\Otp;
 
 class SocialAuthService
 {
     public function __construct(
         protected Otp $otp
     ) {}
+
     public function getRedirectUrl(string $provider): string
     {
         return Socialite::driver($provider)
@@ -67,6 +68,7 @@ class SocialAuthService
         $user->doctor()->create();
         $otpCode = Auth::generateOtp($user->contact, $this->otp);
         UserRegistered::dispatch($user, $otpCode);
+
         return $user;
     }
 

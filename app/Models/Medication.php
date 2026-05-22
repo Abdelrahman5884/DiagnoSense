@@ -7,13 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Medication extends Model
 {
-    use LogsActivity;
+    // use LogsActivity;
 
     protected $fillable = [
         'name',
         'dosage',
         'frequency',
-        'patient_id',
         'doctor_id',
         'duration',
         'visit_id',
