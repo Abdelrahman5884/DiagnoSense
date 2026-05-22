@@ -7,15 +7,15 @@ use App\Http\Requests\Patient\PatientListRequest;
 use App\Http\Requests\Patient\StorePatientRequest;
 use App\Http\Requests\UpdatePatientRequest;
 use App\Http\Requests\UpdatePatientStatusRequest;
+use App\Http\Resources\ActivityLogResource;
 use App\Http\Resources\PatientEditResource;
 use App\Http\Resources\PatientOverviewResource;
 use App\Http\Resources\PatientResource;
-use App\Http\Resources\ActivityLogResource;
-use App\Models\Patient;
 use App\Models\ActivityLog;
-use Illuminate\Http\Request;
+use App\Models\Patient;
 use App\Services\PatientService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class PatientController extends Controller
 {
@@ -229,7 +229,8 @@ class PatientController extends Controller
             return ApiResponse::error(message: $e->getMessage(), status: $e->getCode() ?: 500);
         }
     }
-        public function activityHistory(Request $request, $patientId)
+
+    public function activityHistory(Request $request, $patientId)
     {
         $doctor = $request->user()->doctor;
         $patient = $doctor->patients()->find($patientId);
