@@ -123,17 +123,4 @@ class DashboardController extends Controller
             return ApiResponse::error(message: 'Failed to retrieve today\'s visits, please try again later.', status: 500);
         }
     }
-
-    public function markAttended(Request $request, $patientId)
-    {
-        $doctor = $request->user()->doctor;
-        $patient = $doctor->patients()->findorfail($patientId);
-        if ($patient->next_visit_date && Carbon::parse($patient->next_visit_date)->isToday()) {
-            $patient->update([
-                'next_visit_date' => null,
-            ]);
-        }
-
-        return ApiResponse::success('Patient marked as attended and queue updated successfully.', null, 200);
-    }
 }

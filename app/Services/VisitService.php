@@ -30,4 +30,9 @@ class VisitService
 
         return $visit->load('doctor.user');
     }
+
+    public function attend(Visit $visit)
+    {
+        $visit->update(['status' => 'attended']);
+    }
 }

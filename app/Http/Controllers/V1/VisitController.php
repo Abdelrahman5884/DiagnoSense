@@ -9,6 +9,7 @@ use App\Http\Resources\MedicationResource;
 use App\Http\Resources\NextVisitResource;
 use App\Http\Resources\TaskResource;
 use App\Models\Patient;
+use App\Models\Visit;
 use App\Services\VisitService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
@@ -49,6 +50,18 @@ class VisitController extends Controller
             \Log::error('Store Visit Error: '.$e->getMessage());
 
             return ApiResponse::error(message: 'An error occurred while creating visit.', status: 500);
+        }
+    }
+
+    public function attend(Visit $visit)
+    {
+        try{
+            $this->visitService->attend($visit);
+            return ApiResponse::success(message: 'Visit attended successfully.');
+        }catch (\Exception $e) {
+            \Log::error('Attend Visit Error: '.$e->getMessage());
+
+            return ApiResponse::error(message: 'An error occurred while attending visit.', status: 500);
         }
     }
 }
