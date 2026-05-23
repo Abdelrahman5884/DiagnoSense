@@ -222,6 +222,7 @@ class PatientController extends Controller
         } catch (\Exception $e) {
 
             \Log::error('Patient Status Update Error: '.$e->getMessage(), ['id' => $patient->id]);
+
             return ApiResponse::error(message: 'Failed to update patient status.', status: 500);
         }
     }

@@ -58,7 +58,7 @@ Route::prefix('v1')->group(function () {
                 Route::get('/{patient}/comparative-analysis', 'getComparativeAnalysis')->name('comparative-analysis');
             });
             Route::patch('/{patient}', 'update')->name('update');
-            Route::patch('{patient}/status','updateStatus')->name('update-status');
+            Route::patch('{patient}/status', 'updateStatus')->name('update-status');
             Route::post('/{patient}/re-analyze', 'triggerAiAnalysis')->name('re-analyze')->middleware('check-ai-access');
 
         });

@@ -17,6 +17,7 @@ class UpdatePatientStatusRequest extends FormRequest
             return false;
         }
         $patient = $this->route('patient');
+
         return $currentDoctor->patients()->where('patients.id', $patient->id)->exists();
     }
 
