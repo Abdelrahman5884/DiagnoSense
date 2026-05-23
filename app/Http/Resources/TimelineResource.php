@@ -23,7 +23,7 @@ class TimelineResource extends JsonResource
                 ? Carbon::parse($this->next_visit_date)->format('Y-m-d h:i A')
                 : (string) $this->description,
             'doctor' => $doctorName ? 'Dr. ' . $doctorName : 'N/A',
-            'date' => $createdAt->format('d'),
+            'day' => $createdAt->format('d'),
             'month' => $createdAt->format('M'),
             'year' => $createdAt->format('Y'),
         ];
