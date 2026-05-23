@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class DeleteKeyInfoRequest extends FormRequest
@@ -14,9 +13,9 @@ class DeleteKeyInfoRequest extends FormRequest
     {
         $patient = $this->route('patient');
         $keyPoint = $this->route('keyPoint');
+
         return $patient->aiAnalysisResults()->whereHas('keyPoints', function ($query) use ($keyPoint) {
             $query->where('id', $keyPoint->id);
         })->exists();
     }
-
 }

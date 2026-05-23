@@ -66,7 +66,7 @@ Route::prefix('v1')->group(function () {
             Route::get('/{patient}/key-info', 'index')->name('key-info')->middleware('can:view,patient');
             Route::post('/{patient}/key-info', 'store')->name('add-note');
             Route::patch('{patient}/key-info/{keyPoint}', 'update')->name('key-points.update');
-            Route::delete('{patient}/key-info/{keyPoint}',  'destroy')->name('key-points.destroy');
+            Route::delete('{patient}/key-info/{keyPoint}', 'destroy')->name('key-points.destroy');
         });
     });
 
