@@ -28,5 +28,4 @@ class TimelineResource extends JsonResource
             'year' => $createdAt->format('Y'),
         ];
     }
-
 }
