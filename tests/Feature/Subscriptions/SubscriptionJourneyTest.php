@@ -23,7 +23,7 @@ beforeEach(function () {
 });
 
 it('allows a doctor to subscribe to a plan successfully', function () {
-    $response = postJson(route('subscriptions.subscribe'), ['plan_id' => $this->plan->id]);
+    $response = $this->postJson(route('subscriptions.subscribe', ['plan' => $this->plan->id]));
     $response->assertStatus(201);
 });
 

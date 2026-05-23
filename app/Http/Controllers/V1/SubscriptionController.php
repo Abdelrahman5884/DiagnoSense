@@ -4,7 +4,6 @@ namespace App\Http\Controllers\V1;
 
 use App\Exceptions\BillingValidationException;
 use App\Helpers\ApiResponse;
-use App\Http\Requests\SubscribePlanRequest;
 use App\Http\Resources\CurrentSubscriptionResource;
 use App\Http\Resources\PlanResource;
 use App\Models\Plan;
@@ -19,13 +18,14 @@ class SubscriptionController extends Controller
         protected SubscriptionService $subscriptionService
     ) {}
 
-    public function subscribe(SubscribePlanRequest $request): JsonResponse
+    public function subscribe(Request $request,Plan $plan): JsonResponse
     {
         try {
             $doctor = $request->user()->doctor;
+            if(!$doctor) return ApiResponse::error(message: 'Doctor profile not found.', status: 404);
             $this->subscriptionService->subscribeDoctorToPlan(
                 doctor: $doctor,
-                planId: $request->validated()['plan_id']
+                plan: $plan
             );
 
             return ApiResponse::success(
@@ -36,7 +36,7 @@ class SubscriptionController extends Controller
         } catch (BillingValidationException $e) {
             return ApiResponse::error(message: $e->getMessage(), status: $e->getStatusCode());
         } catch (\Exception $e) {
-            \Log::error('Subscription Error: '.$e->getMessage(), ['plan_id' => $request->input('plan_id')]);
+            \Log::error('Subscription Error: '.$e->getMessage(), ['plan_id' => $plan->id]);
 
             return ApiResponse::error(
                 message: 'An error occurred while processing your subscription. Please try again later.',

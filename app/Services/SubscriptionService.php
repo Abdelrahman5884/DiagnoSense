@@ -13,9 +13,8 @@ use Illuminate\Support\Facades\DB;
 
 class SubscriptionService
 {
-    public function subscribeDoctorToPlan(Doctor $doctor, int $planId): Subscription
+    public function subscribeDoctorToPlan(Doctor $doctor, Plan $plan): Subscription
     {
-        $plan = Plan::findOrFail($planId);
 
         return DB::transaction(function () use ($doctor, $plan) {
             $doctorWithLock = Doctor::where('id', $doctor->id)->with(['wallet', 'activeSubscription'])->lockForUpdate()->first();

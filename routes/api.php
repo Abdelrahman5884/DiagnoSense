@@ -72,7 +72,7 @@ Route::prefix('v1')->group(function () {
 
     Route::post('/patients/{patient}/chatbot/ask', ChatbotController::class)->middleware(['auth:sanctum', 'check-ai-access'])->name('patients.chatbot.ask');
     Route::controller(SubscriptionController::class)->middleware('auth:sanctum')->prefix('subscriptions')->as('subscriptions.')->group(function () {
-        Route::post('/subscribe', 'subscribe')->name('subscribe');
+        Route::post('/{plan}/subscribe', 'subscribe')->name('subscribe');
         Route::get('/current', 'current')->name('current');
         Route::post('/cancel', 'cancel')->name('cancel');
     });
