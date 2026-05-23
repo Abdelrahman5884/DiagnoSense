@@ -35,7 +35,7 @@ it('switches doctor to pay per use mode successfully', function () {
     $response = $this->postJson(route('subscription.pay-per-use'));
 
     $response->assertStatus(200)
-        ->assertJsonPath('message', 'Switched to Pay-Per-Use mode. E£ 25 will be charged per file.');
+        ->assertJsonPath('message', 'Switched to Pay-Per-Use mode. 20EGP will be charged per file.');
 
     expect($this->doctor->fresh()->billing_mode)->toBe('pay-per-use');
 
