@@ -80,7 +80,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/medications', [MedicationController::class, 'index'])->name('medications.index');
         Route::get('/timeline', TimelineController::class)->name('timeline.index');
         Route::patch('/fcm-token', [PatientController::class, 'updateFcmToken'])->name('patients.fcm-token');
-        Route::get('/mobile-notifications', MobileNotificationController::class)->name('notifications.index');
+        Route::get('/mobile-notifications', MobileNotificationController::class)->name('mobile.notifications');
         Route::get('/patients/{patient}/overview', [PatientController::class, 'overview'])->name('patients.overview');
         Route::delete('/patients/{patient}', [PatientController::class, 'destroy'])->name('patients.destroy');
         Route::get('/dashboard/summary', [DashboardController::class, 'summary'])->name('dashboard.summary');
