@@ -67,7 +67,9 @@ class SubscriptionController extends Controller
     {
         try {
             $doctor = $request->user()->doctor;
-            if (!$doctor) return ApiResponse::error(message:'Doctor profile not found.',status: 404);
+            if (! $doctor) {
+                return ApiResponse::error(message: 'Doctor profile not found.', status: 404);
+            }
 
             $message = $this->subscriptionService->switchToPayPerUseMode($doctor);
 
@@ -81,8 +83,6 @@ class SubscriptionController extends Controller
             return ApiResponse::error(message: 'An error occurred while switching to pay-per-use mode.', status: 500);
         }
     }
-
-
 
     public function current(Request $request)
     {
