@@ -2330,7 +2330,7 @@ paths:
                 example:
                   success: true
                   message: "Task deleted successfully"
-  '/api/v1/subscriptions/subscribe':
+  '/api/v1/subscriptions/{plan}/subscribe':
     post:
       summary: 'Subscribe to a Plan'
       operationId: postApiV1SubscriptionsSubscribe
@@ -2339,19 +2339,14 @@ paths:
         - Subscriptions
       security:
         - sanctum: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - plan_id
-              properties:
-                plan_id:
-                  type: integer
-                  description: 'The unique structural database ID of the plan to subscribe to.'
-                  example: 17
+      parameters:
+        - name: plan
+          in: path
+          required: true
+          description: 'The unique structural database ID of the plan to subscribe to.'
+          schema:
+            type: integer
+          example: 17
       responses:
         201:
           description: 'Successfully subscribed to the plan!'
@@ -2366,7 +2361,7 @@ paths:
         401:
           $ref: '#/components/responses/Unauthorized'
         403:
-          description: 'Billing Validation Conflict - Already has an active subscription or insufficient wallet credits balance.'
+          description: 'Billing Validation Conflict - Already has an active subscription, unauthorized non-doctor user, or insufficient wallet credits balance.'
           content:
             application/json:
               schema:
@@ -2376,26 +2371,15 @@ paths:
                   message: "Insufficient credits. Please recharge E£45 to your wallet to subscribe to this plan."
                   data: null
         404:
-          description: 'Not Found - Doctor profile associated with the token does not exist'
+          description: 'Not Found - The selected plan ID or doctor profile associated with the token does not exist'
           content:
             application/json:
               schema:
                 type: object
                 example:
                   success: false
-                  message: "Doctor profile not found."
+                  message: "Doctor profile or plan not found."
                   data: null
-        422:
-          description: 'Validation Error - Plan ID field is missing, not an integer, or does not exist in the plans database table'
-          content:
-            application/json:
-              schema:
-                type: object
-                example:
-                  success: false
-                  message: "The given data was invalid."
-                  errors:
-                    plan_id: ["The selected plan is invalid."]
         500:
           description: 'Internal Server Error - Operational database transaction rollback'
           content:
