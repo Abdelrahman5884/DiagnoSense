@@ -12,7 +12,7 @@ class PatientIngestion extends Model
         'patient_id',
         'status',
         'error_message',
-        'files_hash',
+        'file_hash',
     ];
 
     public function patient()

@@ -1,5 +1,6 @@
 <?php
 
+
 use App\Http\Controllers\V1\Auth\AuthenticatedController;
 use App\Http\Controllers\V1\Auth\ContactVerificationController;
 use App\Http\Controllers\V1\Auth\RegisterController;
@@ -21,6 +22,7 @@ use App\Http\Controllers\V1\SupportController;
 use App\Http\Controllers\V1\TaskController;
 use App\Http\Controllers\V1\VisitController;
 use App\Http\Controllers\V1\WalletController;
+use Illuminate\Http\Request;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
@@ -44,6 +46,9 @@ Route::prefix('v1')->group(function () {
             Route::post('/logout/{type}', [AuthenticatedController::class, 'logout'])->name('logout');
             Route::post('/verify-contact', [ContactVerificationController::class, 'verifyContact'])->name('verify-contact');
             Route::get('/resend-otp', [ContactVerificationController::class, 'resendOtp'])->name('resend-otp');
+            Route::post('/logout/{type}', [AuthenticatedController::class, 'logout'])->name('logout');
+            Route::post('/verify-contact', [ContactVerificationController::class, 'verifyContact']);
+            Route::get('/resend-otp', [ContactVerificationController::class, 'resendOtp']);
         });
     });
 
@@ -69,6 +74,8 @@ Route::prefix('v1')->group(function () {
         Route::post('charge', 'store')->name('charge');
         Route::get('transactions', 'index')->name('transactions');
     });
+
+    Route::post('/patients/{patient}/chatbot/ask', ChatbotController::class)->middleware(['auth:sanctum', 'check-ai-access'])->name('patients.chatbot.ask');
     Route::controller(SubscriptionController::class)->middleware('auth:sanctum')->prefix('subscriptions')->as('subscriptions.')->group(function () {
         Route::post('/subscribe', 'subscribe')->name('subscribe');
         Route::get('/current', 'current')->name('current');
@@ -116,7 +123,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/subscription/pay-per-use', [SubscriptionController::class, 'switchToPayPerUse']);
     Route::get('/subscription/plans', [SubscriptionController::class, 'index']);
     Route::get('/patient/next-visit', [PatientController::class, 'nextVisit']);
-    Route::post('/chatbot/{patientId}', [ChatbotController::class, 'store'])->middleware('check-ai-access');
+    Route::get('/dashboard/summary', [DashboardController::class, 'summary']);
+    Route::get('/dashboard/status-distribution', [DashboardController::class, 'statusDistribution']);
+    Route::get('/dashboard/top-diseases', [DashboardController::class, 'topDiseases']);
 
 
     Route::get('/dashboard/today-visits', [DashboardController::class, 'todayVisits']);
