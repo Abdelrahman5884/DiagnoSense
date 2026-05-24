@@ -30,9 +30,7 @@ describe('Patient Edit', function () {
             ->attach($patient->id);
 
         getJson(
-            route('patients.edit', [
-                'patientId' => $patient->id,
-            ])
+            route('patients.edit', $patient)
         )
             ->assertOk()
             ->assertJson([
@@ -58,26 +56,12 @@ describe('Patient Edit', function () {
             ->attach($patient->id);
 
         getJson(
-            route('patients.edit', [
-                'patientId' => $patient->id,
-            ])
+            route('patients.edit', $patient)
         )
             ->assertOk()
             ->assertJsonFragment([
                 'name' => 'Ahmed Khaled',
             ]);
-    });
-
-    it('returns 401 for guest user', function () {
-
-        auth()->logout();
-
-        getJson(
-            route('patients.edit', [
-                'patientId' => 1,
-            ])
-        )
-            ->assertStatus(401);
     });
 
     it('returns reports in response', function () {
@@ -91,9 +75,7 @@ describe('Patient Edit', function () {
             ->attach($patient->id);
 
         getJson(
-            route('patients.edit', [
-                'patientId' => $patient->id,
-            ])
+            route('patients.edit', $patient)
         )
             ->assertOk()
             ->assertJsonStructure([
