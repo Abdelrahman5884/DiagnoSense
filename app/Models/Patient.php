@@ -10,13 +10,23 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Patient extends Model
 {
-    use HasFactory;
-    use LogsActivity , SoftDeletes;
+    use HasFactory , LogsActivity , SoftDeletes;
+
+    protected array $logOnlyEvents = ['updated'];
+
+    public function toActivityDisplayName(): string
+    {
+        return $this->user?->name ?? 'Unknown Patient';
+    }
+
+    public function getActivityPatientId(): int
+    {
+        return $this->id;
+    }
 
     const STATUS_CRITICAL = 'critical';
 
@@ -97,9 +107,9 @@ class Patient extends Model
         return $this->hasOne(AiAnalysisResult::class)->latest();
     }
 
-    public function activities(): MorphMany
+    public function activityLogs(): HasMany
     {
-        return $this->morphMany(ActivityLog::class, 'model');
+        return $this->hasMany(ActivityLog::class, 'patient_id');
     }
 
     public function refreshVisitDates(?string $newDate = null): void

@@ -2,11 +2,13 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateKeyPointRequest extends FormRequest
+class DeleteKeyInfoRequest extends FormRequest
 {
+    /**
+     * Determine if the user is authorized to make this request.
+     */
     public function authorize(): bool
     {
         $patient = $this->route('patient');
@@ -15,17 +17,5 @@ class UpdateKeyPointRequest extends FormRequest
         return $patient->aiAnalysisResults()->whereHas('keyPoints', function ($query) use ($keyPoint) {
             $query->where('id', $keyPoint->id);
         })->exists();
-    }
-
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, ValidationRule|array<mixed>|string>
-     */
-    public function rules(): array
-    {
-        return [
-            'insight' => 'required|string',
-        ];
     }
 }

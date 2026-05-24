@@ -2,9 +2,9 @@
 
 namespace App\Http\Resources;
 
+use App\Helpers\FileSystem;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Storage;
 
 class PatientEditResource extends JsonResource
 {
@@ -19,8 +19,7 @@ class PatientEditResource extends JsonResource
             'id' => $this->id,
             'personal_info' => [
                 'name' => $this->user->name,
-                'email' => $this->user->email,
-                'phone' => $this->user->phone,
+                'contact' => $this->user->contact,
                 'age' => $this->age,
                 'gender' => $this->gender,
                 'national_id' => $this->national_id,
@@ -30,7 +29,7 @@ class PatientEditResource extends JsonResource
                 'id' => $report->id,
                 'type' => $report->type,
                 'name' => $report->file_name,
-                'url' => Storage::disk('azure')->temporaryUrl($report->file_path, now()->addMinutes(30)),
+                'url' => FileSystem::getTempUrl($report->file_path),
             ]),
         ];
     }

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\V1;
 
 use App\Helpers\ApiResponse;
-use App\Http\Requests\DestroyKeyPointRequest;
+use App\Http\Requests\DeleteKeyInfoRequest;
 use App\Http\Requests\StoreManualNoteRequest;
 use App\Http\Requests\UpdateKeyPointRequest;
 use App\Http\Resources\KeyPointResource;
@@ -35,23 +35,31 @@ class KeyPointController extends Controller
         }
     }
 
-    public function destroy(DestroyKeyPointRequest $request, $keyPointId)
+    public function destroy(DeleteKeyInfoRequest $request, Patient $patient, KeyPoint $keyPoint): JsonResponse
     {
-        $keyPoint = KeyPoint::findOrFail($keyPointId);
-        $keyPoint->delete();
+        try {
+            $this->keyPointService->deleteKeyPoint($keyPoint);
 
-        return ApiResponse::success('Key point deleted successfully', null, 200);
+            return ApiResponse::success(message: 'Key point deleted successfully');
+        } catch (\Exception $e) {
+            \Log::error('Error deleting key point: '.$e->getMessage(), ['id' => $keyPoint->id]);
+
+            return ApiResponse::error(message: 'Error while deleting key point', status: 500);
+        }
     }
 
-    public function update(UpdateKeyPointRequest $request, $keyPointId)
+    public function update(UpdateKeyPointRequest $request, Patient $patient, KeyPoint $keyPoint): JsonResponse
     {
-        $keyPoint = KeyPoint::findOrFail($keyPointId);
-        $validated = $request->validated();
-        $keyPoint->update([
-            'insight' => $validated['insight'],
-        ]);
+        try {
+            $this->keyPointService->updateKeyPoint($keyPoint, $request->validated());
 
-        return ApiResponse::success('Key point updated successfully', ['id' => $keyPoint->id, 'insight' => $keyPoint->insight], 200);
+            return ApiResponse::success(message: 'Key point updated successfully');
+
+        } catch (\Exception $e) {
+            \Log::error('Error updating key point: '.$e->getMessage(), ['id' => $keyPoint->id]);
+
+            return ApiResponse::error(message: 'Error while updating key point', status: 500);
+        }
     }
 
     public function store(StoreManualNoteRequest $request, Patient $patient): JsonResponse

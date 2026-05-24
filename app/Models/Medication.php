@@ -9,6 +9,13 @@ class Medication extends Model
 {
     // use LogsActivity;
 
+    protected array $logOnlyEvents = ['created', 'updated', 'deleted'];
+
+    public function toActivityDisplayName(): string
+    {
+        return "Medication: '{$this->name}'";
+    }
+
     protected $fillable = [
         'name',
         'dosage',
