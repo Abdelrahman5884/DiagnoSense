@@ -6,7 +6,7 @@ use App\Actions\Subscription\GetTransactionHistoryAction;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\V1\Controller;
 use App\Http\Requests\ChargeWalletRequest;
-use App\Services\PaymobService;
+use App\Services\Subscription\PaymobService;
 use Illuminate\Http\JsonResponse;
 
 class WalletController extends Controller

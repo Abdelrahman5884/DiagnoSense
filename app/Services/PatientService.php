@@ -10,6 +10,7 @@ use App\Models\Doctor;
 use App\Models\MedicalHistory;
 use App\Models\Patient;
 use App\Models\User;
+use App\Services\Subscription\SubscriptionService;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Bus;

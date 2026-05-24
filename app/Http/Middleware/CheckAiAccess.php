@@ -4,7 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Exceptions\Subscription\BillingValidationException;
 use App\Helpers\ApiResponse;
-use App\Services\SubscriptionService;
+use App\Services\Subscription\SubscriptionService;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;

@@ -4,7 +4,7 @@ use App\Jobs\Ai\AiAnalysisJob;
 use App\Models\AiAnalysisResult;
 use App\Models\KeyPoint;
 use App\Models\MedicalHistory;
-use App\Services\AiAnalysisBillingService;
+use App\Services\Subscription\AiAnalysisBillingService;
 use Illuminate\Support\Facades\Http;
 
 beforeEach(function () {

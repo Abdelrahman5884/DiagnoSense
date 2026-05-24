@@ -7,7 +7,7 @@ use App\Helpers\ApiResponse;
 use App\Http\Controllers\V1\Controller;
 use App\Http\Resources\Subscription\CurrentSubscriptionResource;
 use App\Models\Plan;
-use App\Services\SubscriptionService;
+use App\Services\Subscription\SubscriptionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 

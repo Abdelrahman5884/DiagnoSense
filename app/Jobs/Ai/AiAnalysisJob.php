@@ -5,7 +5,7 @@ namespace App\Jobs\Ai;
 use App\Helpers\FileSystem;
 use App\Models\AiAnalysisResult;
 use App\Models\Doctor;
-use App\Services\AiAnalysisBillingService;
+use App\Services\Subscription\AiAnalysisBillingService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Queue\Queueable;
