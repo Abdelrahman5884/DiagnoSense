@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Helpers\FileSystem;
-use App\Http\Resources\KeyPointResource;
+use App\Http\Resources\AnalyzeResult\KeyPointResource;
 use App\Models\AiAnalysisResult;
 use App\Models\KeyPoint;
 use App\Models\Patient;

@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Http\Resources\DecisionSupportResource;
+use App\Http\Resources\AnalyzeResult\DecisionSupportResource;
 use App\Jobs\AiAnalysisJob;
 use App\Jobs\ComparativeAnalysis;
 use App\Models\AiAnalysisResult;

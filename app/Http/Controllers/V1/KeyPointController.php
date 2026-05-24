@@ -6,7 +6,7 @@ use App\Helpers\ApiResponse;
 use App\Http\Requests\KeyPoint\DeleteKeyInfoRequest;
 use App\Http\Requests\KeyPoint\UpdateKeyPointRequest;
 use App\Http\Requests\StoreManualNoteRequest;
-use App\Http\Resources\KeyPointResource;
+use App\Http\Resources\AnalyzeResult\KeyPointResource;
 use App\Models\KeyPoint;
 use App\Models\Patient;
 use App\Services\KeyPointService;
