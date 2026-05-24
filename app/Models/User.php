@@ -2,10 +2,9 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Traits\LogsActivity;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -30,13 +29,6 @@ class User extends Authenticatable
         'contact_verified_at',
         'fcm_token',
     ];
-
-    public function toSearchableArray()
-    {
-        return [
-            'name' => $this->name,
-        ];
-    }
 
     /**
      * The attributes that should be hidden for serialization.
@@ -66,7 +58,7 @@ class User extends Authenticatable
         return $this->hasOne(Doctor::class);
     }
 
-    public function socialAccounts()
+    public function socialAccounts(): HasMany
     {
         return $this->hasMany(UserSocialAccount::class);
     }
@@ -76,17 +68,16 @@ class User extends Authenticatable
         return $this->hasOne(Patient::class);
     }
 
-    // add type of notification
     public function routeNotificationForVonage($notification): string
     {
         return '20'.ltrim($this->contact, '0');
     }
 
-    public function routeNotificationForMail()
+    public function routeNotificationForMail(): string
     {
         return $this->contact;
     }
-    public function routeNotificationForFcm()
+    public function routeNotificationForFcm(): string
     {
         return $this->fcm_token;
     }
