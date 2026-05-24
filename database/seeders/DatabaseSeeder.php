@@ -23,8 +23,6 @@ class DatabaseSeeder extends Seeder
         // ]);
         $this->call([
             PlanSeeder::class,
-            PatientSeeder::class,
-            AiAnalysisSeeder::class,
         ]);
 
     }
