@@ -11,15 +11,10 @@ class CreditAdded extends Notification implements ShouldBroadcast
 {
     use Queueable;
 
-    protected $amount;
-
-    protected $newBalance;
-
-    public function __construct($amount, $newBalance)
-    {
-        $this->amount = $amount;
-        $this->newBalance = $newBalance;
-    }
+    public function __construct(
+        protected float|int|string $amount,
+        protected float|int|string $newBalance,
+    ) {}
 
     /**
      * Get the notification's delivery channels.
