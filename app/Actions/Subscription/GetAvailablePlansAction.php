@@ -2,7 +2,7 @@
 
 namespace App\Actions\Subscription;
 
-use App\Http\Resources\PlanResource;
+use App\Http\Resources\Subscription\PlanResource;
 use App\Models\Plan;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 

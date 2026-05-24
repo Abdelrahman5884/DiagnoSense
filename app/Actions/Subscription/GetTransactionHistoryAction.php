@@ -2,7 +2,7 @@
 
 namespace App\Actions\Subscription;
 
-use App\Http\Resources\TransactionResource;
+use App\Http\Resources\Subscription\TransactionResource;
 use App\Models\Doctor;
 
 final class GetTransactionHistoryAction

@@ -5,7 +5,7 @@ namespace App\Http\Controllers\V1\Subscription;
 use App\Exceptions\Subscription\BillingValidationException;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\V1\Controller;
-use App\Http\Resources\CurrentSubscriptionResource;
+use App\Http\Resources\Subscription\CurrentSubscriptionResource;
 use App\Models\Plan;
 use App\Services\SubscriptionService;
 use Illuminate\Http\JsonResponse;
