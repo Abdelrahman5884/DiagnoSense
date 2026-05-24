@@ -1,6 +1,5 @@
 <?php
 
-
 use App\Http\Controllers\V1\Auth\AuthenticatedController;
 use App\Http\Controllers\V1\Auth\ContactVerificationController;
 use App\Http\Controllers\V1\Auth\RegisterController;
@@ -15,6 +14,7 @@ use App\Http\Controllers\V1\MedicalFileController;
 use App\Http\Controllers\V1\MedicationController;
 use App\Http\Controllers\V1\NotificationController;
 use App\Http\Controllers\V1\PatientController;
+use App\Http\Controllers\V1\PatientProfileController;
 use App\Http\Controllers\V1\PaymobWebhookController;
 use App\Http\Controllers\V1\PlanController;
 use App\Http\Controllers\V1\SubscriptionController;
@@ -88,7 +88,16 @@ Route::prefix('v1')->group(function () {
         Route::get('/top-diseases', 'topDiseases')->name('top-diseases');
     });
 
+    Route::middleware('auth:sanctum')->prefix('patient')->as('patient.')->group(function () {
+        Route::get('medical-files', MedicalFileController::class)->name('medical-files.index');
+    });
+    Route::patch('/profile', [PatientProfileController::class, 'update'])->name('profile.update')->middleware('auth:sanctum');
+
     Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/next-visit', [VisitController::class, 'show'])->name('next-visit');
+        Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
+        Route::get('/tasks/{task}', [TaskController::class, 'show'])->name('tasks.show');
+        Route::patch('/tasks/{task}/complete', [TaskController::class, 'complete'])->name('tasks.complete');
         Route::get('/patients/{patient}/activities', [PatientController::class, 'activityHistory'])->name('patients.activities');
 
         Route::get('/patients/{patient}/overview', [PatientController::class, 'overview'])->name('patients.overview');
@@ -130,6 +139,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/patients/{patientId}', [PatientController::class, 'destroy']);
     Route::post('/subscription/pay-per-use', [SubscriptionController::class, 'switchToPayPerUse']);
     Route::get('/subscription/plans', [SubscriptionController::class, 'index']);
+    Route::get('/subscription/current', [SubscriptionController::class, 'current']);
+    Route::post('/subscription/cancel', [SubscriptionController::class, 'cancel']);
+    Route::post('/chatbot/{patientId}', [ChatbotController::class, 'store'])->middleware('check-ai-access');
     Route::get('/patient/next-visit', [PatientController::class, 'nextVisit']);
     Route::get('/dashboard/summary', [DashboardController::class, 'summary']);
     Route::get('/dashboard/status-distribution', [DashboardController::class, 'statusDistribution']);
@@ -140,13 +152,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/patients/{patientId}/comparative-analysis', [PatientController::class, 'getComparativeAnalysis']);
 });
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/patient/tasks', [TaskController::class, 'index']);
-    Route::get('/patient/tasks/{task}', [TaskController::class, 'show']);
-    Route::patch('/patient/tasks/{task}/complete', [TaskController::class, 'complete']);
-});
-
-Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);
+// Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);
 Route::get('/payment-success', function () {
     return response()->json(['message' => 'Payment successful! You can close this tab.']);
 })->name('payment.success');
@@ -155,13 +161,9 @@ Route::get('/payment-cancel', function () {
 })->name('payment.cancel');
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/patient/medical-history', [MedicalFileController::class, 'medicalHistoryFiles']);
-    Route::get('/patient/lab-reports', [MedicalFileController::class, 'labReports']);
-    Route::get('/patient/radiology-reports', [MedicalFileController::class, 'radiologyReports']);
     Route::get('/patient/medications', [MedicalFileController::class, 'medications']);
     Route::get('/patient/timeline', [MedicalFileController::class, 'timeline']);
     Route::get('/patient/notifications', [FlutterNotificationController::class, 'index']);
-    Route::put('/patient/profile', [MedicalFileController::class, 'update']);
 });
 
 Broadcast::routes(['middleware' => ['auth:sanctum']]);

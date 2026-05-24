@@ -5,6 +5,7 @@ namespace App\Http\Controllers\V1;
 use App\Helpers\ApiResponse;
 use App\Http\Requests\CompleteTaskRequest;
 use App\Http\Requests\DeleteTaskRequest;
+use App\Http\Requests\GetTaskDetailsRequest;
 use App\Http\Requests\NextVisit\StoreTaskRequest;
 use App\Http\Resources\TaskResource;
 use App\Models\Task;
@@ -20,22 +21,19 @@ class TaskController extends Controller
 
     public function index()
     {
-        $patient = auth()->user()->patient;
+        try {
+            $patient = auth()->user()->patient;
+            $tasks = $this->taskService->getTasks($patient);
 
-        if (! $patient) {
-            return ApiResponse::error('Unauthorized', null, 403);
+            return ApiResponse::success(
+                message: 'Tasks retrieved successfully',
+                data: TaskResource::collection($tasks),
+            );
+        } catch (\Exception $e) {
+            \Log::error('Error fetching tasks: '.$e->getMessage(), ['exception' => $e]);
+
+            return ApiResponse::error(message: 'Failed to retrieve tasks, please try again later.', status: 500);
         }
-
-        $tasks = $patient->tasks()
-            ->with('visit')
-            ->latest()
-            ->get();
-
-        return ApiResponse::success(
-            message: 'Tasks retrieved successfully',
-            data: TaskResource::collection($tasks),
-            statusCode: 200
-        );
     }
 
     public function store(StoreTaskRequest $request, Visit $visit): JsonResponse
@@ -68,40 +66,34 @@ class TaskController extends Controller
         }
     }
 
-    public function show($task)
+    public function show(GetTaskDetailsRequest $request, Task $task)
     {
-        $patient = auth()->user()->patient;
-        $task = Task::with('visit')->findOrFail($task);
+        try {
+            $task->load('visit');
 
-        if ($task->patient_id !== $patient->id) {
-
-            return ApiResponse::error(
-                'Unauthorized access',
-                null,
-                403
+            return ApiResponse::success(
+                message: 'Task details retrieved successfully',
+                data: new TaskResource($task),
             );
-        }
+        } catch (\Exception $e) {
+            \Log::error('Error fetching task details: '.$e->getMessage(), ['exception' => $e]);
 
-        return ApiResponse::success(
-            message: 'Task retrieved successfully',
-            data: new TaskResource($task),
-            statusCode: 200
-        );
+            return ApiResponse::error(message: 'Failed to fetch task details, please try again later.', status: 500);
+        }
     }
 
-    public function complete(CompleteTaskRequest $request, $task)
+    public function complete(CompleteTaskRequest $request, Task $task)
     {
-        $task = Task::findOrFail($task);
         $task->update([
             'is_completed' => ! $task->is_completed,
         ]);
+        $task->load('visit');
 
         return ApiResponse::success(
             message: $task->is_completed
                ? 'Task marked as completed'
                : 'Task marked as uncompleted',
             data: new TaskResource($task),
-            statusCode: 200
         );
     }
 }
