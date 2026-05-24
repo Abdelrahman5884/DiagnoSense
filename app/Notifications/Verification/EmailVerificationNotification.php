@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Notifications;
+namespace App\Notifications\Verification;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -26,10 +26,5 @@ class EmailVerificationNotification extends Notification implements ShouldQueue
                 'name' => $notifiable->name,
                 'otp' => $this->otp,
             ]);
-    }
-
-    public function toArray(object $notifiable): array
-    {
-        return [];
     }
 }

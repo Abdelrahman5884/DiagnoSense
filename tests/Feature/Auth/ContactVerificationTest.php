@@ -1,7 +1,7 @@
 <?php
 
 use App\Mail\EmailVerificationMail;
-use App\Notifications\EmailVerificationSMSNotification;
+use App\Notifications\Verification\EmailVerificationSMSNotification;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
 

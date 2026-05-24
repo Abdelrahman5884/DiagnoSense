@@ -4,7 +4,7 @@ namespace App\Listeners\Email;
 
 use App\Events\User\UserRegistered;
 use App\Mail\EmailVerificationMail;
-use App\Notifications\EmailVerificationSMSNotification;
+use App\Notifications\Verification\EmailVerificationSMSNotification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Mail;
 
