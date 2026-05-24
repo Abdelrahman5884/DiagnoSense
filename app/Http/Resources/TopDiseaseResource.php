@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class TopDiseaseResource extends JsonResource
@@ -15,7 +16,7 @@ class TopDiseaseResource extends JsonResource
         ];
     }
 
-    public static function collection($resource)
+    public static function collection($resource): AnonymousResourceCollection
     {
         $formatted = collect($resource)->map(fn ($count, $name) => [
             'label' => $name,
