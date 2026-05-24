@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\V1;
 
-use App\Exceptions\InvalidHmacException;
-use App\Exceptions\MissingHmacException;
+use App\Exceptions\Hmac\InvalidHmacException;
+use App\Exceptions\Hmac\MissingHmacException;
 use App\Models\Transactions;
 use App\Models\Wallet;
 use Illuminate\Http\JsonResponse;
