@@ -20,6 +20,10 @@ class Plan extends Model
         'features',
     ];
 
+    protected $casts = [
+        'features' => 'array',
+    ];
+
     public function subscriptions()
     {
         return $this->hasMany(Subscription::class);

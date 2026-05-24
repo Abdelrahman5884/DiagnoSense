@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Exceptions\BillingValidationException;
 use App\Models\Doctor;
 use App\Models\Plan;
+use App\Notifications\PayPerUseActivated;
 use App\Models\Subscription;
 use App\Notifications\CreditsExhausted;
 use App\Notifications\PlanSubscribed;
@@ -83,11 +84,26 @@ class SubscriptionService
         }
     }
 
-    public function setPayPerUseMode(Doctor $doctor)
+    public function switchToPayPerUseMode(Doctor $doctor): string
     {
-        $doctor->update(['billing_mode' => 'pay_per_use']);
 
-        $doctor->subscriptions()->update(['status' => 'cancelled']);
+        DB::transaction(function () use ($doctor) {
+            $doctor->update([
+                'billing_mode' => 'pay-per-use',
+            ]);
+
+            $doctor->subscriptions()
+                ->where('status', 'active')
+                ->update([
+                    'status' => 'cancelled',
+                ]);
+        });
+
+        DB::afterCommit(function () use ($doctor) {
+            $doctor->notify(new PayPerUseActivated);
+        });
+
+        return 'Switched to Pay-Per-Use mode. '.Plan::PAY_PER_USE_PRICE.'EGP will be charged per file.';
     }
 
     public function validateAiAccess(Doctor $doctor): void

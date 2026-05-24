@@ -16,6 +16,7 @@ use App\Http\Controllers\V1\MedicationController;
 use App\Http\Controllers\V1\NotificationController;
 use App\Http\Controllers\V1\PatientController;
 use App\Http\Controllers\V1\PaymobWebhookController;
+use App\Http\Controllers\V1\PlanController;
 use App\Http\Controllers\V1\SubscriptionController;
 use App\Http\Controllers\V1\SupportController;
 use App\Http\Controllers\V1\TaskController;
@@ -73,13 +74,15 @@ Route::prefix('v1')->group(function () {
         Route::post('charge', 'store')->name('charge');
         Route::get('transactions', 'index')->name('transactions');
     });
+    Route::controller(SubscriptionController::class)->middleware('auth:sanctum')->prefix('subscription')->as('subscription.')->group(function () {
+        Route::post('/{plan}/subscribe', 'subscribe')->name('subscribe');
+        Route::post('pay-per-use', 'switchToPayPerUse')->name('pay-per-use');
+        Route::get('plans', PlanController::class)->name('plans.index');
+        Route::get('current', 'current');
+        Route::post('cancel', 'cancel');
+    });
 
     Route::post('/patients/{patient}/chatbot/ask', ChatbotController::class)->middleware(['auth:sanctum', 'check-ai-access'])->name('patients.chatbot.ask');
-    Route::controller(SubscriptionController::class)->middleware('auth:sanctum')->prefix('subscriptions')->as('subscriptions.')->group(function () {
-        Route::post('/{plan}/subscribe', 'subscribe')->name('subscribe');
-        Route::get('/current', 'current')->name('current');
-        Route::post('/cancel', 'cancel')->name('cancel');
-    });
     Route::controller(DashboardController::class)->middleware('auth:sanctum')->prefix('dashboard')->as('dashboard.')->group(function () {
         Route::get('/status-distribution', 'statusDistribution')->name('status-distribution');
         Route::get('/top-diseases', 'topDiseases')->name('top-diseases');

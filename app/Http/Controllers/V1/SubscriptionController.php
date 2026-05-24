@@ -5,9 +5,7 @@ namespace App\Http\Controllers\V1;
 use App\Exceptions\BillingValidationException;
 use App\Helpers\ApiResponse;
 use App\Http\Resources\CurrentSubscriptionResource;
-use App\Http\Resources\PlanResource;
 use App\Models\Plan;
-use App\Notifications\PayPerUseActivated;
 use App\Services\SubscriptionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -45,27 +43,25 @@ class SubscriptionController extends Controller
         }
     }
 
-    public function switchToPayPerUse(Request $request)
+    public function switchToPayPerUse(Request $request): JsonResponse
     {
-        $this->subscriptionService->setPayPerUseMode($request->user()->doctor);
-        $request->user()->doctor->notify(new PayPerUseActivated);
+        try {
+            $doctor = $request->user()->doctor;
+            if (! $doctor) {
+                return ApiResponse::error(message: 'Doctor profile not found.', status: 404);
+            }
 
-        return ApiResponse::success(
-            'Switched to Pay-Per-Use mode. E£ 25 will be charged per file.',
-            null,
-            200
-        );
-    }
+            $message = $this->subscriptionService->switchToPayPerUseMode($doctor);
 
-    public function index()
-    {
-        $plans = Plan::all();
+            return ApiResponse::success(
+                message: $message,
+            );
 
-        return ApiResponse::success(
-            'Available plans retrieved successfully',
-            PlanResource::collection($plans),
-            200
-        );
+        } catch (\Exception $e) {
+            \Log::error('Error switching to pay per use mode: '.$e->getMessage(), ['user_id' => auth()->id()]);
+
+            return ApiResponse::error(message: 'An error occurred while switching to pay-per-use mode.', status: 500);
+        }
     }
 
     public function current(Request $request): JsonResponse

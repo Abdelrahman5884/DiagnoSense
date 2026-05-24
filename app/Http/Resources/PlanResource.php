@@ -19,7 +19,7 @@ class PlanResource extends JsonResource
             'name' => $this->name,
             'price' => (float) $this->price,
             'summaries_limit' => $this->summaries_limit,
-            'features' => is_string($this->features) ? json_decode($this->features) : $this->features,
+            'features' => $this->features ?? [],
             'duration_days' => $this->duration_days,
         ];
     }
