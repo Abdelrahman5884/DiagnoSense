@@ -93,8 +93,12 @@ trait LogsActivity
             return $this->patient_id;
         }
 
-        if (method_exists($this, 'patient')) {
+        if (method_exists($this, 'patient') && $this->patient) {
             return $this->patient?->id;
+        }
+
+        if(method_exists($this, 'visit') && $this->visit) {
+            return $this->visit->patient_id;
         }
 
         return null;
