@@ -3,15 +3,12 @@
 namespace App\Http\Controllers\V1;
 
 use App\Helpers\ApiResponse;
-use App\Http\Resources\CurrentVisitResource;
-use App\Http\Resources\VisitsQueueResource;
 use App\Http\Resources\DashboardStatusResource;
 use App\Http\Resources\TopDiseaseResource;
+use App\Http\Resources\Visit\CurrentVisitResource;
+use App\Http\Resources\Visit\VisitsQueueResource;
 use App\Http\Resources\WidgetsDashboardResource;
-use App\Models\AiAnalysisResult;
-use App\Models\Patient;
 use App\Services\DashboardService;
-use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
