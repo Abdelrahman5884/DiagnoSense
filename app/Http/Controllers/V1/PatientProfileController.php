@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\V1;
 
-use App\Actions\UpdatePatientProfileAction;
+use App\Actions\Patient\UpdatePatientProfileAction;
 use App\Helpers\ApiResponse;
 use App\Http\Requests\UpdateProfileRequest;
 use App\Http\Resources\PatientProfileResource;
