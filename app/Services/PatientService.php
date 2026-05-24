@@ -16,6 +16,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class PatientService
 {
@@ -421,7 +422,7 @@ class PatientService
         $patient->update(['status' => $status]);
     }
 
-    public function getPatientActivities(int $doctorId, Patient $patient): Collection
+    public function getPatientActivities(int $doctorId, Patient $patient): LengthAwarePaginator
     {
 
         $isAuthorized = $patient->doctors()
@@ -429,13 +430,12 @@ class PatientService
             ->exists();
 
         if (! $isAuthorized) {
-            throw new \Exception('You are not allowed to view this patient activities', 403);
+            throw new AccessDeniedHttpException(__('You are not allowed to view this patient\'s activities.'));
         }
 
-        return ActivityLog::query()
-            ->where('patient_id', $patient->id)
+        return $patient->activityLogs()
             ->with('doctor.user')
-            ->latest('created_at')
-            ->get();
+            ->latest()
+            ->paginate(15);
     }
 }

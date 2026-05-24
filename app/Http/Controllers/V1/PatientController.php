@@ -16,6 +16,7 @@ use App\Models\Patient;
 use App\Services\PatientService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class PatientController extends Controller
 {
@@ -231,20 +232,20 @@ class PatientController extends Controller
     {
 
         try {
-            $doctorId = auth()->user()->doctor->id;
-
-            $logs = $this->patientService->getPatientActivities($doctorId, $patient);
+            $doctor = $request->user()->doctor;
+            if (!$doctor) return ApiResponse::error(message:"Doctor not found", status: 404);
+            $logs = $this->patientService->getPatientActivities($doctor->id, $patient);
 
             return ApiResponse::success(
                 message: 'Activity history retrieved successfully',
-                data: ActivityLogResource::collection($logs),
-                status: 200
+                data: ActivityLogResource::collection($logs)->response()->getData(true),
             );
 
+        }catch (HttpException $e) {
+            return ApiResponse::error(message: $e->getMessage(), status: $e->getStatusCode());
         } catch (\Exception $e) {
             \Log::error('Error retrieving patient activities: '.$e->getMessage(), ['patient_id' => $patient->id]);
-
-            return ApiResponse::error(message: 'An error occurred while retrieving patient activities.'.$e->getMessage(), status: $e->getCode() ?: 500);
+            return ApiResponse::error(message: 'An error occurred while retrieving patient activities.', status: 500);
         }
     }
 }
