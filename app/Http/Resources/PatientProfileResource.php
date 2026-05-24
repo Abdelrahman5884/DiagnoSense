@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
@@ -9,7 +10,7 @@ class PatientProfileResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'name'    => $this->name,
+            'name' => $this->name,
             'contact' => $this->contact,
         ];
     }

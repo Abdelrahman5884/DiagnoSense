@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\V1;
 
 use App\Helpers\ApiResponse;
-use App\Http\Requests\UpdateProfileRequest;
 use App\Http\Resources\LabReportResource;
 use App\Http\Resources\MedicalFileResource;
 use App\Http\Resources\MedicationListResource;
@@ -84,8 +83,6 @@ class MedicalFileController extends Controller
             return ApiResponse::error(message: $e->getMessage(), status: $e->getCode() ?: 500);
         }
     }
-
-    
 
     /**
      * Medications

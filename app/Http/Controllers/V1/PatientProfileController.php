@@ -10,13 +10,16 @@ use Illuminate\Http\JsonResponse;
 
 class PatientProfileController extends Controller
 {
-    public function update(UpdateProfileRequest $request , UpdatePatientProfileAction $updatePatientProfileAction): JsonResponse
+    public function update(UpdateProfileRequest $request, UpdatePatientProfileAction $updatePatientProfileAction): JsonResponse
     {
 
         try {
             $user = $request->user();
-            if(!$user->patient) return ApiResponse::error(message:'Patient Profile Not Found', status: 404);
+            if (! $user->patient) {
+                return ApiResponse::error(message: 'Patient Profile Not Found', status: 404);
+            }
             $data = $updatePatientProfileAction->execute($user, $request->validated());
+
             return ApiResponse::success(
                 message: 'Profile updated successfully',
                 data: new PatientProfileResource($data),
@@ -24,6 +27,7 @@ class PatientProfileController extends Controller
 
         } catch (\Exception $e) {
             \Log::error('Error updating profile: '.$e->getMessage(), ['user_id' => $request->user()?->id]);
+
             return ApiResponse::error(
                 message: 'An error occurred while updating profile.',
                 status: 500
