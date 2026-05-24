@@ -1,12 +1,11 @@
 <?php
 
-use App\Models\Visit;
 use App\Models\Task;
+use App\Models\Visit;
 use App\Notifications\PatientNotification;
 use Illuminate\Support\Facades\Notification;
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\patchJson;
-use function Pest\Laravel\getJson;
 
 beforeEach(function () {
     $this->patientUser = createUserWithType('patient', fake()->unique()->safeEmail());
@@ -77,7 +76,7 @@ it('returns only the patient medical notifications through the mobile endpoint',
 
     $this->patientUser->notifications()->create([
         'id' => \Str::uuid(),
-        'type' => 'App\Notifications\CreditAdded',
+        'type' => 'App\Notifications\Credit\CreditAdded',
         'data' => ['message' => 'Credit Added Test'],
     ]);
 
