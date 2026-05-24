@@ -24,8 +24,8 @@ describe('Update Profile', function () {
             'contact' => 'new@example.com',
         ];
 
-        $response = $this->putJson(
-            route('patient.profile.update'),
+        $response = $this->patchJson(
+            route('profile.update'),
             $payload
         );
 
@@ -51,8 +51,8 @@ describe('Update Profile', function () {
             'contact' => '01012345678',
         ];
 
-        $response = $this->putJson(
-            route('patient.profile.update'),
+        $response = $this->patchJson(
+            route('profile.update'),
             $payload
         );
 
@@ -78,8 +78,8 @@ describe('Update Profile', function () {
             'contact' => 'existing@example.com',
         ];
 
-        $response = $this->putJson(
-            route('patient.profile.update'),
+        $response = $this->patchJson(
+            route('profile.update'),
             $payload
         );
 
@@ -92,8 +92,8 @@ describe('Update Profile', function () {
             'contact' => '%%%%',
         ];
 
-        $response = $this->putJson(
-            route('patient.profile.update'),
+        $response = $this->patchJson(
+            route('profile.update'),
             $payload
         );
 
@@ -104,8 +104,8 @@ describe('Update Profile', function () {
 
         auth()->logout();
 
-        $response = $this->putJson(
-            route('patient.profile.update'),
+        $response = $this->patchJson(
+            route('profile.update'),
             [
                 'contact' => 'new@example.com',
             ]
