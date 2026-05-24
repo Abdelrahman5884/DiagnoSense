@@ -3,10 +3,12 @@
 namespace App\Models;
 
 use App\Traits\LogsActivity;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Visit extends Model
 {
+    use HasFactory;
     // use LogsActivity;
 
     protected array $logOnlyEvents = ['created', 'updated', 'deleted'];

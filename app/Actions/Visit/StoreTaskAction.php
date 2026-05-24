@@ -2,6 +2,7 @@
 
 namespace App\Actions\Visit;
 
+use App\Helpers\PushNotification;
 use App\Models\Task;
 use App\Models\Visit;
 
@@ -21,6 +22,14 @@ class StoreTaskAction extends StoreVisitRequirementAction
         ]);
         $task['action'] = $data['action'];
         $task->load('visit');
+
+        $patient = $visit->patient;
+        PushNotification::sendToPatient(
+        patient: $patient,
+        type: 'task',
+        title: __('New Task Assigned'),
+        body: $task->title
+        );
 
         return $task;
     }

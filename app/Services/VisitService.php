@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Helpers\PushNotification;
 use App\Models\Doctor;
 use App\Models\Patient;
 use App\Models\Visit;
@@ -40,6 +41,13 @@ class VisitService
             'status' => $status,
         ]);
 
+        PushNotification::sendToPatient(
+        patient: $patient,
+        type: 'visit',
+        title: __('Upcoming Appointment Scheduled'),
+        body: __('Your next visit is scheduled on: :date', ['date' => $visit->next_visit_date->format('Y-m-d h:i A')])
+        );
+        
         return $visit->load('doctor.user');
     }
 

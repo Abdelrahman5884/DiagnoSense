@@ -12,6 +12,7 @@ use App\Http\Controllers\V1\FlutterNotificationController;
 use App\Http\Controllers\V1\KeyPointController;
 use App\Http\Controllers\V1\MedicalFileController;
 use App\Http\Controllers\V1\MedicationController;
+use App\Http\Controllers\V1\MobileNotificationController;
 use App\Http\Controllers\V1\NotificationController;
 use App\Http\Controllers\V1\PatientController;
 use App\Http\Controllers\V1\PatientProfileController;
@@ -20,6 +21,7 @@ use App\Http\Controllers\V1\PlanController;
 use App\Http\Controllers\V1\SubscriptionController;
 use App\Http\Controllers\V1\SupportController;
 use App\Http\Controllers\V1\TaskController;
+use App\Http\Controllers\V1\TimelineController;
 use App\Http\Controllers\V1\VisitController;
 use App\Http\Controllers\V1\WalletController;
 use Illuminate\Http\Request;
@@ -98,6 +100,10 @@ Route::prefix('v1')->group(function () {
         Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
         Route::get('/tasks/{task}', [TaskController::class, 'show'])->name('tasks.show');
         Route::patch('/tasks/{task}/complete', [TaskController::class, 'complete'])->name('tasks.complete');
+        Route::get('/medications', [MedicationController::class, 'index'])->name('medications.index');
+        Route::get('/timeline', TimelineController::class)->name('timeline.index');
+        Route::patch('/fcm-token', [PatientController::class, 'updateFcmToken'])->name('patients.fcm-token');
+        Route::get('/mobile-notifications', MobileNotificationController::class)->name('mobile.notifications');
         Route::get('/patients/{patient}/activities', [PatientController::class, 'activityHistory'])->name('patients.activities');
 
         Route::get('/patients/{patient}/overview', [PatientController::class, 'overview'])->name('patients.overview');

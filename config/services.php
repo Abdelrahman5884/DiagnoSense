@@ -72,4 +72,7 @@ return [
         'base_url' => env('PAYMOB_BASE_URL'),
         'notification_url' => env('PAYMOB_NOTIFICATION_URL'),
     ],
+
+        'credentials' => env('FIREBASE_CREDENTIALS', storage_path('app/firebase/firebase-auth.json')),
+
 ];

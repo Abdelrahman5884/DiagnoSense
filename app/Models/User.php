@@ -28,6 +28,7 @@ class User extends Authenticatable
         'type',
         'is_active',
         'contact_verified_at',
+        'fcm_token',
     ];
 
     public function toSearchableArray()
@@ -84,5 +85,9 @@ class User extends Authenticatable
     public function routeNotificationForMail()
     {
         return $this->contact;
+    }
+    public function routeNotificationForFcm()
+    {
+        return $this->fcm_token;
     }
 }

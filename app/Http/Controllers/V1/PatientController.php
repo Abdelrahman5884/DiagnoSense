@@ -8,6 +8,7 @@ use App\Http\Requests\DeletePatientRequest;
 use App\Http\Requests\Patient\PatientListRequest;
 use App\Http\Requests\Patient\StorePatientRequest;
 use App\Http\Requests\PatientOverviewRequest;
+use App\Http\Requests\UpdateFcmTokenRequest;
 use App\Http\Requests\UpdatePatientRequest;
 use App\Http\Requests\UpdatePatientStatusRequest;
 use App\Http\Resources\ActivityLogResource;
@@ -177,6 +178,16 @@ class PatientController extends Controller
             \Log::error('AI Analysis Trigger Error: '.$e->getMessage());
 
             return ApiResponse::error(message: 'AI Analysis Trigger failed: '.$e->getMessage(), status: 500);
+        }
+    }
+    public function updateFcmToken(UpdateFcmTokenRequest $request): JsonResponse
+    {
+        try{
+            $request->user()->update(['fcm_token' => $request->validated()['fcm_token']]);
+            return ApiResponse::success(message: 'FCM Token Updated Successfully');
+        }catch (\Exception $e) {
+            \Log::error('FCM Token Update Error: '.$e->getMessage());
+            return ApiResponse::error(message: 'An error occurred while updating the FCM token.', status: 500);
         }
     }
 
