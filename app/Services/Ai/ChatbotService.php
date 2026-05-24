@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Ai;
 
 use App\Jobs\Ai\IngestPatientJob;
 use App\Models\Patient;

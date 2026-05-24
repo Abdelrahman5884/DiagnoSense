@@ -6,7 +6,7 @@ use App\Events\Chatbot\ChatbotAnswerFailed;
 use App\Events\Chatbot\ChatbotAnswerReady;
 use App\Models\Patient;
 use App\Models\PatientIngestion;
-use App\Services\AIGatewayService;
+use App\Services\Ai\AIGatewayService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 

@@ -5,7 +5,7 @@ namespace App\Http\Controllers\V1;
 use App\Helpers\ApiResponse;
 use App\Http\Requests\AskChatbotRequest;
 use App\Models\Patient;
-use App\Services\ChatbotService;
+use App\Services\Ai\ChatbotService;
 use Illuminate\Http\JsonResponse;
 
 class ChatbotController extends Controller
