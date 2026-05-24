@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Wallet extends Model
 {
@@ -11,12 +13,12 @@ class Wallet extends Model
         'doctor_id',
     ];
 
-    public function doctor()
+    public function doctor(): BelongsTo
     {
         return $this->belongsTo(Doctor::class);
     }
 
-    public function transactions()
+    public function transactions(): MorphMany
     {
         return $this->morphMany(Transactions::class, 'source');
     }
