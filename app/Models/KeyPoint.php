@@ -5,12 +5,25 @@ namespace App\Models;
 use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class KeyPoint extends Model
 {
     use HasFactory , LogsActivity ,  SoftDeletes;
 
+    protected $fillable = [
+        'ai_analysis_result_id',
+        'priority',
+        'title',
+        'insight',
+        'is_ai_generated',
+        'evidence',
+    ];
+
+    protected $casts = [
+        'evidence' => 'array',
+    ];
     protected array $logOnlyEvents = ['created', 'updated', 'deleted'];
 
     public function toActivityDisplayName(): string
@@ -31,20 +44,7 @@ class KeyPoint extends Model
         return null;
     }
 
-    protected $fillable = [
-        'ai_analysis_result_id',
-        'priority',
-        'title',
-        'insight',
-        'is_ai_generated',
-        'evidence',
-    ];
-
-    protected $casts = [
-        'evidence' => 'array',
-    ];
-
-    public function aiAnalysisResult()
+    public function aiAnalysisResult(): BelongsTo
     {
         return $this->belongsTo(AiAnalysisResult::class);
     }
