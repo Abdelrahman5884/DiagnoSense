@@ -88,33 +88,25 @@ Route::prefix('v1')->group(function () {
             Route::get('current', 'current')->name('current');
             Route::post('cancel', 'cancel')->name('cancel');
         });
-    });
 
-    Route::controller(DashboardController::class)->middleware('auth:sanctum')->prefix('dashboard')->as('dashboard.')->group(function () {
-        Route::get('/status-distribution', 'statusDistribution')->name('status-distribution');
-        Route::get('/top-diseases', 'topDiseases')->name('top-diseases');
-    });
+        Route::controller(DashboardController::class)->prefix('dashboard')->as('dashboard.')->group(function () {
+            Route::get('/status-distribution', 'statusDistribution')->name('status-distribution');
+            Route::get('/top-diseases', 'topDiseases')->name('top-diseases');
+            Route::get('/summary','summary')->name('summary');
+            Route::get('/today-visits', 'todayVisits')->name('todayVisits');
+        });
 
-    Route::middleware('auth:sanctum')->prefix('patient')->as('patient.')->group(function () {
-        Route::get('medical-files', MedicalFileController::class)->name('medical-files.index');
-    });
-    Route::patch('/profile',[PatientProfileController::class])->name('profile.update')->middleware('auth:sanctum');
+        Route::controller(TaskController::class)->prefix('tasks')->as('tasks.')->group(function () {
+            Route::get('', 'index')->name('index');
+            Route::get('/{task}', 'show')->name('show');
+            Route::patch('/{task}/complete', 'complete')->name('complete');
+        });
 
-    Route::middleware('auth:sanctum')->group(function () {
-        Route::get('/next-visit', [VisitController::class, 'show'])->name('next-visit');
-        Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
-        Route::get('/tasks/{task}', [TaskController::class, 'show'])->name('tasks.show');
-        Route::patch('/tasks/{task}/complete', [TaskController::class, 'complete'])->name('tasks.complete');
-        Route::get('/medications', [MedicationController::class, 'index'])->name('medications.index');
-        Route::get('/timeline', TimelineController::class)->name('timeline.index');
-        Route::patch('/fcm-token', [PatientController::class, 'updateFcmToken'])->name('patients.fcm-token');
-        Route::get('/mobile-notifications', MobileNotificationController::class)->name('mobile.notifications');
+        Route::controller(VisitController::class)->group(function(){
+            Route::get('/next-visit', 'show')->name('next-visit');
+            Route::patch('/visits/{visit}/attend', 'attend')->name('visits.attend');
+        });
 
-
-
-        Route::get('/dashboard/summary', [DashboardController::class, 'summary'])->name('dashboard.summary');
-        Route::get('/dashboard/today-visits', [DashboardController::class, 'todayVisits'])->name('dashboard.todayVisits');
-        Route::patch('/visits/{visit}/attend', [VisitController::class, 'attend'])->name('visits.attend');
         Route::controller(WebNotificationController::class)->prefix('notifications')->as('notifications.')->group(function () {
             Route::get('/', 'index')->name('index');
             Route::get('/unread-count', 'unreadCount')->name('unreadCount');
@@ -122,12 +114,21 @@ Route::prefix('v1')->group(function () {
             Route::patch('/read-all', 'readAll')->name('readAll');
             Route::delete('/clear-all', 'clearAll')->name('clearAll');
         });
-        Route::controller(DoctorProfileController::class)->prefix('doctors')->group(function () {
-            Route::get('/profile/edit', 'edit')->name('doctor.profile.edit');
-            Route::patch('/profile', 'update')->name('doctor.profile.update');
-            Route::delete('/profile', 'destroy')->name('doctor.profile.destroy');
-            Route::patch('/change-password', 'changePassword')->name('doctor.password.update');
+
+        Route::controller(DoctorProfileController::class)->prefix('doctors')->as('doctor.')->group(function () {
+            Route::get('/profile/edit', 'edit')->name('profile.edit');
+            Route::patch('/profile', 'update')->name('profile.update');
+            Route::delete('/profile', 'destroy')->name('profile.destroy');
+            Route::patch('/change-password', 'changePassword')->name('password.update');
         });
+
+        Route::get('patient/medical-files', MedicalFileController::class)->name('patient.medical-files.index');
+        Route::patch('/profile',[PatientProfileController::class])->name('profile.update');
+
+        Route::get('/medications', [MedicationController::class, 'index'])->name('medications.index');
+        Route::get('/timeline', TimelineController::class)->name('timeline.index');
+        Route::patch('/fcm-token', [PatientController::class, 'updateFcmToken'])->name('patients.fcm-token');
+        Route::get('/mobile-notifications', MobileNotificationController::class)->name('mobile.notifications');
         Route::apiResource('patients.visits', VisitController::class)->only(['index', 'store'])->shallow();
         Route::apiResource('visits.medications', MedicationController::class)->only(['store', 'destroy'])->shallow();
         Route::apiResource('visits.tasks', TaskController::class)->only(['store', 'destroy'])->shallow();
@@ -135,18 +136,11 @@ Route::prefix('v1')->group(function () {
     });
 });
 
-
-
-Route::get('/payment-success', function () {
-    return response()->json(['message' => 'Payment successful! You can close this tab.']);
-})->name('payment.success');
-Route::get('/payment-cancel', function () {
-    return response()->json(['message' => 'Payment cancelled.']);
-})->name('payment.cancel');
-Broadcast::routes(['middleware' => ['auth:sanctum']]);
 Route::get('/payment-redirect', function (Request $request) {
     if ($request->query('success') === 'true') {
         return redirect('http://localhost:5173/subscription?status=success');
     }
 });
 Route::post('/paymob/webhook', [PaymobWebhookController::class, 'handle'])->name('paymob.webhook');
+Broadcast::routes(['middleware' => ['auth:sanctum']]);
+
