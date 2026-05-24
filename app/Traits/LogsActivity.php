@@ -30,11 +30,11 @@ trait LogsActivity
 
     protected function shouldLogEvent(string $event): bool
     {
-        if (!request()->user() || !request()->user()->doctor) {
+        if (! request()->user() || ! request()->user()->doctor) {
             return false;
         }
 
-        if (property_exists($this, 'logOnlyEvents') && !in_array($event, $this->logOnlyEvents)) {
+        if (property_exists($this, 'logOnlyEvents') && ! in_array($event, $this->logOnlyEvents)) {
             return false;
         }
 
