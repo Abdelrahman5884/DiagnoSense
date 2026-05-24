@@ -17,18 +17,6 @@ class Patient extends Model
 {
     use HasFactory , LogsActivity , SoftDeletes;
 
-    protected array $logOnlyEvents = ['updated'];
-
-    public function toActivityDisplayName(): string
-    {
-        return $this->user?->name ?? 'Unknown Patient';
-    }
-
-    public function getActivityPatientId(): int
-    {
-        return $this->id;
-    }
-
     const STATUS_CRITICAL = 'critical';
 
     const STATUS_STABLE = 'stable';
@@ -49,6 +37,17 @@ class Patient extends Model
     protected $casts = [
         'date_of_birth' => 'date',
     ];
+    protected array $logOnlyEvents = ['updated'];
+
+    public function toActivityDisplayName(): string
+    {
+        return $this->user?->name ?? 'Unknown Patient';
+    }
+
+    public function getActivityPatientId(): int
+    {
+        return $this->id;
+    }
 
     protected function age(): Attribute
     {
