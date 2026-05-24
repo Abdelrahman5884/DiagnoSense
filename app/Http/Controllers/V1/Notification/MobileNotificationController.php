@@ -4,7 +4,7 @@ namespace App\Http\Controllers\V1\Notification;
 
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\V1\Controller;
-use App\Http\Resources\MobileNotificationResource;
+use App\Http\Resources\Notification\MobileNotificationResource;
 use App\Services\MobileNotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

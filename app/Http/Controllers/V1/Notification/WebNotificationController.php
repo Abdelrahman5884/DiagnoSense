@@ -5,7 +5,7 @@ namespace App\Http\Controllers\V1\Notification;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\V1\Controller;
 use App\Http\Requests\Notification\MarkNotificationAsReadRequest;
-use App\Http\Resources\NotificationResource;
+use App\Http\Resources\Notification\WebNotificationResource;
 use App\Services\Notifications\WebNotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -24,7 +24,7 @@ class WebNotificationController extends Controller
 
             return ApiResponse::success(
                 message: 'Notifications retrieved successfully.',
-                data: NotificationResource::collection($notifications)->response()->getData(true)
+                data: WebNotificationResource::collection($notifications)->response()->getData(true)
             );
         } catch (\Exception $e) {
             \Log::error('Failed to fetch notifications: '.$e->getMessage());
