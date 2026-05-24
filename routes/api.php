@@ -71,10 +71,8 @@ Route::prefix('v1')->group(function () {
         Route::get('transactions', 'index')->name('transactions');
     });
 
-    Route::controller(MedicalFileController::class)->middleware('auth:sanctum')->prefix('patient')->as('patient.')->group(function () {
-        Route::get('medical-history', 'medicalHistoryFiles')->name('medical-history');
-        Route::get('radiology-reports', 'radiologyReports')->name('radiology-reports');
-        Route::get('lab-reports', 'labReports')->name('lab-reports');
+    Route::middleware('auth:sanctum')->prefix('patient')->as('patient.')->group(function () {
+        Route::get('medical-files', MedicalFileController::class)->name('medical-files.index');
     });
     Route::patch('/profile', [PatientProfileController::class, 'update'])->name('profile.update')->middleware('auth:sanctum');
 
