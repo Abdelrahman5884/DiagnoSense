@@ -73,7 +73,7 @@ class VisitController extends Controller
         }
     }
 
-    public function attend(Visit $visit)
+    public function attend(Visit $visit): JsonResponse
     {
         try {
             $this->visitService->attend($visit);
