@@ -49,12 +49,6 @@ return [
         'ingest_timeout' => env('AI_INGEST_TIMEOUT', 120),
         'answer_timeout' => env('AI_ANSWER_TIMEOUT', 60),
     ],
-
-    'stripe' => [
-        'key' => env('STRIPE_KEY'),
-        'secret' => env('STRIPE_SECRET'),
-        'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
-    ],
     'frontend' => [
         'url' => env('FRONTEND_URL'),
     ],
