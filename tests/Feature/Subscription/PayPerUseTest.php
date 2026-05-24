@@ -32,7 +32,7 @@ it('switches doctor to pay per use mode successfully', function () {
         'used_summaries' => 0,
     ]);
 
-    $response = $this->postJson(route('subscription.pay-per-use'));
+    $response = $this->postJson(route('subscriptions.pay-per-use'));
 
     $response->assertStatus(200)
         ->assertJsonPath('message', 'Switched to Pay-Per-Use mode. 20EGP will be charged per file.');
@@ -50,7 +50,7 @@ it('switches doctor to pay per use mode successfully', function () {
 it('returns 401 for guest user', function () {
     auth()->logout();
 
-    $response = $this->postJson(route('subscription.pay-per-use'));
+    $response = $this->postJson(route('subscriptions.pay-per-use'));
 
     $response->assertStatus(401);
 });
@@ -82,7 +82,7 @@ it('cancels all active subscriptions when switching to pay per use', function ()
         'used_summaries' => 0,
     ]);
 
-    $this->postJson(route('subscription.pay-per-use'));
+    $this->postJson(route('subscriptions.pay-per-use'));
 
     $this->assertDatabaseMissing('subscriptions', [
         'doctor_id' => $this->doctor->id,
