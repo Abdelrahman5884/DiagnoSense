@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions;
+namespace App\Actions\Subscription;
 
 use App\Http\Resources\PlanResource;
 use App\Models\Plan;

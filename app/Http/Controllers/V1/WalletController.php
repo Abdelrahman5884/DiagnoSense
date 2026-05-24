@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\V1;
 
-use App\Actions\GetTransactionHistoryAction;
+use App\Actions\Subscription\GetTransactionHistoryAction;
 use App\Helpers\ApiResponse;
 use App\Http\Requests\ChargeWalletRequest;
 use App\Services\PaymobService;

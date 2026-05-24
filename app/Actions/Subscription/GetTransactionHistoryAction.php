@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions;
+namespace App\Actions\Subscription;
 
 use App\Http\Resources\TransactionResource;
 use App\Models\Doctor;

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\V1;
 
-use App\Actions\GetAvailablePlansAction;
+use App\Actions\Subscription\GetAvailablePlansAction;
 use App\Helpers\ApiResponse;
 use Illuminate\Http\JsonResponse;
 
