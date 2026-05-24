@@ -3510,6 +3510,249 @@ paths:
                 success: false
                 message: "An error occurred while retrieving patient activities."
                 data: null
+  '/api/v1/next-visit':
+    get:
+      summary: 'Get Patient Upcoming Next Visit'
+      operationId: getApiV1NextVisit
+      description: 'Retrieves the nearest future scheduled upcoming visit session for the authenticated mobile patient user.'
+      tags:
+        - Mobile App
+      security:
+        - sanctum: []
+      responses:
+        200:
+          description: 'Upcoming visit details payload processed successfully.'
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                HasUpcomingVisit:
+                  summary: 'Upcoming Visit Scheduled Record'
+                  value:
+                    success: true
+                    message: "Next visit retrieved successfully."
+                    data:
+                      id: 88
+                      next_visit_date: "2026-06-15"
+                      status: "scheduled"
+                      doctor_name: "Dr. Menna Baligh"
+                      specialization: "Cardiology"
+                      date: "15 Jun, 2026"
+                      time: "10:00 AM"
+                NoUpcomingVisit:
+                  summary: 'No Future Visits Found'
+                  value:
+                    success: true
+                    message: "No upcoming visit."
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        500:
+          description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: "An error occurred while fetching next visit."
+                data: null
+
+  '/api/v1/tasks':
+    get:
+      summary: 'List All Tasks'
+      operationId: getApiV1TasksIndex
+      description: 'Retrieves a complete chronological timeline collection of patient care monitoring tasks mapped to the authenticated patient profile.'
+      tags:
+        - Mobile App
+      security:
+        - sanctum: []
+      responses:
+        200:
+          description: 'Care tasks collection dataset loaded successfully.'
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                TasksCollection:
+                  summary: 'Assigned Patient Tasks List'
+                  value:
+                    success: true
+                    message: "Tasks retrieved successfully"
+                    data:
+                      - id: 301
+                        title: "Check Fasting Blood Sugar"
+                        description: "Daily before breakfast monitoring"
+                        notes: "Notify if reading exceeds 140 mg/dL"
+                        is_completed: false
+                        action: "save"
+                        due_date: "2026-06-15"
+                        created_at: "2026-05-24"
+                        updated_at: "2026-05-24"
+                      - id: 302
+                        title: "Low Salt Diet Plan"
+                        description: "Restrict sodium intake below 2g daily"
+                        notes: null
+                        is_completed: true
+                        action: "save"
+                        due_date: "2026-06-15"
+                        created_at: "2026-05-22"
+                        updated_at: "2026-05-24"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        500:
+          description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: "Failed to retrieve tasks, please try again later."
+                data: null
+
+  '/api/v1/tasks/{task}':
+    get:
+      summary: 'Get Task Details'
+      operationId: getApiV1TasksShow
+      description: 'Retrieves comprehensive details for a specific care monitoring milestone task along with its parent visit relationship details block.'
+      tags:
+        - Mobile App
+      security:
+        - sanctum: []
+      parameters:
+        - in: path
+          name: task
+          required: true
+          description: 'The explicit database tracking row ID of the target task.'
+          schema:
+            type: integer
+          example: 301
+      responses:
+        200:
+          description: 'Task specifications log retrieved successfully.'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: true
+                message: "Task details retrieved successfully"
+                data:
+                  id: 301
+                  title: "Check Fasting Blood Sugar"
+                  description: "Daily before breakfast monitoring"
+                  notes: "Notify if reading exceeds 140 mg/dL"
+                  is_completed: false
+                  action: "save"
+                  due_date: "2026-06-15"
+                  created_at: "2026-05-24"
+                  updated_at: "2026-05-24"
+                  visit:
+                    id: 88
+                    next_visit_date: "2026-06-15"
+                    status: "scheduled"
+                    doctor_name: "Dr. Menna Baligh"
+                    specialization: "Cardiology"
+                    date: "15 Jun, 2026"
+                    time: "10:00 AM"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          description: 'Forbidden - Task reference record does not match authenticated patient ownership mapping limits.'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: "This action is unauthorized."
+        500:
+          description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: "Failed to fetch task details, please try again later."
+                data: null
+
+  '/api/v1/tasks/{task}/complete':
+    patch:
+      summary: 'Toggle Task Completion State'
+      operationId: patchApiV1TasksComplete
+      description: 'Toggles the operational boolean completion flag indicator status of a specific monitoring task row entry between true and false values.'
+      tags:
+        - Mobile App
+      security:
+        - sanctum: []
+      parameters:
+        - in: path
+          name: task
+          required: true
+          description: 'The explicit database tracking row ID of the target task.'
+          schema:
+            type: integer
+          example: 301
+      responses:
+        200:
+          description: 'Task execution state flipped successfully.'
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                MarkedAsCompleted:
+                  summary: 'Task Marked as Completed'
+                  value:
+                    success: true
+                    message: "Task marked as completed"
+                    data:
+                      id: 301
+                      title: "Check Fasting Blood Sugar"
+                      description: "Daily before breakfast monitoring"
+                      notes: "Notify if reading exceeds 140 mg/dL"
+                      is_completed: true
+                      action: "save"
+                      due_date: "2026-06-15"
+                      created_at: "2026-05-24"
+                      updated_at: "2026-05-24"
+                      visit:
+                        id: 88
+                        next_visit_date: "2026-06-15"
+                        status: "scheduled"
+                MarkedAsUncompleted:
+                  summary: 'Task Marked as Uncompleted'
+                  value:
+                    success: true
+                    message: "Task marked as uncompleted"
+                    data:
+                      id: 301
+                      title: "Check Fasting Blood Sugar"
+                      description: "Daily before breakfast monitoring"
+                      notes: "Notify if reading exceeds 140 mg/dL"
+                      is_completed: false
+                      action: "save"
+                      due_date: "2026-06-15"
+                      created_at: "2026-05-24"
+                      updated_at: "2026-05-24"
+                      visit:
+                        id: 88
+                        next_visit_date: "2026-06-15"
+                        status: "scheduled"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          description: 'Forbidden - Patient ownership criteria verification failed for this matching task segment.'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: "This action is unauthorized."
 
 
 
