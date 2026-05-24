@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\Patient;
 
 use Auth;
 use Illuminate\Http\Request;

@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\Patient;
 
 use App\Helpers\FileSystem;
+use App\Http\Resources\MedicalHistoryResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
