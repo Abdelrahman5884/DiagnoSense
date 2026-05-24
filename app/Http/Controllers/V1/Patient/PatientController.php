@@ -4,14 +4,14 @@ namespace App\Http\Controllers\V1\Patient;
 
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\V1\Controller;
-use App\Http\Requests\DeletePatientRequest;
-use App\Http\Requests\GetPatientDataForUpdateRequest;
+use App\Http\Requests\Notification\UpdateFcmTokenRequest;
+use App\Http\Requests\Patient\DeletePatientRequest;
+use App\Http\Requests\Patient\GetPatientDataForUpdateRequest;
+use App\Http\Requests\Patient\GetPatientOverviewRequest;
 use App\Http\Requests\Patient\PatientListRequest;
 use App\Http\Requests\Patient\StorePatientRequest;
-use App\Http\Requests\PatientOverviewRequest;
-use App\Http\Requests\UpdateFcmTokenRequest;
-use App\Http\Requests\UpdatePatientRequest;
-use App\Http\Requests\UpdatePatientStatusRequest;
+use App\Http\Requests\Patient\UpdatePatientRequest;
+use App\Http\Requests\Patient\UpdatePatientStatusRequest;
 use App\Http\Resources\ActivityLogResource;
 use App\Http\Resources\PatientEditResource;
 use App\Http\Resources\PatientOverviewResource;
@@ -47,7 +47,7 @@ class PatientController extends Controller
     }
 
 
-    public function overview(PatientOverviewRequest $request, Patient $patient): JsonResponse
+    public function overview(GetPatientOverviewRequest $request, Patient $patient): JsonResponse
     {
 
         try {

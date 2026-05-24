@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Patient;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class PatientMedicalFilesRequest extends FormRequest
+class GetPatientMedicalFilesRequest extends FormRequest
 {
     public function all($keys = null): array
     {

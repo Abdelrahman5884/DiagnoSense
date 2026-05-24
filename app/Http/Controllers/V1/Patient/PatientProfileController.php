@@ -5,13 +5,13 @@ namespace App\Http\Controllers\V1\Patient;
 use App\Actions\Patient\UpdatePatientProfileAction;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\V1\Controller;
-use App\Http\Requests\UpdateProfileRequest;
+use App\Http\Requests\Patient\UpdatePatientProfileRequest;
 use App\Http\Resources\PatientProfileResource;
 use Illuminate\Http\JsonResponse;
 
 class PatientProfileController extends Controller
 {
-    public function __invoke(UpdateProfileRequest $request, UpdatePatientProfileAction $updatePatientProfileAction): JsonResponse
+    public function __invoke(UpdatePatientProfileRequest $request, UpdatePatientProfileAction $updatePatientProfileAction): JsonResponse
     {
 
         try {

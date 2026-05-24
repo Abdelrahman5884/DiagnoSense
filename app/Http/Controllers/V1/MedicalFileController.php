@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\V1;
 
 use App\Helpers\ApiResponse;
-use App\Http\Requests\PatientMedicalFilesRequest;
+use App\Http\Requests\Patient\GetPatientMedicalFilesRequest;
 use App\Http\Resources\MedicalFileResource;
 use App\Services\MedicalFileService;
 use Illuminate\Http\JsonResponse;
@@ -14,7 +14,7 @@ class MedicalFileController extends Controller
         protected MedicalFileService $medicalFileService
     ) {}
 
-    public function __invoke(PatientMedicalFilesRequest $request): JsonResponse
+    public function __invoke(GetPatientMedicalFilesRequest $request): JsonResponse
     {
         try {
             $user = $request->user();

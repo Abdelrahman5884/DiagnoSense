@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Patient;
 
 use App\Rules\ValidContactRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateProfileRequest extends FormRequest
+class UpdatePatientProfileRequest extends FormRequest
 {
     public function rules(): array
     {

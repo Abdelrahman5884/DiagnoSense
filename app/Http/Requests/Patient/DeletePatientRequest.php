@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Patient;
 
-use Illuminate\Contracts\Validation\ValidationRule;
+
 use Illuminate\Foundation\Http\FormRequest;
 
 class DeletePatientRequest extends FormRequest
@@ -17,17 +17,5 @@ class DeletePatientRequest extends FormRequest
         return $patient->doctors()
             ->where('doctor_id', auth()->user()->doctor->id)
             ->exists();
-    }
-
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, ValidationRule|array<mixed>|string>
-     */
-    public function rules(): array
-    {
-        return [
-            //
-        ];
     }
 }
