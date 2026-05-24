@@ -4,7 +4,7 @@ namespace App\Listeners\Email;
 
 use App\Events\User\UserRegistered;
 use App\Mail\WelcomeMail;
-use App\Notifications\WelcomeSMSNotification;
+use App\Notifications\SMS\WelcomeSMSNotification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Mail;
 

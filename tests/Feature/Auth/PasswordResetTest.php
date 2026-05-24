@@ -1,11 +1,10 @@
 <?php
 
 use App\Mail\ResetPasswordMail;
-use App\Notifications\ResetPasswordSMSNotification;
+use App\Notifications\SMS\ResetPasswordSMSNotification;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
-
 use function Pest\Laravel\postJson;
 
 beforeEach(function () {

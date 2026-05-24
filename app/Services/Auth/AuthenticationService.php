@@ -9,7 +9,7 @@ use App\Helpers\Auth;
 use App\Mail\EmailVerificationMail;
 use App\Mail\ResetPasswordMail;
 use App\Models\User;
-use App\Notifications\ResetPasswordSMSNotification;
+use App\Notifications\SMS\ResetPasswordSMSNotification;
 use App\Notifications\Verification\EmailVerificationSMSNotification;
 use Ichtrojan\Otp\Otp;
 use Illuminate\Support\Facades\DB;

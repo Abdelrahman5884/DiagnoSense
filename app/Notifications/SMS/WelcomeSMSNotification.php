@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Notifications;
+namespace App\Notifications\SMS;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\VonageMessage;
