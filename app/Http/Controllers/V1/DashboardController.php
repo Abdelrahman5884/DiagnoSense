@@ -3,8 +3,15 @@
 namespace App\Http\Controllers\V1;
 
 use App\Helpers\ApiResponse;
+use App\Http\Resources\CurrentVisitResource;
+use App\Http\Resources\VisitsQueueResource;
+use App\Http\Resources\DashboardStatusResource;
+use App\Http\Resources\TopDiseaseResource;
 use App\Http\Resources\WidgetsDashboardResource;
+use App\Models\AiAnalysisResult;
+use App\Models\Patient;
 use App\Services\DashboardService;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -13,6 +20,7 @@ class DashboardController extends Controller
     public function __construct(
         protected DashboardService $dashboardService
     ) {}
+
 
     public function summary(Request $request): JsonResponse
     {
@@ -32,119 +40,65 @@ class DashboardController extends Controller
         }
     }
 
-    public function statusDistribution(Request $request)
+    public function statusDistribution(Request $request): JsonResponse
     {
-        $doctor = $request->user()->doctor;
+        try {
+            $doctor = $request->user()->doctor;
+            if (! $doctor) {
+                return ApiResponse::error(message: 'Doctor not found', status: 404);
+            }
+            $distribution = $this->dashboardService->getPatientStatusDistribution($doctor);
 
-        if (! $doctor) {
-            return ApiResponse::error('Unauthorized', null, 403);
+            return ApiResponse::success(
+                message: 'Status distribution retrieved successfully',
+                data: new DashboardStatusResource($distribution)
+            );
+        } catch (\Exception $e) {
+            \Log::error('Error retrieving status distribution: '.$e->getMessage());
+
+            return ApiResponse::error(message: 'Failed to retrieve status distribution', status: 500);
         }
-
-        $distribution = $doctor->patients()
-            ->select('status', DB::raw('count(*) as total'))
-            ->groupBy('status')
-            ->pluck('total', 'status');
-
-        $totalPatients = $distribution->sum();
-
-        $statuses = ['critical', 'stable', 'under review'];
-
-        $result = collect($statuses)->map(function ($status) use ($distribution, $totalPatients) {
-            $count = $distribution[$status] ?? 0;
-
-            return [
-                'status' => $status,
-                'value' => $count,
-                'percentage' => $totalPatients > 0 ? round(($count / $totalPatients) * 100) : 0,
-            ];
-        })->values();
-
-        return ApiResponse::success(
-            'Status distribution retrieved successfully',
-            [
-                'total_registered_patients' => $totalPatients,
-                'pie_chart_data' => $result,
-            ],
-            200
-        );
     }
 
-    public function topDiseases(Request $request)
+    public function topDiseases(Request $request): JsonResponse
     {
-        $doctor = $request->user()->doctor;
-        if (! $doctor) {
-            return ApiResponse::error('Unauthorized', null, 403);
+        try {
+            $doctor = $request->user()->doctor;
+            if (! $doctor) {
+                return ApiResponse::error(message: 'Doctor not found', status: 404);
+            }
+            $topDiseases = $this->dashboardService->getTopChronicDiseases($doctor);
+
+            return ApiResponse::success(
+                message: 'Top 5 chronic diseases retrieved successfully',
+                data: TopDiseaseResource::collection($topDiseases)
+            );
+        } catch (\Exception $e) {
+            \Log::error('Error retrieving top diseases: '.$e->getMessage());
+
+            return ApiResponse::error(message: 'Failed to retrieve top diseases', status: 500);
         }
-
-        $patientIds = $doctor->patients()->pluck('patients.id');
-        $histories = MedicalHistory::whereIn('patient_id', $patientIds)
-            ->whereNotNull('chronic_diseases')
-            ->pluck('chronic_diseases');
-
-        $topDiseases = collect($histories)
-            ->flatMap(fn ($diseases) => (array) $diseases)
-            ->filter()
-            ->countBy()
-            ->sortDesc()
-            ->take(5)
-            ->map(fn ($count, $name) => [
-                'label' => $name,
-                'value' => $count,
-            ])
-            ->values();
-
-        return ApiResponse::success(
-            'Top 5 chronic diseases retrieved successfully',
-            $topDiseases,
-            200
-        );
-
     }
 
-    public function todayVisits(Request $request)
+    public function todayVisits(): JsonResponse
     {
-        $doctor = $request->user()->doctor;
+        try {
+            $doctor = auth()->user()->doctor;
+            $result = $this->dashboardService->getTodayVisit($doctor);
+            request()->merge(['current_patient_id' => $result['currentPatient']?->patient->id ?? null]);
 
-        if (! $doctor) {
-            return ApiResponse::error('Unauthorized', null, 403);
+            return ApiResponse::success(
+                message: 'Queue retrieved successfully',
+                data: [
+                    'current_attending' => $result['currentPatient'] ? new CurrentVisitResource($result['currentPatient']) : null,
+                    'full_queue_list' => $result['todayPatients']->isNotEmpty() ? VisitsQueueResource::collection($result['todayPatients']) : null,
+                    'remaining_count_label' => ($result['totalTodayCount'] > 1 ? ($result['totalTodayCount'] - 1) : 0).' remaining',
+                ]
+            );
+        } catch (\Exception $e) {
+            \Log::error('Error retrieving today\'s visits: '.$e->getMessage(), ['exception' => $e]);
+
+            return ApiResponse::error(message: 'Failed to retrieve today\'s visits, please try again later.', status: 500);
         }
-
-        $patientsToday = Patient::whereHas('doctors', function ($q) use ($doctor) {
-            $q->where('doctors.id', $doctor->id);
-        })
-            ->whereDate('patients.next_visit_date', today())
-            ->with('latestAiAnalysisResult')
-            ->orderBy('patients.next_visit_date', 'asc')
-            ->take(5)
-            ->get();
-        $currentPatient = $patientsToday->first();
-        $totalTodayCount = Patient::whereHas('doctors', fn ($q) => $q->where('doctors.id', $doctor->id))
-            ->whereDate('patients.next_visit_date', today())
-            ->count();
-        $request->merge(['current_id' => $currentPatient?->id]);
-
-        return ApiResponse::success(
-            'Queue retrieved successfully',
-            [
-                'current_attending' => $currentPatient ? new CurrentVisitDashboardResource($currentPatient) : null,
-                'full_queue_list' => QueueDashboardResource::collection($patientsToday),
-                'remaining_count_label' => ($totalTodayCount > 1 ? ($totalTodayCount - 1) : 0).' remaining',
-            ],
-            200
-        );
-
-    }
-
-    public function markAttended(Request $request, $patientId)
-    {
-        $doctor = $request->user()->doctor;
-        $patient = $doctor->patients()->findorfail($patientId);
-        if ($patient->next_visit_date && Carbon::parse($patient->next_visit_date)->isToday()) {
-            $patient->update([
-                'next_visit_date' => null,
-            ]);
-        }
-
-        return ApiResponse::success('Patient marked as attended and queue updated successfully.', null, 200);
     }
 }

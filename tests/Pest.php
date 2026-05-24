@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Visit;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Carbon;
 use Tests\TestCase;
 
 /*
@@ -160,10 +161,10 @@ function fakeAiResponse(): array
     ];
 }
 
-function createVisit(Doctor $doctor, Patient $patient)
+function createVisit(Doctor $doctor, Patient $patient, ?Carbon $nextVisitDate = null)
 {
     return Visit::create([
-        'next_visit_date' => now()->addDays(7),
+        'next_visit_date' => $nextVisitDate ?? now()->addDays(7),
         'doctor_id' => $doctor->id,
         'patient_id' => $patient->id,
         'status' => 'draft',

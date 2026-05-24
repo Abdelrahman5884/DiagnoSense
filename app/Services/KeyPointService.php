@@ -95,4 +95,14 @@ class KeyPointService
             'is_ai_generated' => false,
         ]);
     }
+
+    public function deleteKeyPoint(KeyPoint $keyPoint): void
+    {
+        $keyPoint->delete();
+    }
+
+    public function updateKeyPoint(KeyPoint $keyPoint, array $data): void
+    {
+        $keyPoint->update(['insight' => $data['insight']]);
+    }
 }

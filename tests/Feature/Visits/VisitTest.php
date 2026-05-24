@@ -9,6 +9,7 @@ beforeEach(function () {
     $this->patient = $userPatient->patient;
     $doctor->patients()->attach($this->patient);
     actingAs($userDoctor);
+    $this->visit = createVisit($doctor, $this->patient, today());
 });
 
 it('allow doctor to create visit successfully', function () {
@@ -48,4 +49,17 @@ it('prevents doctor from creating visit for unassigned patient', function () {
         'action' => 'save',
     ]);
     $response->assertStatus(403);
+});
+
+it('allows doctor to mark visit as attended successfully', function () {
+    $response = $this->patch(route('visits.attend', ['visit' => $this->visit->id]));
+    $response->assertStatus(200);
+    $this->assertDatabaseHas('visits', [
+        'id' => $this->visit->id,
+        'status' => 'attended',
+    ]);
+    $response->assertJsonStructure([
+        'success',
+        'message',
+    ]);
 });

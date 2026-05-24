@@ -3,10 +3,18 @@
 namespace App\Services;
 
 use App\Models\Doctor;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 class DoctorService
 {
+    public function getDoctorProfileData(User $user): User
+    {
+        $user['specialization'] = $user->doctor->specialization;
+
+        return $user;
+    }
+
     public function updateProfile(Doctor $doctor, array $data): void
     {
         DB::transaction(function () use ($doctor, $data) {
@@ -19,5 +27,12 @@ class DoctorService
                 $doctor->update($doctorData);
             }
         });
+    }
+
+    public function deleteDoctorAccount(User $user): void
+    {
+        $user->doctor()->delete();
+        $user->tokens()->delete();
+        $user->delete();
     }
 }

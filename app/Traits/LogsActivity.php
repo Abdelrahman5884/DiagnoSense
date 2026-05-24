@@ -3,59 +3,52 @@
 namespace App\Traits;
 
 use App\Models\ActivityLog;
-use App\Models\KeyPoint;
-use App\Models\Medication;
-use App\Models\Patient;
-use App\Models\Task;
-use App\Models\Visit;
-use Carbon\Carbon;
+use Illuminate\Support\Carbon;
 
 trait LogsActivity
 {
-    protected static function bootLogsActivity()
+    protected static function bootLogsActivity(): void
     {
         static::created(function ($model) {
-            $modelName = class_basename($model);
-            if ($modelName === 'KeyPoint' && $model->is_manual) {
-                $model->logActivity('created');
-            } elseif (in_array($modelName, ['Task', 'Medication', 'Visit'])) {
+            if ($model->shouldLogEvent('created')) {
                 $model->logActivity('created');
             }
         });
 
         static::updated(function ($model) {
-            $modelName = class_basename($model);
-            if (in_array($modelName, ['Patient', 'KeyPoint', 'Task', 'Medication', 'Visit'])) {
+            if ($model->shouldLogEvent('updated')) {
                 $model->logActivity('updated');
             }
         });
 
         static::deleted(function ($model) {
-            $modelName = class_basename($model);
-            if (in_array($modelName, ['KeyPoint', 'Task', 'Medication', 'Visit'])) {
+            if ($model->shouldLogEvent('deleted')) {
                 $model->logActivity('deleted');
             }
         });
     }
 
-    public function logActivity(string $event)
+    protected function shouldLogEvent(string $event): bool
     {
-        $doctor = auth()->user()?->doctor;
-        $patientId = null;
-
-        if ($this instanceof Patient) {
-            $patientId = $this->id;
-        } elseif (isset($this->patient_id)) {
-            $patientId = $this->patient_id;
-        } elseif (method_exists($this, 'patient')) {
-            $patientId = $this->patient?->id;
-        } elseif (method_exists($this, 'aiAnalysisResult')) {
-            $analysis = $this->aiAnalysisResult()->first();
-
-            if ($analysis && isset($analysis->patient_id)) {
-                $patientId = $analysis->patient_id;
-            }
+        if (! request()->user() || ! request()->user()->doctor) {
+            return false;
         }
+
+        if (property_exists($this, 'logOnlyEvents') && ! in_array($event, $this->logOnlyEvents)) {
+            return false;
+        }
+
+        if (class_basename($this) === 'KeyPoint' && $event === 'created' && ($this->is_ai_generated ?? false)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function logActivity(string $event): void
+    {
+        $doctor = request()->user()?->doctor;
+        $patientId = $this->determinePatientId();
 
         $changes = [];
         $original = [];
@@ -64,7 +57,7 @@ trait LogsActivity
             $changes = $this->getChanges();
             $original = $this->getOriginal();
 
-            unset($changes['updated_at']);
+            unset($changes['updated_at'], $changes['last_visit_date']);
 
             if (empty($changes)) {
                 return;
@@ -72,7 +65,6 @@ trait LogsActivity
         }
 
         $formattedChanges = [];
-
         foreach ($changes as $field => $newValue) {
             $formattedChanges[$field] = [
                 'old' => $original[$field] ?? null,
@@ -83,7 +75,7 @@ trait LogsActivity
         ActivityLog::create([
             'doctor_id' => $doctor?->id,
             'patient_id' => $patientId,
-            'changeable_type' => class_basename($this),
+            'changeable_type' => $this->getMorphClass(),
             'changeable_id' => $this->id,
             'action' => strtolower(class_basename($this)).'_'.$event,
             'description' => $this->generateDescription($event, $formattedChanges),
@@ -91,36 +83,41 @@ trait LogsActivity
         ]);
     }
 
-    protected function generateDescription($event, $changes)
+    protected function determinePatientId(): ?int
     {
-        $doctorName = request()->user()?->doctor?->user?->name ?? 'System';
-        $modelName = class_basename($this);
-
-        $displayName = match (true) {
-            $this instanceof Visit => 'Visit on '.Carbon::parse($this->next_visit_date)->format('M d, Y'),
-            $this instanceof Patient => $this->user?->name,
-            $this instanceof KeyPoint => ($this->is_manual ? 'Doctor Note' : 'Key Point') ,
-            $this instanceof Task => "Task: '{$this->title}'",
-            $this instanceof Medication => "Medication: '{$this->name}'",
-            default => "{$modelName} (ID: {$this->id})"
-        };
-
-        if ($event === 'created') {
-            return "Dr. {$doctorName} created {$displayName}";
+        if (method_exists($this, 'getActivityPatientId')) {
+            return $this->getActivityPatientId();
         }
 
-        if ($event === 'deleted') {
-            return "Dr. {$doctorName} deleted {$displayName}";
+        if (property_exists($this, 'patient_id') || isset($this->patient_id)) {
+            return $this->patient_id;
+        }
+
+        if (method_exists($this, 'patient')) {
+            return $this->patient?->id;
+        }
+
+        return null;
+    }
+
+    protected function generateDescription(string $event, array $changes): string
+    {
+        $doctorName = request()->user()?->doctor?->user?->name ?? 'System';
+
+        if (method_exists($this, 'toActivityDisplayName')) {
+            $displayName = $this->toActivityDisplayName();
+        } else {
+            $displayName = class_basename($this)." (ID: {$this->id})";
+        }
+
+        if ($event === 'created' || $event === 'deleted') {
+            return "Dr. {$doctorName} {$event} {$displayName}";
         }
 
         if ($event === 'updated') {
-            if (isset($changes['last_visit_date'])) {
-                unset($changes['last_visit_date']);
-            }
             $messages = [];
-
             foreach ($changes as $field => $values) {
-                if (($this instanceof Patient && $field === 'status') || $this instanceof KeyPoint) {
+                if ((class_basename($this) === 'Patient' && $field === 'status') || class_basename($this) === 'KeyPoint') {
                     $messages[] = "{$field} changed from '{$values['old']}' to '{$values['new']}'";
                 } else {
                     if ($field === 'next_visit_date') {
@@ -134,6 +131,6 @@ trait LogsActivity
             return "Dr. {$doctorName}: ".implode(', ', $messages);
         }
 
-        return "{$modelName} {$event}";
+        return class_basename($this)." {$event}";
     }
 }

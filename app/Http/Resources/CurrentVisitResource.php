@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class CurrentVisitDashboardResource extends JsonResource
+class CurrentVisitResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -17,12 +17,13 @@ class CurrentVisitDashboardResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->user->name,
-            'age' => $this->age.' y/o',
-            'gender' => ucfirst($this->gender),
+            'patient_id' => $this->patient->id,
+            'name' => $this->patient->user->name,
+            'age' => $this->patient->age.' y/o',
+            'gender' => ucfirst($this->patient->gender),
             'appointment_time' => Carbon::parse($this->next_visit_date)->format('h:i A'),
             'ai_insight' => [
-                'summary' => $this->latestAiAnalysisResult?->ai_insight ?? 'No AI insight found for this patient.',
+                'summary' => $this->patient->latestAiAnalysisResult?->ai_insight ?? 'No AI insight found for this patient.',
             ],
         ];
     }

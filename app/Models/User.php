@@ -16,8 +16,6 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory , Notifiable;
 
-    use LogsActivity;
-
     /**
      * The attributes that are mass assignable.
      *

@@ -32,5 +32,6 @@
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>
         <env name="FILESYSTEM_DISK" value="azure"/>
+        <env name="AI_API_URL" value="http://fake-ai-service.test/"/>
     </php>
 </phpunit>

@@ -1,6 +1,7 @@
 <?php
 
 use function Pest\Laravel\actingAs;
+use function Pest\Laravel\getJson;
 use function Pest\Laravel\patchJson;
 
 beforeEach(function () {
@@ -9,6 +10,44 @@ beforeEach(function () {
     $this->doctor = $this->user->doctor;
 
     actingAs($this->user, 'sanctum');
+});
+it('retrieves doctor profile data', function () {
+    $response = $this->get(route('doctor.profile.edit'));
+    $response->assertStatus(200);
+    $response->assertJsonStructure([
+        'success',
+        'message',
+        'data' => [
+            'id',
+            'name',
+            'contact',
+            'speciality',
+        ]
+    ]);
+});
+
+it('allows doctor to delete his account', function () {
+    $response = $this->delete(route('doctor.profile.destroy'),[
+        'password' => 'password',
+        'password_confirmation' => 'password',
+    ]);
+    $response->assertStatus(200);
+    $response->assertJsonStructure([
+        'success',
+        'message',
+    ]);
+});
+
+it('fails to delete account with wrong password', function () {
+    $response = $this->delete(route('doctor.profile.destroy'),[
+        'password' => 'wrong-password',
+        'password_confirmation' => 'wrong-password',
+    ]);
+    $response->assertStatus(422);
+    $response->assertJsonStructure([
+        'success',
+        'message',
+    ]);
 });
 
 describe('Profile Update: Success Scenarios', function () {

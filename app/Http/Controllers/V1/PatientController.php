@@ -3,17 +3,23 @@
 namespace App\Http\Controllers\V1;
 
 use App\Helpers\ApiResponse;
+use App\Http\Requests\GetPatientDataForUpdateRequest;
 use App\Http\Requests\DeletePatientRequest;
 use App\Http\Requests\Patient\PatientListRequest;
 use App\Http\Requests\Patient\StorePatientRequest;
 use App\Http\Requests\PatientOverviewRequest;
 use App\Http\Requests\UpdateFcmTokenRequest;
 use App\Http\Requests\UpdatePatientRequest;
+use App\Http\Requests\UpdatePatientStatusRequest;
+use App\Http\Resources\ActivityLogResource;
+use App\Http\Resources\PatientEditResource;
 use App\Http\Resources\PatientOverviewResource;
 use App\Http\Resources\PatientResource;
 use App\Models\Patient;
 use App\Services\PatientService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class PatientController extends Controller
 {
@@ -62,6 +68,7 @@ class PatientController extends Controller
             );
         }
     }
+
     public function store(StorePatientRequest $request): JsonResponse
     {
         try {
@@ -106,7 +113,6 @@ class PatientController extends Controller
     {
 
         try {
-
             $this->patientService->deletePatient($patient);
             return ApiResponse::success(
                 message: 'Patient deleted successfully.'
@@ -118,9 +124,9 @@ class PatientController extends Controller
             return ApiResponse::error(
                 message: 'Failed to delete patient, please try again later.',
                 status: 500
-            );}
+            );
+        }
     }
-
 
     public function getComparativeAnalysis(Patient $patient): JsonResponse
     {
@@ -131,6 +137,7 @@ class PatientController extends Controller
                     message: 'No comparative analysis data available for this patient.',
                 );
             }
+
             return ApiResponse::success(
                 message: $result['message'],
                 data: $result['data']
@@ -181,6 +188,69 @@ class PatientController extends Controller
         }catch (\Exception $e) {
             \Log::error('FCM Token Update Error: '.$e->getMessage());
             return ApiResponse::error(message: 'An error occurred while updating the FCM token.', status: 500);
+        }
+    }
+
+    public function edit(GetPatientDataForUpdateRequest $request, Patient $patient): JsonResponse
+    {
+        try {
+            $doctor = auth()->user()->doctor;
+
+            $patient = $this->patientService->getPatientEditData($doctor, $patient);
+
+            return ApiResponse::success(
+                message: 'Data retrieved successfully',
+                data: new PatientEditResource($patient)
+            );
+
+        } catch (\Exception $e) {
+
+            \Log::error('Error retrieving patient data for edit: '.$e->getMessage(), ['id' => $patient->id]);
+
+            return ApiResponse::error(message: 'An error occurred while retrieving patient data for edit.', status: 500);
+        }
+    }
+
+    public function updateStatus(UpdatePatientStatusRequest $request, Patient $patient): JsonResponse
+    {
+
+        try {
+
+            $doctor = auth()->user()->doctor;
+
+            $this->patientService->updatePatientStatus($doctor, $patient, $request->validated()['status']);
+
+            return ApiResponse::success(message: 'Patient status updated successfully');
+
+        } catch (\Exception $e) {
+
+            \Log::error('Patient Status Update Error: '.$e->getMessage(), ['id' => $patient->id]);
+
+            return ApiResponse::error(message: 'Failed to update patient status.', status: 500);
+        }
+    }
+
+    public function activityHistory(Request $request, Patient $patient): JsonResponse
+    {
+
+        try {
+            $doctor = $request->user()->doctor;
+            if (! $doctor) {
+                return ApiResponse::error(message: 'Doctor not found', status: 404);
+            }
+            $logs = $this->patientService->getPatientActivities($doctor->id, $patient);
+
+            return ApiResponse::success(
+                message: 'Activity history retrieved successfully',
+                data: ActivityLogResource::collection($logs)->response()->getData(true),
+            );
+
+        } catch (HttpException $e) {
+            return ApiResponse::error(message: $e->getMessage(), status: $e->getStatusCode());
+        } catch (\Exception $e) {
+            \Log::error('Error retrieving patient activities: '.$e->getMessage(), ['patient_id' => $patient->id]);
+
+            return ApiResponse::error(message: 'An error occurred while retrieving patient activities.', status: 500);
         }
     }
 }

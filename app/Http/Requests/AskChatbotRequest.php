@@ -2,8 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Patient;
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class AskChatbotRequest extends FormRequest
@@ -14,9 +12,9 @@ class AskChatbotRequest extends FormRequest
     public function authorize(): bool
     {
         $currentDoctor = auth()->user()->doctor;
-        $patient = Patient::query()->findOrFail($this->route('patientId'));
+        $patient = $this->route('patient');
 
-        return $currentDoctor->patients()->whereKey($patient)->exists();
+        return $currentDoctor->patients()->where('patients.id', $patient->id)->exists();
     }
 
     /**

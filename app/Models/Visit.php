@@ -11,6 +11,13 @@ class Visit extends Model
     use HasFactory;
     // use LogsActivity;
 
+    protected array $logOnlyEvents = ['created', 'updated', 'deleted'];
+
+    public function toActivityDisplayName(): string
+    {
+        return 'Visit on '.\Carbon\Carbon::parse($this->next_visit_date)->format('M d, Y');
+    }
+
     protected $fillable = [
         'next_visit_date',
         'status',

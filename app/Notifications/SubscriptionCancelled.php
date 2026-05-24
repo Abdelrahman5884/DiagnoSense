@@ -11,12 +11,9 @@ class SubscriptionCancelled extends Notification implements ShouldBroadcast
 {
     use Queueable;
 
-    protected $planName;
-
-    public function __construct($planName)
-    {
-        $this->planName = $planName;
-    }
+    public function __construct(
+        protected string $planName
+    ) {}
 
     /**
      * Get the notification's delivery channels.

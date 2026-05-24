@@ -7,18 +7,14 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateKeyPointRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
-        $doctor = $this->user()->doctor;
-        $keyPointId = $this->route('keyPointId');
+        $patient = $this->route('patient');
+        $keyPoint = $this->route('keyPoint');
 
-        return $doctor->patients()
-            ->whereHas('aiAnalysisResults.keyPoints', function ($query) use ($keyPointId) {
-                $query->where('id', $keyPointId);
-            })->exists();
+        return $patient->aiAnalysisResults()->whereHas('keyPoints', function ($query) use ($keyPoint) {
+            $query->where('id', $keyPoint->id);
+        })->exists();
     }
 
     /**
@@ -30,14 +26,6 @@ class UpdateKeyPointRequest extends FormRequest
     {
         return [
             'insight' => 'required|string',
-        ];
-    }
-
-    public function messages(): array
-    {
-        return [
-            'insight.required' => 'The insight field is required.',
-            'insight.string' => 'The insight must be a string.',
         ];
     }
 }

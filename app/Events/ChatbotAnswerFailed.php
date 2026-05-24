@@ -17,8 +17,8 @@ class ChatbotAnswerFailed implements ShouldBroadcast
      * Create a new event instance.
      */
     public function __construct(
-        public $doctorId,
-        public $error,
+        public int $doctorId,
+        public string $error,
     ) {}
 
     /**
@@ -33,7 +33,7 @@ class ChatbotAnswerFailed implements ShouldBroadcast
         ];
     }
 
-    public function broadcastWith()
+    public function broadcastWith(): array
     {
         return [
             'error' => $this->error,

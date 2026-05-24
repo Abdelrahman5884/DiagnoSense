@@ -13,13 +13,6 @@ class ActivityLogResource extends JsonResource
             'id' => $this->id,
             'type' => $this->action,
             'message' => $this->description,
-
-            'doctor' => [
-                'id' => $this->doctor?->id,
-                'name' => $this->doctor?->user?->name,
-            ],
-
-            'created_at' => $this->created_at,
             'time_ago' => $this->created_at?->diffForHumans(),
         ];
     }

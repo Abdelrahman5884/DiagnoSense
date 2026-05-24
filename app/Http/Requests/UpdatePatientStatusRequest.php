@@ -13,7 +13,13 @@ class UpdatePatientStatusRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        $currentDoctor = auth()->user()->doctor;
+        if (! $currentDoctor) {
+            return false;
+        }
+        $patient = $this->route('patient');
+
+        return $currentDoctor->patients()->where('patients.id', $patient->id)->exists();
     }
 
     /**
@@ -25,14 +31,6 @@ class UpdatePatientStatusRequest extends FormRequest
     {
         return [
             'status' => ['required', Rule::in(['critical', 'stable', 'under review'])],
-        ];
-    }
-
-    public function messages(): array
-    {
-        return [
-            'status.required' => 'Status is required.',
-            'status.in' => 'Invalid status value.',
         ];
     }
 }

@@ -953,6 +953,68 @@ paths:
           description: 'Validation Error'
         500:
           description: 'Internal Server Error'
+    delete:
+      summary: 'Delete Doctor Account'
+      operationId: deleteApiV1DoctorsProfileDestroy
+      description: 'Permanently deletes the authenticated doctor profile, invalidates all active Sanctum authentication tokens, and removes the associated user record. Requires valid password confirmation for security verification.'
+      tags:
+        - Doctor Profile
+      security:
+        - sanctum: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - password
+                - password_confirmation
+              properties:
+                password:
+                  type: string
+                  format: password
+                  example: "SecretPassword123"
+                password_confirmation:
+                  type: string
+                  format: password
+                  example: "SecretPassword123"
+      responses:
+        200:
+          description: 'Account and associated clinical profile rows deleted successfully.'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: true
+                message: "Account deleted successfully"
+                data: null
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        422:
+          description: 'Validation Error - Incorrect password hash or missing confirmation fields.'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: "The given data was invalid."
+                errors:
+                  password:
+                    - "The password security verification failed."
+                    - "The password confirmation does not match."
+        500:
+          description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: "Failed to fetch doctor profile"
+                data: null
 
   '/api/v1/doctors/change-password':
     patch:
@@ -2268,6 +2330,573 @@ paths:
                 example:
                   success: true
                   message: "Task deleted successfully"
+  '/api/v1/subscriptions/{plan}/subscribe':
+    post:
+      summary: 'Subscribe to a Plan'
+      operationId: postApiV1SubscriptionsSubscribe
+      description: 'Deducts the plan price from the authenticated doctor wallet, updates their billing mode to subscription, creates or updates an active subscription record, and logs a billing transaction. Emits verification and budget alert notifications.'
+      tags:
+        - Subscriptions
+      security:
+        - sanctum: []
+      parameters:
+        - name: plan
+          in: path
+          required: true
+          description: 'The unique structural database ID of the plan to subscribe to.'
+          schema:
+            type: integer
+          example: 17
+      responses:
+        201:
+          description: 'Successfully subscribed to the plan!'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: true
+                  message: "Successfully subscribed to the plan!"
+                  data: null
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          description: 'Billing Validation Conflict - Already has an active subscription, unauthorized non-doctor user, or insufficient wallet credits balance.'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: "Insufficient credits. Please recharge E£45 to your wallet to subscribe to this plan."
+                  data: null
+        404:
+          description: 'Not Found - The selected plan ID or doctor profile associated with the token does not exist'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: "Doctor profile or plan not found."
+                  data: null
+        500:
+          description: 'Internal Server Error - Operational database transaction rollback'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: "An error occurred while processing your subscription. Please try again later."
+                  data: null
+  '/api/v1/subscriptions/current':
+    get:
+      summary: 'Get Current Subscription and Billing Details'
+      operationId: getApiV1SubscriptionsCurrent
+      description: 'Retrieves the dynamic billing status and subscription information for the authenticated doctor. The response structure adapts polymorphic data based on whether the billing mode is "pay-per-use" or "subscription" (active or expired).'
+      tags:
+        - Subscriptions
+      security:
+        - sanctum: []
+      responses:
+        200:
+          description: 'Current billing details retrieved successfully.'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Current billing mode retrieved successfully"
+                  data:
+                    type: object
+                    required: [billing_mode, balance]
+                    properties:
+                      billing_mode:
+                        type: string
+                        enum: [pay-per-use, subscription]
+                        example: "subscription"
+                      balance:
+                        type: number
+                        format: float
+                        example: 250.50
+              examples:
+                ActiveSubscriptionMode:
+                  summary: 'Doctor is under an Active Fixed Plan Subscription'
+                  value:
+                    success: true
+                    message: "Current billing mode retrieved successfully"
+                    data:
+                      billing_mode: "subscription"
+                      balance: 450.00
+                      plan_name: "Premium Clinic Plan"
+                      status: "active"
+                      usage:
+                        used: 12
+                        total: 50
+                        remaining: 38
+                        percentage: 24.00
+                      starts_at: "Fri, May 01, 2026"
+                      expires_at: "Sun, May 31, 2026"
+                      features:
+                        - "Unlimited Patient Records"
+                        - "Decision Support Assistance"
+                        - "Advanced PDF Comparative Reports"
+                PayPerUseMode:
+                  summary: 'Doctor is under Pay-Per-Use Billing Mode'
+                  value:
+                    success: true
+                    message: "Current billing mode retrieved successfully"
+                    data:
+                      billing_mode: "pay-per-use"
+                      balance: 85.00
+                      price_per_file: 20.00
+                      features:
+                        - "All features included"
+                ExpiredSubscriptionFallback:
+                  summary: 'Subscription Expired but Billing Mode is still flagged'
+                  value:
+                    success: true
+                    message: "Current billing mode retrieved successfully"
+                    data:
+                      billing_mode: "subscription"
+                      balance: 0.00
+                      plan_name: "Basic Starter Plan"
+                      status: "expired"
+                      usage:
+                        used: 20
+                        total: 20
+                        remaining: 0
+                        percentage: 100.00
+                      starts_at: "Tue, April 07, 2026"
+                      expires_at: "Thu, May 07, 2026"
+                      features:
+                        - "Basic OCR Extraction"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          description: 'Not Found - The doctor profile does not have an active billing mode established yet'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: "No active subscription or billing mode found."
+                  data: null
+        500:
+          description: 'Internal Server Error'
+  '/api/v1/subscriptions/cancel':
+    post:
+      summary: 'Cancel Subscription or Billing Mode'
+      operationId: postApiV1SubscriptionsCancel
+      description: 'Cancels the authenticated doctor’s active subscription or disables their pay-per-use billing mode. If a subscription is cancelled before expiration, it informs the user about their grace period and remaining summaries.'
+      tags:
+        - Subscriptions
+      security:
+        - sanctum: []
+      responses:
+        200:
+          description: 'Cancellation request processed successfully.'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    nullable: true
+                    example: null
+              examples:
+                CancelledWithGracePeriod:
+                  summary: 'Subscription Cancelled with Remaining Credits'
+                  description: 'Triggered when the doctor cancels the subscription but still has remaining summaries left to use until the expiration date.'
+                  value:
+                    success: true
+                    message: "Subscription cancelled. You can still use your remaining 38 summaries until Sun, May 31, 2026"
+                    data: null
+                CancelledLimitReached:
+                  summary: 'Subscription Cancelled with Limit Reached'
+                  description: 'Triggered when the doctor cancels the subscription and has already consumed 100% of the allowed summaries limit.'
+                  value:
+                    success: true
+                    message: "Subscription cancelled. Note: You have already reached your limit of 50 summaries."
+                    data: null
+                DisabledPayPerUse:
+                  summary: 'Pay-Per-Use Mode Disabled'
+                  description: 'Triggered when a doctor on pay-per-use cancels their billing style, reverting the doctor billing_mode back to null.'
+                  value:
+                    success: true
+                    message: "Pay-Per-Use mode has been disabled. Please subscribe to a plan to continue."
+                    data: null
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          description: 'Billing Validation Conflict - No active subscription or billing mode found to cancel.'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: "No active subscription or billing mode found to cancel."
+                  data: null
+        500:
+          description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: "An error occurred while cancelling your subscription."
+                  data: null
+  '/api/v1/dashboard/status-distribution':
+    get:
+      summary: 'Get Patient Status Distribution'
+      operationId: getApiV1DashboardStatusDistribution
+      description: 'Retrieves the total number of registered patients for the authenticated doctor along with a distribution breakdown by health status (stable, critical, under review) formatted specifically for Pie Chart visualization.'
+      tags:
+        - Dashboard
+      security:
+        - sanctum: []
+      responses:
+        200:
+          description: 'Patient status distribution data retrieved successfully.'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Status distribution retrieved successfully"
+                  data:
+                    type: object
+                    properties:
+                      total_registered_patients:
+                        type: integer
+                        description: 'The aggregate sum of all patients assigned to this doctor.'
+                        example: 248
+                      pie_chart_data:
+                        type: array
+                        description: 'Array of state distribution metrics mapping directly to frontend charting components.'
+                        items:
+                          type: object
+                          properties:
+                            status:
+                              type: string
+                              example: "stable"
+                            value:
+                              type: integer
+                              example: 148
+                            percentage:
+                              type: integer
+                              example: 60
+              examples:
+                StandardDistribution:
+                  summary: 'Complete Distribution Record'
+                  description: 'Example response when the doctor has patients registered under all active medical statuses.'
+                  value:
+                    success: true
+                    message: "Status distribution retrieved successfully"
+                    data:
+                      total_registered_patients: 248
+                      pie_chart_data:
+                        - { status: "critical", value: 62, percentage: 25 }
+                        - { status: "stable", value: 150, percentage: 60 }
+                        - { status: "under review", value: 36, percentage: 15 }
+                NoPatientsDistribution:
+                  summary: 'Empty Dashboard State'
+                  description: 'Fallback layout response when a newly registered doctor has zero patients in their clinic list.'
+                  value:
+                    success: true
+                    message: "Status distribution retrieved successfully"
+                    data:
+                      total_registered_patients: 0
+                      pie_chart_data:
+                        - { status: "critical", value: 0, percentage: 0 }
+                        - { status: "stable", value: 0, percentage: 0 }
+                        - { status: "under review", value: 0, percentage: 0 }
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          description: 'Not Found - Authenticated user is not linked to a valid doctor profile'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: "Doctor not found"
+                  data: null
+        500:
+          description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: "Failed to retrieve status distribution"
+                  data: null
+  '/api/v1/dashboard/top-diseases':
+    get:
+      summary: 'Get Top 5 Chronic Diseases'
+      operationId: getApiV1DashboardTopDiseases
+      description: 'Aggregates and calculates occurrence frequencies across all active patient medical histories assigned to the authenticated doctor. Returns the top 5 most prevalent chronic conditions formatted as label/value pairs optimized for Bar Chart components.'
+      tags:
+        - Dashboard
+      security:
+        - sanctum: []
+      responses:
+        200:
+          description: 'Top chronic diseases dataset retrieved successfully.'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Top 5 chronic diseases retrieved successfully"
+                  data:
+                    type: array
+                    description: 'Collection of the top 5 chronic conditions ordered descending by prevalence.'
+                    items:
+                      type: object
+                      properties:
+                        label:
+                          type: string
+                          description: 'The standardized name of the chronic disease.'
+                          example: "Hypertension"
+                        value:
+                          type: integer
+                          description: 'The absolute total count of patients diagnosed with this condition.'
+                          example: 156
+              examples:
+                SuccessTopDiseases:
+                  summary: 'Standard Dashboard Charts Payload'
+                  description: 'Response payload containing categorized conditions ranked dynamically by frequency counts.'
+                  value:
+                    success: true
+                    message: "Top 5 chronic diseases retrieved successfully"
+                    data:
+                      - { label: "Hypertension", value: 156 }
+                      - { label: "Diabetes", value: 142 }
+                      - { label: "Heart Disease", value: 98 }
+                      - { label: "Thyroid Disorder", value: 45 }
+                      - { label: "Asthma", value: 22 }
+                NoDataState:
+                  summary: 'Empty Aggregation Fallback'
+                  description: 'Returned safely as an empty array when the doctors patients have no recorded values under chronic diseases.'
+                  value:
+                    success: true
+                    message: "Top 5 chronic diseases retrieved successfully"
+                    data: []
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          description: 'Not Found - User profile not linked to a valid doctor database record'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: "Doctor not found"
+                  data: null
+        500:
+          description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: "Failed to retrieve top diseases"
+                  data: null
+  '/api/v1/doctors/profile/edit':
+    get:
+      summary: 'Get Authenticated Doctor Profile'
+      operationId: getApiV1DoctorsProfileEdit
+      description: 'Retrieves the secure profile details of the currently authenticated doctor using their Sanctum token session. Returns account configuration parameters like name, contact channel, and clinical specialization.'
+      tags:
+        - Doctor Profile
+      security:
+        - sanctum: []
+      responses:
+        200:
+          description: 'Doctor profile data fetched successfully.'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Doctor Information"
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 12
+                      name:
+                        type: string
+                        example: "Dr. Menna Baligh"
+                      contact:
+                        type: string
+                        example: "menna.backend@example.com"
+                      speciality:
+                        type: string
+                        example: "Cardiology"
+              examples:
+                StandardDoctorProfile:
+                  summary: 'Complete Profile Payload'
+                  value:
+                    success: true
+                    message: "Doctor Information"
+                    data:
+                      id: 12
+                      name: "Dr. Menna Baligh"
+                      contact: "menna.backend@example.com"
+                      speciality: "Cardiology"
+                UnassignedSpecialtyProfile:
+                  summary: 'Profile Missing Specialty Branch'
+                  value:
+                    success: true
+                    message: "Doctor Information"
+                    data:
+                      id: 15
+                      name: "Dr. Unknown Practitioner"
+                      contact: "+201012345678"
+                      speciality: "N/A"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        500:
+          description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: "Failed to fetch doctor profile"
+                data: null
+  '/api/v1/patients/{patient}/chatbot/ask':
+    post:
+      summary: 'Ask Patient Chatbot (DiagnoBot)'
+      operationId: postApiV1PatientsChatbotAsk
+      description: 'Queries the AI chatbot regarding a specific patient clinical record data. If the patient data files have changed or are not yet ingested into the vector storage ecosystem, it triggers a background job processing routine and gracefully flags a 202 status.'
+      tags:
+        - Patient Profile
+      security:
+        - sanctum: []
+      parameters:
+        - in: path
+          name: patient
+          required: true
+          description: 'The secure primary row ID of the patient.'
+          schema:
+            type: integer
+          example: 48
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - question
+              properties:
+                question:
+                  type: string
+                  minLength: 3
+                  description: 'The clinical question or query directed at the patient analytical profile records.'
+                  example: "Does the patient have any critical cardiovascular risk indications?"
+      responses:
+        200:
+          description: 'Success - Chatbot query response retrieved successfully.'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: true
+                message: "Answer from chatbot"
+                data: "Based on the latest lab report findings, the patient shows a high risk of hypertensive episodes due to elevated lipid values."
+        202:
+          description: 'Accepted - Patient data is being prepared and ingested asynchronously.'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: true
+                message: "Answer from chatbot"
+                data: "Preparing patient data..."
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          description: 'Forbidden - Feature premium gating constraint or patient access ownership mismatch.'
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                PremiumGateError:
+                  summary: 'Subscription Tier Conflict'
+                  value:
+                    success: false
+                    message: "You need to upgrade to Premium to use the chatbot"
+                UnauthorizedPatientAccess:
+                  summary: 'Patient Ownership Mismatch'
+                  value:
+                    success: false
+                    message: "This action is unauthorized."
+        422:
+          description: 'Validation Error - Missing question or text length below structural minimum constraints.'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: "The given data was invalid."
+                errors:
+                  question:
+                    - "The question field is required."
+        500:
+          description: 'Internal Server Error - AI Gateway handshake exceptions or downstream pipeline failures.'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: "Failed to get answer from chatbot"
+                data: null
+
 
 
 components:
