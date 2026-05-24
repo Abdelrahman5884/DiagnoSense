@@ -2994,6 +2994,119 @@ paths:
                 success: false
                 message: "An error occurred while switching to pay-per-use mode."
                 data: null
+  '/api/v1/dashboard/today-visits':
+    get:
+      summary: 'Get Today Visits Queue'
+      operationId: getApiV1DashboardTodayVisits
+      description: 'Retrieves the complete clinical queue configuration for the authenticated doctor for the current calendar date. Distinguishes the currently active attending patient from the remaining sequential waiting list elements.'
+      tags:
+        - Dashboard
+      security:
+        - sanctum: []
+      responses:
+        200:
+          description: 'Today’s clinic visit queue payload compiled successfully.'
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                ActiveQueueState:
+                  summary: 'Active Ongoing Queue State'
+                  value:
+                    success: true
+                    message: "Queue retrieved successfully"
+                    data:
+                      current_attending:
+                        id: 112
+                        patient_id: 48
+                        name: "Menna Baligh"
+                        age: "22 y/o"
+                        gender: "Female"
+                        appointment_time: "10:30 AM"
+                        ai_insight:
+                          summary: "Patient shows steady recovery signs."
+                      full_queue_list:
+                        - id: 112
+                          patient_id: 48
+                          name: "Menna Baligh"
+                          age: 22
+                          gender: "Female"
+                          appointment_time: "10:30 AM"
+                          ai_insight:
+                            summary: "Patient shows steady recovery signs."
+                          status_tag: "Now"
+                        - id: 113
+                          patient_id: 50
+                          name: "Ahmed Mohamed"
+                          age: 45
+                          gender: "Male"
+                          appointment_time: "11:15 AM"
+                          ai_insight:
+                            summary: "Abnormal cardiac rhythm detected."
+                          status_tag: "Waiting"
+                      remaining_count_label: "1 remaining"
+                EmptyQueueState:
+                  summary: 'Empty Daily Queue State'
+                  value:
+                    success: true
+                    message: "Queue retrieved successfully"
+                    data:
+                      current_attending: null
+                      full_queue_list: null
+                      remaining_count_label: "0 remaining"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        500:
+          description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: "Failed to retrieve today's visits, please try again later."
+                data: null
+  '/api/v1/visits/{visit}/attend':
+    patch:
+      summary: 'Mark Visit as Attended'
+      operationId: patchApiV1VisitsAttend
+      description: 'Updates the operational tracking status of a specific patient clinic visit queue record to "attended".'
+      tags:
+        - Dashboard
+      security:
+        - sanctum: []
+      parameters:
+        - in: path
+          name: visit
+          required: true
+          description: 'The unique row database record ID of the visit.'
+          schema:
+            type: integer
+          example: 112
+      responses:
+        200:
+          description: 'Visit record state updated to attended successfully.'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: true
+                message: "Visit attended successfully."
+                data: null
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        500:
+          description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: "An error occurred while attending visit."
+                data: null
 
 
 
