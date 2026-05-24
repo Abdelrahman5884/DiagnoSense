@@ -4,7 +4,7 @@ namespace App\Http\Controllers\V1;
 
 use App\Helpers\ApiResponse;
 use App\Http\Requests\Patient\GetPatientMedicalFilesRequest;
-use App\Http\Resources\MedicalFileResource;
+use App\Http\Resources\Patient\MedicalFileResource;
 use App\Services\MedicalFileService;
 use Illuminate\Http\JsonResponse;
 

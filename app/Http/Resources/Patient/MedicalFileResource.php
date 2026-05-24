@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\Patient;
 
 use App\Helpers\FileSystem;
 use Illuminate\Http\Resources\Json\JsonResource;
