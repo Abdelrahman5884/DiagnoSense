@@ -35,10 +35,10 @@ class KeyPointController extends Controller
         }
     }
 
-    public function destroy(DeleteKeyInfoRequest $request, Patient $patient, KeyPoint $keyPoint): JsonResponse
+    public function destroy(DeleteKeyInfoRequest $request, Patient $patient, KeyPoint $key_point): JsonResponse
     {
         try {
-            $this->keyPointService->deleteKeyPoint($keyPoint);
+            $this->keyPointService->deleteKeyPoint($key_point);
 
             return ApiResponse::success(message: 'Key point deleted successfully');
         } catch (\Exception $e) {
@@ -48,10 +48,10 @@ class KeyPointController extends Controller
         }
     }
 
-    public function update(UpdateKeyPointRequest $request, Patient $patient, KeyPoint $keyPoint): JsonResponse
+    public function update(UpdateKeyPointRequest $request, Patient $patient, KeyPoint $key_point): JsonResponse
     {
         try {
-            $this->keyPointService->updateKeyPoint($keyPoint, $request->validated());
+            $this->keyPointService->updateKeyPoint($key_point, $request->validated());
 
             return ApiResponse::success(message: 'Key point updated successfully');
 

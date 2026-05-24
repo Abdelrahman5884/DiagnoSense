@@ -96,13 +96,13 @@ class KeyPointService
         ]);
     }
 
-    public function deleteKeyPoint(KeyPoint $keyPoint): void
+    public function deleteKeyPoint(KeyPoint $key_point): void
     {
-        $keyPoint->delete();
+        $key_point->delete();
     }
 
-    public function updateKeyPoint(KeyPoint $keyPoint, array $data): void
+    public function updateKeyPoint(KeyPoint $key_point, array $data): void
     {
-        $keyPoint->update(['insight' => $data['insight']]);
+        $key_point->update(['insight' => $data['insight']]);
     }
 }
