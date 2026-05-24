@@ -1,7 +1,7 @@
 <?php
 
-use App\Jobs\AiAnalysisJob;
-use App\Jobs\ComparativeAnalysis;
+use App\Jobs\Ai\AiAnalysisJob;
+use App\Jobs\Ai\ComparativeAnalysis;
 use App\Models\AiAnalysisResult;
 use App\Models\MedicalHistory;
 use App\Models\Patient;

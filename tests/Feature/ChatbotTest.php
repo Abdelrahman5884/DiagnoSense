@@ -1,13 +1,13 @@
 <?php
 
-use App\Jobs\IngestPatientJob;
+use App\Jobs\Ai\IngestPatientJob;
 use App\Models\PatientIngestion;
 use App\Models\Plan;
 use App\Models\Report;
 use App\Models\Subscription;
-use function Pest\Laravel\actingAs;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
+use function Pest\Laravel\actingAs;
 
 beforeEach(function () {
     $this->doctor = createUserWithType('doctor', fake()->unique()->safeEmail());

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Ai;
 
 use App\Helpers\FileSystem;
 use App\Models\AiAnalysisResult;

@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Jobs\IngestPatientJob;
+use App\Jobs\Ai\IngestPatientJob;
 use App\Models\Patient;
 use App\Models\PatientIngestion;
 

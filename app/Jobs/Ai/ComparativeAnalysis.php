@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Ai;
 
 use App\Models\AiAnalysisResult;
 use App\Models\Patient;
@@ -18,11 +18,11 @@ class ComparativeAnalysis implements ShouldQueue
 {
     use Dispatchable , InteractsWithQueue , Queueable, SerializesModels;
 
-    public $tries = 3;
+    public int $tries = 3;
 
-    public $backoff = 10;
+    public int $backoff = 10;
 
-    public $timeout = 60;
+    public int $timeout = 60;
 
     public function __construct(
         public Patient $patient,

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Ai;
 
 use App\Events\Chatbot\ChatbotAnswerFailed;
 use App\Events\Chatbot\ChatbotAnswerReady;
@@ -14,7 +14,7 @@ class IngestPatientJob implements ShouldQueue
 {
     use Queueable;
 
-    public $timeout = 300;
+    public int $timeout = 300;
 
     public function __construct(
         public Patient $patient,

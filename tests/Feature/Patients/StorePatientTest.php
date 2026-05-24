@@ -1,11 +1,10 @@
 <?php
 
-use App\Jobs\AiAnalysisJob;
+use App\Jobs\Ai\AiAnalysisJob;
 use App\Models\MedicalHistory;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
-
 use function Pest\Laravel\actingAs;
 
 beforeEach(function () {

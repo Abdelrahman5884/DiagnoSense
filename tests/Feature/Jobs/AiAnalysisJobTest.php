@@ -1,6 +1,6 @@
 <?php
 
-use App\Jobs\AiAnalysisJob;
+use App\Jobs\Ai\AiAnalysisJob;
 use App\Models\AiAnalysisResult;
 use App\Models\KeyPoint;
 use App\Models\MedicalHistory;
