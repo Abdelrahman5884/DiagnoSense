@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\V1;
 
 use App\Helpers\ApiResponse;
-use App\Http\Resources\DashboardStatusResource;
-use App\Http\Resources\TopDiseaseResource;
+use App\Http\Resources\Dashboard\DashboardStatusResource;
+use App\Http\Resources\Dashboard\TopDiseaseResource;
+use App\Http\Resources\Dashboard\WidgetsDashboardResource;
 use App\Http\Resources\Visit\CurrentVisitResource;
 use App\Http\Resources\Visit\VisitsQueueResource;
-use App\Http\Resources\WidgetsDashboardResource;
 use App\Services\DashboardService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
