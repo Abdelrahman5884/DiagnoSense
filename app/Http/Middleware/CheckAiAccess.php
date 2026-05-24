@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Exceptions\BillingValidationException;
+use App\Exceptions\Subscription\BillingValidationException;
 use App\Helpers\ApiResponse;
 use App\Services\SubscriptionService;
 use Closure;

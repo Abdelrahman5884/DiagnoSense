@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\V1;
 
-use App\Exceptions\BillingValidationException;
+use App\Exceptions\Subscription\BillingValidationException;
 use App\Helpers\ApiResponse;
 use App\Http\Resources\CurrentSubscriptionResource;
 use App\Models\Plan;

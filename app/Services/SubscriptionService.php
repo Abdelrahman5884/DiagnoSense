@@ -2,12 +2,12 @@
 
 namespace App\Services;
 
-use App\Exceptions\BillingValidationException;
+use App\Exceptions\Subscription\BillingValidationException;
 use App\Models\Doctor;
 use App\Models\Plan;
-use App\Notifications\PayPerUseActivated;
 use App\Models\Subscription;
 use App\Notifications\CreditsExhausted;
+use App\Notifications\PayPerUseActivated;
 use App\Notifications\PlanSubscribed;
 use App\Notifications\SubscriptionCancelled;
 use Illuminate\Support\Facades\DB;
