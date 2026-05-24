@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\V1;
 
 use App\Helpers\ApiResponse;
-use App\Http\Requests\DeleteKeyInfoRequest;
+use App\Http\Requests\KeyPoint\DeleteKeyInfoRequest;
+use App\Http\Requests\KeyPoint\UpdateKeyPointRequest;
 use App\Http\Requests\StoreManualNoteRequest;
-use App\Http\Requests\UpdateKeyPointRequest;
 use App\Http\Resources\KeyPointResource;
 use App\Models\KeyPoint;
 use App\Models\Patient;
