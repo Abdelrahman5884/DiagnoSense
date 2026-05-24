@@ -43,7 +43,8 @@ trait LogsActivity
         }
 
         return true;
-}
+    }
+
     public function logActivity(string $event): void
     {
         $doctor = request()->user()?->doctor;
@@ -76,11 +77,12 @@ trait LogsActivity
             'patient_id' => $patientId,
             'changeable_type' => $this->getMorphClass(),
             'changeable_id' => $this->id,
-            'action' => strtolower(class_basename($this)) . '_' . $event,
+            'action' => strtolower(class_basename($this)).'_'.$event,
             'description' => $this->generateDescription($event, $formattedChanges),
             'changes' => $formattedChanges ?: null,
         ]);
     }
+
     protected function determinePatientId(): ?int
     {
         if (method_exists($this, 'getActivityPatientId')) {
@@ -105,7 +107,7 @@ trait LogsActivity
         if (method_exists($this, 'toActivityDisplayName')) {
             $displayName = $this->toActivityDisplayName();
         } else {
-            $displayName = class_basename($this) . " (ID: {$this->id})";
+            $displayName = class_basename($this)." (ID: {$this->id})";
         }
 
         if ($event === 'created' || $event === 'deleted') {
@@ -126,9 +128,9 @@ trait LogsActivity
                 }
             }
 
-            return "Dr. {$doctorName}: " . implode(', ', $messages);
+            return "Dr. {$doctorName}: ".implode(', ', $messages);
         }
 
-        return class_basename($this) . " {$event}";
+        return class_basename($this)." {$event}";
     }
 }

@@ -14,7 +14,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Patient extends Model
 {
-    use LogsActivity , SoftDeletes , HasFactory;
+    use HasFactory , LogsActivity , SoftDeletes;
+
     protected array $logOnlyEvents = ['updated'];
 
     public function toActivityDisplayName(): string
@@ -24,7 +25,7 @@ class Patient extends Model
 
     public function getActivityPatientId(): int
     {
-        return $this->id; 
+        return $this->id;
     }
 
     protected $fillable = [

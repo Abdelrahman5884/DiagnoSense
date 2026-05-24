@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class KeyPoint extends Model
 {
     use HasFactory , LogsActivity ,  SoftDeletes;
+
     protected array $logOnlyEvents = ['created', 'updated', 'deleted'];
 
     public function toActivityDisplayName(): string

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Medication extends Model
 {
     use LogsActivity;
+
     protected array $logOnlyEvents = ['created', 'updated', 'deleted'];
 
     public function toActivityDisplayName(): string

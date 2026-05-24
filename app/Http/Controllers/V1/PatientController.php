@@ -233,7 +233,9 @@ class PatientController extends Controller
 
         try {
             $doctor = $request->user()->doctor;
-            if (!$doctor) return ApiResponse::error(message:"Doctor not found", status: 404);
+            if (! $doctor) {
+                return ApiResponse::error(message: 'Doctor not found', status: 404);
+            }
             $logs = $this->patientService->getPatientActivities($doctor->id, $patient);
 
             return ApiResponse::success(
@@ -241,10 +243,11 @@ class PatientController extends Controller
                 data: ActivityLogResource::collection($logs)->response()->getData(true),
             );
 
-        }catch (HttpException $e) {
+        } catch (HttpException $e) {
             return ApiResponse::error(message: $e->getMessage(), status: $e->getStatusCode());
         } catch (\Exception $e) {
             \Log::error('Error retrieving patient activities: '.$e->getMessage(), ['patient_id' => $patient->id]);
+
             return ApiResponse::error(message: 'An error occurred while retrieving patient activities.', status: 500);
         }
     }
