@@ -2896,6 +2896,1248 @@ paths:
                 success: false
                 message: "Failed to get answer from chatbot"
                 data: null
+  '/api/v1/subscriptions/plans':
+    get:
+      summary: 'Get Available Subscription Plans'
+      operationId: getApiV1SubscriptionsPlans
+      description: 'Retrieves a collection of all available subscription plans including their pricing, summary usage limits, active feature lists, and duration periods.'
+      tags:
+        - Subscriptions
+      security: []
+      responses:
+        200:
+          description: 'Available plans retrieved successfully.'
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                SuccessPlansList:
+                  summary: 'Available Plans Collection Response'
+                  value:
+                    success: true
+                    message: "Available plans retrieved successfully"
+                    data:
+                      - id: 1
+                        name: "Basic Starter Plan"
+                        price: 150.00
+                        summaries_limit: 20
+                        features:
+                          - "Basic OCR Document Extraction"
+                          - "Standard Patient History Storage"
+                        duration_days: 30
+                      - id: 2
+                        name: "Premium Clinic Plan"
+                        price: 450.00
+                        summaries_limit: 50
+                        features:
+                          - "Advanced OCR Document Extraction"
+                          - "DiagnoBot AI Chatbot Assistant"
+                          - "Clinical Decision Support Warnings"
+                          - "Comparative Analysis Lab Trend Charts"
+                        duration_days: 30
+                EmptyPlansList:
+                  summary: 'No Plans Configured State'
+                  value:
+                    success: true
+                    message: "Available plans retrieved successfully"
+                    data: []
+        500:
+          description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: "An error occurred while retrieving plans."
+                data: null
+  '/api/v1/subscriptions/pay-per-use':
+    post:
+      summary: 'Switch to Pay-Per-Use Mode'
+      operationId: postApiV1SubscriptionsPayPerUse
+      description: 'Transitions the authenticated doctor’s billing configuration to pay-per-use mode inside a database transaction. This action simultaneously cancels any currently active structural fixed plan subscriptions and dispatches an activation notification alert.'
+      tags:
+        - Subscriptions
+      security:
+        - sanctum: []
+      responses:
+        200:
+          description: 'Successfully switched to pay-per-use billing mode.'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: true
+                message: "Switched to Pay-Per-Use mode. 20EGP will be charged per file."
+                data: null
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          description: 'Not Found - Authenticated user account is not associated with a doctor profile record.'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: "Doctor profile not found."
+                data: null
+        500:
+          description: 'Internal Server Error - Database atomic operation failure or notification event rollback exception.'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: "An error occurred while switching to pay-per-use mode."
+                data: null
+  '/api/v1/dashboard/today-visits':
+    get:
+      summary: 'Get Today Visits Queue'
+      operationId: getApiV1DashboardTodayVisits
+      description: 'Retrieves the complete clinical queue configuration for the authenticated doctor for the current calendar date. Distinguishes the currently active attending patient from the remaining sequential waiting list elements.'
+      tags:
+        - Dashboard
+      security:
+        - sanctum: []
+      responses:
+        200:
+          description: 'Today’s clinic visit queue payload compiled successfully.'
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                ActiveQueueState:
+                  summary: 'Active Ongoing Queue State'
+                  value:
+                    success: true
+                    message: "Queue retrieved successfully"
+                    data:
+                      current_attending:
+                        id: 112
+                        patient_id: 48
+                        name: "Menna Baligh"
+                        age: "22 y/o"
+                        gender: "Female"
+                        appointment_time: "10:30 AM"
+                        ai_insight:
+                          summary: "Patient shows steady recovery signs."
+                      full_queue_list:
+                        - id: 112
+                          patient_id: 48
+                          name: "Menna Baligh"
+                          age: 22
+                          gender: "Female"
+                          appointment_time: "10:30 AM"
+                          ai_insight:
+                            summary: "Patient shows steady recovery signs."
+                          status_tag: "Now"
+                        - id: 113
+                          patient_id: 50
+                          name: "Ahmed Mohamed"
+                          age: 45
+                          gender: "Male"
+                          appointment_time: "11:15 AM"
+                          ai_insight:
+                            summary: "Abnormal cardiac rhythm detected."
+                          status_tag: "Waiting"
+                      remaining_count_label: "1 remaining"
+                EmptyQueueState:
+                  summary: 'Empty Daily Queue State'
+                  value:
+                    success: true
+                    message: "Queue retrieved successfully"
+                    data:
+                      current_attending: null
+                      full_queue_list: null
+                      remaining_count_label: "0 remaining"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        500:
+          description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: "Failed to retrieve today's visits, please try again later."
+                data: null
+  '/api/v1/visits/{visit}/attend':
+    patch:
+      summary: 'Mark Visit as Attended'
+      operationId: patchApiV1VisitsAttend
+      description: 'Updates the operational tracking status of a specific patient clinic visit queue record to "attended".'
+      tags:
+        - Dashboard
+      security:
+        - sanctum: []
+      parameters:
+        - in: path
+          name: visit
+          required: true
+          description: 'The unique row database record ID of the visit.'
+          schema:
+            type: integer
+          example: 112
+      responses:
+        200:
+          description: 'Visit record state updated to attended successfully.'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: true
+                message: "Visit attended successfully."
+                data: null
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        500:
+          description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: "An error occurred while attending visit."
+                data: null
+  '/api/v1/patients/{patientId}/edit':
+    get:
+      summary: 'Get Patient Data for Update'
+      operationId: getApiV1PatientsEdit
+      description: 'Retrieves complete clinical and personal data of a specific patient to populate update forms on the frontend. Ensures the authenticated doctor owns the record and generates temporary secure URLs for existing medical files.'
+      tags:
+        - Patient Profile
+      security:
+        - sanctum: []
+      parameters:
+        - in: path
+          name: patientId
+          required: true
+          description: 'The unique primary database row ID of the patient.'
+          schema:
+            type: integer
+          example: 48
+      responses:
+        200:
+          description: 'Patient dataset for update form retrieved successfully.'
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                SuccessPatientEditData:
+                  summary: 'Complete Form Population Payload'
+                  value:
+                    success: true
+                    message: "Data retrieved successfully"
+                    data:
+                      id: 48
+                      personal_info:
+                        name: "Ahmed Mohamed"
+                        contact: "ahmed.patient@example.com"
+                        age: 45
+                        gender: "male"
+                        national_id: "28405121234567"
+                      medical_history:
+                        id: 92
+                        is_smoker: false
+                        chronic_diseases: ["hypertension", "diabetes"]
+                        previous_surgeries_name: "Appendectomy in 2018"
+                        current_medications: "Metformin 500mg once daily"
+                        allergies: "Penicillin allergy"
+                        family_history: "Father had Type 2 Diabetes"
+                        current_complaints: "Persistent chest discomfort"
+                      existing_files:
+                        - id: 201
+                          type: "lab"
+                          name: "blood_test_report.pdf"
+                          url: "https://diagnosensestorage.blob.core.windows.net/patient-data/ocr/blood_test_report.pdf?sv=2026..."
+                        - id: 202
+                          type: "radiology"
+                          name: "chest_xray.jpg"
+                          url: "https://diagnosensestorage.blob.core.windows.net/patient-data/ocr/chest_xray.jpg?sv=2026..."
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          description: 'Forbidden - User is not a valid doctor profile or does not own this patient record list.'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: "This action is unauthorized."
+        500:
+          description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: "An error occurred while retrieving patient data for edit."
+                data: null
+  '/api/v1/patients/{patient}/status':
+    patch:
+      summary: 'Update Patient Health Status'
+      operationId: patchApiV1PatientsStatus
+      description: 'Updates the clinical triage status of an existing patient assigned to the authenticated doctor. Validates that the input value matches system parameters (critical, stable, under review).'
+      tags:
+        - Patient Profile
+      security:
+        - sanctum: []
+      parameters:
+        - in: path
+          name: patient
+          required: true
+          description: 'The unique row database ID of the target patient.'
+          schema:
+            type: integer
+          example: 48
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+              properties:
+                status:
+                  type: string
+                  enum: [critical, stable, under review]
+                  description: 'The newly designated clinical severity tier classification of the patient.'
+                  example: "critical"
+      responses:
+        200:
+          description: 'Patient severity status updated successfully.'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: true
+                message: "Patient status updated successfully"
+                data: null
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          description: 'Forbidden - Authenticated profile is not a valid doctor or lacks structural ownership access to this patient record.'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: "This action is unauthorized."
+        422:
+          description: 'Validation Error - Missing status field or value parameter does not conform to the predefined structural enumeration.'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: "The given data was invalid."
+                errors:
+                  status:
+                    - "The selected status is invalid."
+        500:
+          description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: "Failed to update patient status."
+                data: null
+  '/api/v1/patients/{patient}/key-info/{keyPoint}':
+    patch:
+      summary: 'Update Patient Key Point Insight'
+      operationId: patchApiV1PatientsKeyInfoUpdate
+      description: 'Updates the clinical insight content text of a specific patient key point row. Validates that the requested key point relates structurally to the specified patient record list.'
+      tags:
+        - Patient Profile
+      security:
+        - sanctum: []
+      parameters:
+        - in: path
+          name: patient
+          required: true
+          description: 'The unique row database ID of the target patient.'
+          schema:
+            type: integer
+          example: 48
+        - in: path
+          name: keyPoint
+          required: true
+          description: 'The structural database key point record ID identifier.'
+          schema:
+            type: integer
+          example: 102
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - insight
+              properties:
+                insight:
+                  type: string
+                  description: 'The updated medical note or dynamic medical text explanation string.'
+                  example: "Patient exhibits secondary historic blood pressure stabilization indicators."
+      responses:
+        200:
+          description: 'Key point insight updated successfully.'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: true
+                message: "Key point updated successfully"
+                data: null
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          description: 'Forbidden - Unauthorized access or structural relationship mismatch between patient and key point.'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: "This action is unauthorized."
+        422:
+          description: 'Validation Error - Missing insight parameter string.'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: "The given data was invalid."
+                errors:
+                  insight:
+                    - "The insight field is required."
+        500:
+          description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: "Error while updating key point"
+                data: null
+
+    delete:
+      summary: 'Delete Patient Key Point'
+      operationId: deleteApiV1PatientsKeyInfoDestroy
+      description: 'Permanently removes a specific clinical key point record entry from the selected patient medical history profile scope.'
+      tags:
+        - Patient Profile
+      security:
+        - sanctum: []
+      parameters:
+        - in: path
+          name: patient
+          required: true
+          description: 'The unique row database ID of the target patient.'
+          schema:
+            type: integer
+          example: 48
+        - in: path
+          name: keyPoint
+          required: true
+          description: 'The structural database key point record ID identifier.'
+          schema:
+            type: integer
+          example: 102
+      responses:
+        200:
+          description: 'Key point row dropped from patient dataset logs successfully.'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: true
+                message: "Key point deleted successfully"
+                data: null
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          description: 'Forbidden - Lacks valid relationship links tracking between targeted key point and parent patient identifier.'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: "This action is unauthorized."
+        500:
+          description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: "Error while deleting key point"
+                data: null
+  '/api/v1/patients/{patientId}/activities':
+    get:
+      summary: 'Get Patient Activity Audit Logs'
+      operationId: getApiV1PatientsActivities
+      description: 'Retrieves a paginated list of tracking audit logs and historical operational actions recorded for a specific patient. Enforces strict doctor ownership authorization mapping and formats timestamps into relative time metrics.'
+      tags:
+        - Patient Profile
+      security:
+        - sanctum: []
+      parameters:
+        - in: path
+          name: patientId
+          required: true
+          description: 'The unique row database record ID of the patient.'
+          schema:
+            type: integer
+          example: 48
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: 'The page number constraint parameter used to navigate through pagination records.'
+          example: 1
+      responses:
+        200:
+          description: 'Patient activity timeline logs collection retrieved successfully with pagination wrappers.'
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                SuccessActivityLogsList:
+                  summary: 'Standard Paginated Timeline Logs Response'
+                  value:
+                    success: true
+                    message: "Activity history retrieved successfully"
+                    data:
+                      data:
+                        - id: 501
+                          type: "created_visit"
+                          message: "Dr. Menna Baligh initialized a new clinic visit session."
+                          time_ago: "2 hours ago"
+                        - id: 502
+                          type: "added_medication"
+                          message: "Added Metformin 500mg prescription entry to active patient log."
+                          time_ago: "3 days ago"
+                        - id: 503
+                          type: "triggered_ai_analysis"
+                          message: "AI diagnostic pipeline extracted clinical insights from radiology scans."
+                          time_ago: "1 week ago"
+                      links:
+                        first: "http://localhost:8000/api/v1/patients/48/activities?page=1"
+                        last: "http://localhost:8000/api/v1/patients/48/activities?page=3"
+                        prev: null
+                        next: "http://localhost:8000/api/v1/patients/48/activities?page=2"
+                      meta:
+                        current_page: 1
+                        from: 1
+                        last_page: 3
+                        path: "http://localhost:8000/api/v1/patients/48/activities"
+                        per_page: 15
+                        to: 15
+                        total: 42
+                EmptyTimelineState:
+                  summary: 'No Activity History Logged'
+                  value:
+                    success: true
+                    message: "Activity history retrieved successfully"
+                    data:
+                      data: []
+                      links:
+                        first: "http://localhost:8000/api/v1/patients/48/activities?page=1"
+                        last: "http://localhost:8000/api/v1/patients/48/activities?page=1"
+                        prev: null
+                        next: null
+                      meta:
+                        current_page: 1
+                        from: null
+                        last_page: 1
+                        path: "http://localhost:8000/api/v1/patients/48/activities"
+                        per_page: 15
+                        to: null
+                        total: 0
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          description: 'Forbidden - The authenticated doctor profile is not cross-referenced or authorized to view this patient logs dataset.'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: "You are not allowed to view this patient's activities."
+        404:
+          description: 'Not Found - The user account profile structure does not match a valid clinical doctor entity entry.'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: "Doctor not found"
+                data: null
+        500:
+          description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: "An error occurred while retrieving patient activities."
+                data: null
+  '/api/v1/next-visit':
+    get:
+      summary: 'Get Patient Upcoming Next Visit'
+      operationId: getApiV1NextVisit
+      description: 'Retrieves the nearest future scheduled upcoming visit session for the authenticated mobile patient user.'
+      tags:
+        - Mobile App
+      security:
+        - sanctum: []
+      responses:
+        200:
+          description: 'Upcoming visit details payload processed successfully.'
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                HasUpcomingVisit:
+                  summary: 'Upcoming Visit Scheduled Record'
+                  value:
+                    success: true
+                    message: "Next visit retrieved successfully."
+                    data:
+                      id: 88
+                      next_visit_date: "2026-06-15"
+                      status: "scheduled"
+                      doctor_name: "Dr. Menna Baligh"
+                      specialization: "Cardiology"
+                      date: "15 Jun, 2026"
+                      time: "10:00 AM"
+                NoUpcomingVisit:
+                  summary: 'No Future Visits Found'
+                  value:
+                    success: true
+                    message: "No upcoming visit."
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        500:
+          description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: "An error occurred while fetching next visit."
+                data: null
+
+  '/api/v1/tasks':
+    get:
+      summary: 'List All Tasks'
+      operationId: getApiV1TasksIndex
+      description: 'Retrieves a complete chronological timeline collection of patient care monitoring tasks mapped to the authenticated patient profile.'
+      tags:
+        - Mobile App
+      security:
+        - sanctum: []
+      responses:
+        200:
+          description: 'Care tasks collection dataset loaded successfully.'
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                TasksCollection:
+                  summary: 'Assigned Patient Tasks List'
+                  value:
+                    success: true
+                    message: "Tasks retrieved successfully"
+                    data:
+                      - id: 301
+                        title: "Check Fasting Blood Sugar"
+                        description: "Daily before breakfast monitoring"
+                        notes: "Notify if reading exceeds 140 mg/dL"
+                        is_completed: false
+                        action: "save"
+                        due_date: "2026-06-15"
+                        created_at: "2026-05-24"
+                        updated_at: "2026-05-24"
+                      - id: 302
+                        title: "Low Salt Diet Plan"
+                        description: "Restrict sodium intake below 2g daily"
+                        notes: null
+                        is_completed: true
+                        action: "save"
+                        due_date: "2026-06-15"
+                        created_at: "2026-05-22"
+                        updated_at: "2026-05-24"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        500:
+          description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: "Failed to retrieve tasks, please try again later."
+                data: null
+
+  '/api/v1/tasks/{task}':
+    get:
+      summary: 'Get Task Details'
+      operationId: getApiV1TasksShow
+      description: 'Retrieves comprehensive details for a specific care monitoring milestone task along with its parent visit relationship details block.'
+      tags:
+        - Mobile App
+      security:
+        - sanctum: []
+      parameters:
+        - in: path
+          name: task
+          required: true
+          description: 'The explicit database tracking row ID of the target task.'
+          schema:
+            type: integer
+          example: 301
+      responses:
+        200:
+          description: 'Task specifications log retrieved successfully.'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: true
+                message: "Task details retrieved successfully"
+                data:
+                  id: 301
+                  title: "Check Fasting Blood Sugar"
+                  description: "Daily before breakfast monitoring"
+                  notes: "Notify if reading exceeds 140 mg/dL"
+                  is_completed: false
+                  action: "save"
+                  due_date: "2026-06-15"
+                  created_at: "2026-05-24"
+                  updated_at: "2026-05-24"
+                  visit:
+                    id: 88
+                    next_visit_date: "2026-06-15"
+                    status: "scheduled"
+                    doctor_name: "Dr. Menna Baligh"
+                    specialization: "Cardiology"
+                    date: "15 Jun, 2026"
+                    time: "10:00 AM"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          description: 'Forbidden - Task reference record does not match authenticated patient ownership mapping limits.'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: "This action is unauthorized."
+        500:
+          description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: "Failed to fetch task details, please try again later."
+                data: null
+
+  '/api/v1/tasks/{task}/complete':
+    patch:
+      summary: 'Toggle Task Completion State'
+      operationId: patchApiV1TasksComplete
+      description: 'Toggles the operational boolean completion flag indicator status of a specific monitoring task row entry between true and false values.'
+      tags:
+        - Mobile App
+      security:
+        - sanctum: []
+      parameters:
+        - in: path
+          name: task
+          required: true
+          description: 'The explicit database tracking row ID of the target task.'
+          schema:
+            type: integer
+          example: 301
+      responses:
+        200:
+          description: 'Task execution state flipped successfully.'
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                MarkedAsCompleted:
+                  summary: 'Task Marked as Completed'
+                  value:
+                    success: true
+                    message: "Task marked as completed"
+                    data:
+                      id: 301
+                      title: "Check Fasting Blood Sugar"
+                      description: "Daily before breakfast monitoring"
+                      notes: "Notify if reading exceeds 140 mg/dL"
+                      is_completed: true
+                      action: "save"
+                      due_date: "2026-06-15"
+                      created_at: "2026-05-24"
+                      updated_at: "2026-05-24"
+                      visit:
+                        id: 88
+                        next_visit_date: "2026-06-15"
+                        status: "scheduled"
+                MarkedAsUncompleted:
+                  summary: 'Task Marked as Uncompleted'
+                  value:
+                    success: true
+                    message: "Task marked as uncompleted"
+                    data:
+                      id: 301
+                      title: "Check Fasting Blood Sugar"
+                      description: "Daily before breakfast monitoring"
+                      notes: "Notify if reading exceeds 140 mg/dL"
+                      is_completed: false
+                      action: "save"
+                      due_date: "2026-06-15"
+                      created_at: "2026-05-24"
+                      updated_at: "2026-05-24"
+                      visit:
+                        id: 88
+                        next_visit_date: "2026-06-15"
+                        status: "scheduled"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          description: 'Forbidden - Patient ownership criteria verification failed for this matching task segment.'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: "This action is unauthorized."
+  '/api/v1/patient/medical-files':
+    get:
+      summary: 'Get Patient Medical Files'
+      operationId: getApiV1PatientMedicalFiles
+      description: 'Retrieves a list of uploaded medical documents, lab tests, or radiology reports belonging to the authenticated patient. Supports filtering by file type and searching by file name.'
+      tags:
+        - Mobile App
+      security:
+        - sanctum: []
+      parameters:
+        - in: query
+          name: type
+          required: false
+          description: 'Filter files by specific clinical document category.'
+          schema:
+            type: string
+            enum: [lab, medical_history, radiology]
+          example: lab
+        - in: query
+          name: search
+          required: false
+          description: 'Search string matching parts of the original file name.'
+          schema:
+            type: string
+          example: "blood_test"
+      responses:
+        200:
+          description: 'Medical files list retrieved successfully.'
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                FilteredFilesList:
+                  summary: 'Filtered Medical Documents Result'
+                  value:
+                    success: true
+                    message: "Medical files retrieved successfully."
+                    data:
+                      - id: 201
+                        name: "blood_test_report.pdf"
+                        referred_by: "Ref: Dr. Menna Baligh"
+                        date: "May 24, 2026"
+                        extension: "PDF"
+                        file_url: "https://diagnosensestorage.blob.core.windows.net/patient-data/ocr/blood_test_report.pdf?sv=2026..."
+                      - id: 204
+                        name: "lipid_panel_results.png"
+                        referred_by: "Ref: Unknown"
+                        date: "May 10, 2026"
+                        extension: "PNG"
+                        file_url: "https://diagnosensestorage.blob.core.windows.net/patient-data/ocr/lipid_panel_results.png?sv=2026..."
+                EmptyFilesList:
+                  summary: 'No Matching Files Found'
+                  value:
+                    success: true
+                    message: "Medical files retrieved successfully."
+                    data: []
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          description: 'Not Found - User account is not linked to a valid patient database profile.'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: "Patient profile not found."
+                data: null
+        422:
+          description: 'Validation Error - Invalid type value constraint parameter.'
+        500:
+          description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: "An error occurred while fetching medical files."
+                data: null
+  '/api/v1/medications':
+    get:
+      summary: 'Get Patient Medications List'
+      operationId: getApiV1MedicationsIndex
+      description: 'Retrieves all active and historical medications prescribed to the authenticated patient profile, sorted with the latest prescriptions first.'
+      tags:
+        - Mobile App
+      security:
+        - sanctum: []
+      responses:
+        200:
+          description: 'Patient prescriptions collection dataset retrieved successfully.'
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                PrescriptionsFound:
+                  summary: 'Active Medications List'
+                  value:
+                    success: true
+                    message: "Patient medications retrieved successfully"
+                    data:
+                      - name: "Concor 5mg"
+                        dosage: "Half tablet"
+                        frequency: "Once every morning"
+                        duration: "3 months"
+                      - name: "Metformin 500mg"
+                        dosage: "1 tablet"
+                        frequency: "Twice daily"
+                        duration: "N/A"
+                NoPrescriptions:
+                  summary: 'Empty Medications Log'
+                  value:
+                    success: true
+                    message: "Patient medications retrieved successfully"
+                    data: []
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          description: 'Not Found - The user account session is not associated with a patient record row.'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: "No patient profile found for the user."
+                data: null
+        500:
+          description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: "An error occurred while retrieving medications."
+                data: null
+  '/api/v1/timeline':
+    get:
+      summary: 'Get Patient Timeline'
+      operationId: getApiV1Timeline
+      description: 'Retrieves a combined, unified chronological timeline of all healthcare interactions for the authenticated mobile patient user. Polymorphically merges clinical doctor visits and recovery tasks into a single feed sorted dynamically by creation date.'
+      tags:
+        - Mobile App
+      security:
+        - sanctum: []
+      responses:
+        200:
+          description: 'Unified timeline events dataset retrieved successfully.'
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                MixedTimelineFeed:
+                  summary: 'Combined Visits and Tasks Timeline'
+                  value:
+                    success: true
+                    message: "Timeline retrieved successfully"
+                    data:
+                      - type: "VISIT"
+                        title: "Visit"
+                        description: "2026-06-15 10:00 AM"
+                        doctor: "Dr. Menna Baligh"
+                        day: "24"
+                        month: "May"
+                        year: "2026"
+                      - type: "TASK"
+                        title: "Check Fasting Blood Sugar"
+                        description: "Daily before breakfast monitoring"
+                        doctor: "Dr. Menna Baligh"
+                        day: "24"
+                        month: "May"
+                        year: "2026"
+                      - type: "TASK"
+                        title: "Low Salt Diet Plan"
+                        description: "Restrict sodium intake below 2g daily"
+                        doctor: "Dr. Menna Baligh"
+                        day: "22"
+                        month: "May"
+                        year: "2026"
+                EmptyTimelineFeed:
+                  summary: 'No Timeline Logs Established'
+                  value:
+                    success: true
+                    message: "Timeline retrieved successfully"
+                    data: []
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          description: 'Not Found - The authenticated mobile user session is not linked to an active patient record.'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: "No patient profile found for the user."
+                data: null
+        500:
+          description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: "Failed to fetch timeline"
+                data: null
+  '/api/v1/fcm-token':
+    patch:
+      summary: 'Update Patient FCM Registration Token'
+      operationId: patchApiV1FcmToken
+      description: 'Updates or registers the Firebase Cloud Messaging device registration token for the authenticated patient user session to enable push notifications.'
+      tags:
+        - Mobile App
+      security:
+        - sanctum: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - fcm_token
+              properties:
+                fcm_token:
+                  type: string
+                  description: 'The unique cloud token string returned by the client device OS push subsystem.'
+                  example: "bk3RNwM-3Q0:CI2g_X56...cl1Vy"
+      responses:
+        200:
+          description: 'Firebase device context registration string cached successfully.'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: true
+                message: "FCM Token Updated Successfully"
+                data: null
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        422:
+          description: 'Validation Error - Missing the fcm_token request payload parameter.'
+        500:
+          description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: "An error occurred while updating the FCM token."
+                data: null
+
+  '/api/v1/mobile-notifications':
+    get:
+      summary: 'Get Patient Notification'
+      operationId: getApiV1MobileNotifications
+      description: 'Retrieves an ordered aggregate feed collection of application notifications generated for the authenticated patient device containing structural category parameters.'
+      tags:
+        - Mobile App
+      security:
+        - sanctum: []
+      responses:
+        200:
+          description: 'Patient notification database record collections marshaled successfully.'
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                NotificationsFeed:
+                  summary: 'Populated App Push In-Box Feed'
+                  value:
+                    success: true
+                    message: "Notifications retrieved successfully"
+                    data:
+                      data:
+                        - id: "930fc4ea-d7ab-4e51-8ff1-9daa68b8df14"
+                          type: "MEDICATION"
+                          title: "New Medication Added"
+                          body: "Dr. Menna Baligh added a new medication: med4"
+                          time_ago: "34 minutes ago"
+                        - id: "cee32dfb-ef91-462c-9d5f-332ac9822bab"
+                          type: "TASK"
+                          title: "New Task Assigned"
+                          body: "title task 11"
+                          time_ago: "34 minutes ago"
+                        - id: "dd1ea8b6-6c7f-44fc-8e01-11ecbe61f449"
+                          type: "VISIT"
+                          title: "Upcoming Appointment Scheduled"
+                          body: "Your next visit is scheduled on: 2026-08-20 06:41 AM"
+                          time_ago: "35 minutes ago"
+                EmptyFeed:
+                  summary: 'Zero Notifications Present State'
+                  value:
+                    success: true
+                    message: "Notifications retrieved successfully"
+                    data:
+                      data: []
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        500:
+          description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: "Failed to fetch notifications"
+                data: null
+  '/api/v1/profile':
+    patch:
+      summary: 'Update Patient Profile Contact'
+      operationId: patchApiV1Profile
+      description: 'Updates the authenticated patient’s primary contact channel (Email or Phone number). Validates the entry format and checks for global system uniqueness, ignoring the user’s current record.'
+      tags:
+        - Mobile App
+      security:
+        - sanctum: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                contact:
+                  type: string
+                  description: 'A newly updated valid Email address or Egyptian phone number constraint.'
+                  example: "menna.patient@example.com"
+      responses:
+        200:
+          description: 'Patient account profile contact updated successfully.'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: true
+                message: "Profile updated successfully"
+                data:
+                  name: "Menna Baligh"
+                  contact: "menna.patient@example.com"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          description: 'Not Found - User session authenticated but no associated patient record structure exists.'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: "Patient Profile Not Found"
+                data: null
+        422:
+          description: 'Validation Error - Contact value fails custom contact rules or is already registered to another user.'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: "The given data was invalid."
+                errors:
+                  contact:
+                    - "The contact has already been taken."
+        500:
+          description: 'Internal Server Error'
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: false
+                message: "An error occurred while updating profile."
+                data: null
 
 
 

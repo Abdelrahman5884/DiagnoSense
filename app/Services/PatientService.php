@@ -31,7 +31,8 @@ class PatientService
             ->select(['users.id', 'users.name'])
             ->join('patients', 'patients.user_id', '=', 'users.id')
             ->join('doctor_patient', 'doctor_patient.patient_id', '=', 'patients.id')
-            ->where('doctor_patient.doctor_id', $doctorId);
+            ->where('doctor_patient.doctor_id', $doctorId)
+            ->whereNull('patients.deleted_at');
 
         $query->when(! empty($params['search']), function ($q) use ($params) {
             $term = $params['search'];
