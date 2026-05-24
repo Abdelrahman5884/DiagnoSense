@@ -24,7 +24,7 @@ class UpdateExpiredSubscriptions extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
         $affected = Subscription::whereIn('status', ['active', 'cancelled'])
             ->where('expires_at', '<', now())
