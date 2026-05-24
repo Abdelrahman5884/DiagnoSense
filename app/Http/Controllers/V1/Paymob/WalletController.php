@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\V1;
+namespace App\Http\Controllers\V1\Paymob;
 
 use App\Actions\Subscription\GetTransactionHistoryAction;
 use App\Helpers\ApiResponse;
+use App\Http\Controllers\V1\Controller;
 use App\Http\Requests\ChargeWalletRequest;
 use App\Services\PaymobService;
 use Illuminate\Http\JsonResponse;
