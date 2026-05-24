@@ -70,25 +70,26 @@ Route::prefix('v1')->group(function () {
                 Route::get('/{patient}/decision-support', 'getDecisionSupport')->name('decision-support');
                 Route::get('/{patient}/comparative-analysis', 'getComparativeAnalysis')->name('comparative-analysis');
             });
+            Route::post('/{patient}/chatbot/ask', ChatbotController::class)->middleware( 'check-ai-access')->name('chatbot.ask');
         });
         Route::apiResource('patients.key-points', KeyPointController::class)
             ->only(['index', 'store', 'update', 'destroy'])
             ->shallow()->middlewareFor('index', 'can:view,patient');
+
+        Route::controller(WalletController::class)->prefix('wallets')->as('wallets.')->group(function () {
+            Route::post('charge', 'store')->name('charge');
+            Route::get('transactions', 'index')->name('transactions');
+        });
+
+        Route::controller(SubscriptionController::class)->prefix('subscriptions')->as('subscriptions.')->group(function () {
+            Route::post('/{plan}/subscribe', 'subscribe')->name('subscribe');
+            Route::post('pay-per-use', 'switchToPayPerUse')->name('pay-per-use');
+            Route::get('plans', PlanController::class)->name('plans.index');
+            Route::get('current', 'current')->name('current');
+            Route::post('cancel', 'cancel')->name('cancel');
+        });
     });
 
-    Route::controller(WalletController::class)->middleware('auth:sanctum')->prefix('wallets')->as('wallets.')->group(function () {
-        Route::post('charge', 'store')->name('charge');
-        Route::get('transactions', 'index')->name('transactions');
-    });
-    Route::controller(SubscriptionController::class)->middleware('auth:sanctum')->prefix('subscriptions')->as('subscriptions.')->group(function () {
-        Route::post('/{plan}/subscribe', 'subscribe')->name('subscribe');
-        Route::post('pay-per-use', 'switchToPayPerUse')->name('pay-per-use');
-        Route::get('plans', PlanController::class)->name('plans.index');
-        Route::get('current', 'current')->name('current');
-        Route::post('cancel', 'cancel')->name('cancel');
-    });
-
-    Route::post('/patients/{patient}/chatbot/ask', ChatbotController::class)->middleware(['auth:sanctum', 'check-ai-access'])->name('patients.chatbot.ask');
     Route::controller(DashboardController::class)->middleware('auth:sanctum')->prefix('dashboard')->as('dashboard.')->group(function () {
         Route::get('/status-distribution', 'statusDistribution')->name('status-distribution');
         Route::get('/top-diseases', 'topDiseases')->name('top-diseases');
