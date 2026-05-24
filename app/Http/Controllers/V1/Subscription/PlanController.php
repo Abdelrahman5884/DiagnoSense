@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\V1;
+namespace App\Http\Controllers\V1\Subscription;
 
 use App\Actions\Subscription\GetAvailablePlansAction;
 use App\Helpers\ApiResponse;
+use App\Http\Controllers\V1\Controller;
 use Illuminate\Http\JsonResponse;
 
 class PlanController extends Controller
