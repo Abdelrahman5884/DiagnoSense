@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Events;
+namespace App\Events\Chatbot;
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
@@ -9,7 +9,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class ChatbotAnswerFailed implements ShouldBroadcast
+class ChatbotAnswerReady implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -18,7 +18,7 @@ class ChatbotAnswerFailed implements ShouldBroadcast
      */
     public function __construct(
         public int $doctorId,
-        public string $error,
+        public string $answer,
     ) {}
 
     /**
@@ -36,7 +36,7 @@ class ChatbotAnswerFailed implements ShouldBroadcast
     public function broadcastWith(): array
     {
         return [
-            'error' => $this->error,
+            'answer' => $this->answer,
         ];
     }
 }

@@ -2,8 +2,8 @@
 
 namespace App\Jobs;
 
-use App\Events\ChatbotAnswerFailed;
-use App\Events\ChatbotAnswerReady;
+use App\Events\Chatbot\ChatbotAnswerFailed;
+use App\Events\Chatbot\ChatbotAnswerReady;
 use App\Models\Patient;
 use App\Models\PatientIngestion;
 use App\Services\AIGatewayService;
