@@ -8,7 +8,6 @@ use App\Http\Controllers\V1\Auth\SocialAuthController;
 use App\Http\Controllers\V1\ChatbotController;
 use App\Http\Controllers\V1\DashboardController;
 use App\Http\Controllers\V1\Doctor\DoctorProfileController;
-use App\Http\Controllers\V1\FlutterNotificationController;
 use App\Http\Controllers\V1\KeyPointController;
 use App\Http\Controllers\V1\MedicalFileController;
 use App\Http\Controllers\V1\Notification\MobileNotificationController;
@@ -38,9 +37,11 @@ Route::prefix('v1')->group(function () {
 
         Route::middleware('check-user-type')->group(function () {
             Route::post('/login/{type}', [AuthenticatedController::class, 'login'])->middleware('throttle:login')->name('login');
-            Route::post('/forget-password/{type}', [ResetPasswordController::class, 'forgotPassword'])->name('password.forgot');
-            Route::post('/verify-otp/{type}', [ResetPasswordController::class, 'verifyOtp'])->name('password.verify');
-            Route::post('/reset-password/{type}', [ResetPasswordController::class, 'resetPassword'])->name('password.reset')->middleware(['auth:sanctum', 'abilities:reset-password']);
+            Route::controller(ResetPasswordController::class)->as('password.')->group(function () {
+                Route::post('/forget-password/{type}', 'forgotPassword')->name('forgot');
+                Route::post('/verify-otp/{type}', 'verifyOtp')->name('verify');
+                Route::post('/reset-password/{type}', 'resetPassword')->name('reset')->middleware(['auth:sanctum', 'abilities:reset-password']);
+            });
         });
 
         Route::middleware('auth:sanctum')->group(function () {
@@ -131,53 +132,18 @@ Route::prefix('v1')->group(function () {
     });
 });
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/visits', [VisitController::class, 'store']);
-    Route::post('/visits/{visit}/items', [VisitItemController::class, 'store']);
-    Route::get('/patients/{patient}/items', [VisitItemController::class, 'index']);
-    Route::delete('/patients/{patient}/medications/{medication}', [VisitItemController::class, 'destroyMedication']);
-    Route::delete('/patients/{patient}/tasks/{task}', [VisitItemController::class, 'destroyTask']);
-    Route::patch('/patients/{patient}/status', [PatientController::class, 'updateStatus']);
-    Route::delete('/key-points/{keyPointId}', [KeyPointController::class, 'destroy']);
-    Route::get('/patients/{patient}/activities', [PatientController::class, 'activityHistory']);
-    Route::post('/patients/{patientId}/key-info', [KeyPointController::class, 'store']);
-    Route::get('/patients/{patientId}/decision-support', [PatientController::class, 'getDecisionSupport']);
-    Route::delete('/patients/{patientId}', [PatientController::class, 'destroy']);
-    Route::post('/subscription/pay-per-use', [SubscriptionController::class, 'switchToPayPerUse']);
-    Route::get('/subscription/plans', [SubscriptionController::class, 'index']);
-    Route::get('/subscription/current', [SubscriptionController::class, 'current']);
-    Route::post('/subscription/cancel', [SubscriptionController::class, 'cancel']);
-    Route::post('/chatbot/{patientId}', [ChatbotController::class, 'store'])->middleware('check-ai-access');
-    Route::get('/patient/next-visit', [PatientController::class, 'nextVisit']);
-    Route::get('/dashboard/summary', [DashboardController::class, 'summary']);
-    Route::get('/dashboard/status-distribution', [DashboardController::class, 'statusDistribution']);
-    Route::get('/dashboard/top-diseases', [DashboardController::class, 'topDiseases']);
-    Route::get('/patients/{patientId}', [PatientController::class, 'edit']);
-    Route::post('/support', [SupportController::class, 'store']);
-    Route::put('/patients/{patientId}', [PatientController::class, 'update']);
-    Route::get('/patients/{patientId}/comparative-analysis', [PatientController::class, 'getComparativeAnalysis']);
-});
 
-// Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);
+
 Route::get('/payment-success', function () {
     return response()->json(['message' => 'Payment successful! You can close this tab.']);
 })->name('payment.success');
 Route::get('/payment-cancel', function () {
     return response()->json(['message' => 'Payment cancelled.']);
 })->name('payment.cancel');
-
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/patient/medications', [MedicalFileController::class, 'medications']);
-    Route::get('/patient/timeline', [MedicalFileController::class, 'timeline']);
-    Route::get('/patient/notifications', [FlutterNotificationController::class, 'index']);
-});
-
 Broadcast::routes(['middleware' => ['auth:sanctum']]);
-
 Route::get('/payment-redirect', function (Request $request) {
     if ($request->query('success') === 'true') {
         return redirect('http://localhost:5173/subscription?status=success');
     }
 });
-
 Route::post('/paymob/webhook', [PaymobWebhookController::class, 'handle'])->name('paymob.webhook');
