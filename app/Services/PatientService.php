@@ -406,11 +406,11 @@ class PatientService
     public function getPatientEditData(Doctor $doctor, Patient $patient): ?Patient
     {
 
-        return $patient->with([
+        return $patient->load([
             'user',
             'medicalHistory',
             'reports',
-        ])->first();
+        ]);
     }
 
     public function updatePatientStatus(Doctor $doctor, Patient $patient, string $status): void

@@ -195,7 +195,7 @@ class PatientController extends Controller
     public function edit(GetPatientDataForUpdateRequest $request, Patient $patient): JsonResponse
     {
         try {
-            $doctor = auth()->user()->doctor;
+            $doctor = $request->user()->doctor;
 
             $patient = $this->patientService->getPatientEditData($doctor, $patient);
 
