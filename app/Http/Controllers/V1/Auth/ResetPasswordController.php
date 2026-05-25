@@ -23,11 +23,7 @@ class ResetPasswordController extends Controller
     {
         try {
             $data = $request->validated();
-            $status = $this->authenticationService->forgotPassword($data);
-
-            if (! $status) {
-                return ApiResponse::error(message: 'User not found with these credentials.', status: 404);
-            }
+            $this->authenticationService->forgotPassword($data);
 
             return ApiResponse::success(message: 'OTP has been sent to your registered contact.');
         } catch (\Exception $e) {
