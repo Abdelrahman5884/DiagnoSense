@@ -15,12 +15,12 @@ class MedicalHistoryResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'current_complaint' => $this->current_complaint,
+            'current_complaint' => $this->current_complaints,
             'is_smoker' => (bool) $this->is_smoker,
-            'previous_surgeries' => (bool) $this->previous_surgeries,
+            'previous_surgeries' => (bool) $this->previous_surgeries_name,
             'chronic_diseases' => $this->chronic_diseases,
             'previous_surgeries_name' => $this->previous_surgeries_name,
-            'medications' => $this->medications,
+            'medications' => $this->current_medications,
             'allergies' => $this->allergies,
             'family_history' => $this->family_history,
         ];
