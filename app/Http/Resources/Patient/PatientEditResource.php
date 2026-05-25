@@ -20,7 +20,7 @@ class PatientEditResource extends JsonResource
             'personal_info' => [
                 'name' => $this->user->name,
                 'contact' => $this->user->contact,
-                'age' => $this->age,
+                'date_of_birth' => $this->date_of_birth->format('Y-m-d'),
                 'gender' => $this->gender,
                 'national_id' => $this->national_id,
             ],
