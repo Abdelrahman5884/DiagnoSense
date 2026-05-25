@@ -53,7 +53,7 @@ describe('forgot password', function () {
             'contact' => 'non-existent@test.com',
         ]);
 
-        $response->assertStatus(404)
+        $response->assertStatus(403)
             ->assertJson(['success' => false]);
     })->with('user_types');
 });
