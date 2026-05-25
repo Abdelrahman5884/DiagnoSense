@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
-use App\Traits\LogsActivity;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class AiAnalysisResult extends Model
 {
-    // use LogsActivity;
+    use HasFactory;
 
     protected $fillable = [
         'patient_id',
@@ -22,17 +24,17 @@ class AiAnalysisResult extends Model
         'response' => 'array',
     ];
 
-    public function patient()
+    public function patient(): BelongsTo
     {
         return $this->belongsTo(Patient::class);
     }
 
-    public function keyPoints()
+    public function keyPoints(): HasMany
     {
         return $this->hasMany(KeyPoint::class);
     }
 
-    public function decisionSupports()
+    public function decisionSupports(): HasMany
     {
         return $this->hasMany(DecisionSupport::class);
     }

@@ -1,8 +1,8 @@
 <?php
 
 use App\Models\Doctor;
-use App\Notifications\SubscriptionExpired;
-use App\Notifications\SubscriptionExpiringSoon;
+use App\Notifications\Subscription\SubscriptionExpired;
+use App\Notifications\Subscription\SubscriptionExpiringSoon;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;

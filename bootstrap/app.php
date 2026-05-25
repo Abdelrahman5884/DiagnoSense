@@ -1,8 +1,20 @@
 <?php
 
+use App\Exceptions\Auth\InvalidOtpException;
+use App\Exceptions\Auth\InvalidUserTypeException;
+use App\Helpers\ApiResponse;
+use App\Http\Middleware\CheckAiAccess;
+use App\Http\Middleware\CheckUserType;
+use App\Http\Middleware\ForceJsonResponse;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Routing\Middleware\SubstituteBindings;
+use Illuminate\Validation\ValidationException;
+use Laravel\Sanctum\Http\Middleware\CheckAbilities;
+use Laravel\Sanctum\Http\Middleware\CheckForAnyAbility;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -14,23 +26,39 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->group('api', [
-            \App\Http\Middleware\ForceJsonResponse::class,
+            ForceJsonResponse::class,
+            SubstituteBindings::class,
         ]);
 
         $middleware->alias([
-            'check-user-type' => \App\Http\Middleware\CheckUserType::class,
-            'check-ai-access' => \App\Http\Middleware\CheckAiAccess::class,
+            'check-user-type' => CheckUserType::class,
+            'check-ai-access' => CheckAiAccess::class,
+            'abilities' => CheckAbilities::class,
+            'ability' => CheckForAnyAbility::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException $e, $request) {
+        $exceptions->render(function (ValidationException $e, $request) {
             if ($request->is('api/*')) {
-                return \App\Http\Responses\ApiResponse::error('Unauthorized access: You do not have permission for this action.', null, 403);
+                return ApiResponse::error(message: 'Validation Errors', data: $e->errors(), status: 422);
             }
         });
-        $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\NotFoundHttpException $e, $request) {
+        $exceptions->render(function (AccessDeniedHttpException $e, $request) {
             if ($request->is('api/*')) {
-                return \App\Http\Responses\ApiResponse::error('The requested resource was not found.', null, 404);
+                $message = $e->getMessage() ?: 'Unauthorized access: You do not have permission for this action.';
+
+                return ApiResponse::error(message: $message, status: 403);
+            }
+        });
+        $exceptions->render(function (InvalidUserTypeException $e, $request) {
+            return ApiResponse::error($e->getMessage(), null, 403);
+        });
+        $exceptions->render(function (InvalidOtpException $e, $request) {
+            return ApiResponse::error($e->getMessage(), null, 401);
+        });
+        $exceptions->render(function (NotFoundHttpException $e, $request) {
+            if ($request->is('api/*')) {
+                return ApiResponse::error('The requested resource was not found.', null, 404);
             }
         });
     })->create();

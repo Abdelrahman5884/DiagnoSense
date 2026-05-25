@@ -2,30 +2,30 @@
 
 namespace App\Models;
 
-use App\Traits\LogsActivity;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class MedicalHistory extends Model
 {
-    // use LogsActivity;
+    use HasFactory;
 
     protected $fillable = [
         'patient_id',
         'is_smoker',
-        'previous_surgeries',
         'chronic_diseases',
-        'medications',
+        'current_medications',
         'allergies',
         'family_history',
         'previous_surgeries_name',
-        'current_complaint',
+        'current_complaints',
     ];
 
     protected $casts = [
         'chronic_diseases' => 'array',
     ];
 
-    public function patient()
+    public function patient(): BelongsTo
     {
         return $this->belongsTo(Patient::class);
     }

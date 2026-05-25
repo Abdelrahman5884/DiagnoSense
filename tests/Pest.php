@@ -1,5 +1,14 @@
 <?php
 
+use App\Models\Doctor;
+use App\Models\Patient;
+use App\Models\User;
+use App\Models\Visit;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Carbon;
+use Tests\TestCase;
+
 /*
 |--------------------------------------------------------------------------
 | Test Case
@@ -11,8 +20,8 @@
 |
 */
 
-pest()->extend(Tests\TestCase::class)
- // ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
+pest()->extend(TestCase::class)
+    ->use(RefreshDatabase::class)
     ->in('Feature');
 
 /*
@@ -26,10 +35,6 @@ pest()->extend(Tests\TestCase::class)
 |
 */
 
-expect()->extend('toBeOne', function () {
-    return $this->toBe(1);
-});
-
 /*
 |--------------------------------------------------------------------------
 | Functions
@@ -41,7 +46,127 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+function createUserWithType(string $type, string $contact, ?string $name = null): User
 {
-    // ..
+    $user = User::factory()->create([
+        'type' => $type,
+        'contact' => $contact,
+        'name' => $name ?? fake()->name(),
+    ]);
+
+    if ($type === 'doctor') {
+        Doctor::factory()->create([
+            'user_id' => $user->id,
+        ]);
+    } else {
+        Patient::factory()->create([
+            'user_id' => $user->id,
+        ]);
+    }
+
+    return $user;
+}
+
+function createOtpInDatabase(string $contact, string $token, bool $expired = false): void
+{
+    DB::table('otps')->insert([
+        'identifier' => $contact,
+        'token' => $token,
+        'valid' => true,
+        'validity' => 10,
+        'created_at' => $expired ? now()->subMinutes(11) : now(),
+        'updated_at' => $expired ? now()->subMinutes(11) : now(),
+    ]);
+}
+function getDataSets(string $userType, $test): array
+{
+    return array_values($test->validData[$userType]);
+}
+
+function validPatientData(): array
+{
+    return [
+        'name' => fake()->name(),
+        'contact' => fake()->unique()->safeEmail(),
+        'date_of_birth' => fake()->date(),
+        'gender' => fake()->randomElement(['male', 'female']),
+        'national_id' => fake()->numerify('##############'),
+        'is_smoker' => fake()->boolean(),
+        'chronic_diseases' => ['diabetes', 'hypertension'],
+        'previous_surgeries_name' => fake()->word(),
+        'current_medications' => fake()->word(),
+        'allergies' => fake()->word(),
+        'family_history' => fake()->word(),
+        'lab' => [UploadedFile::fake()->create('lab_results.pdf', 100, 'application/pdf')],
+        'radiology' => [UploadedFile::fake()->create('radiology_report.pdf', 100, 'application/pdf')],
+        'medical_history' => [UploadedFile::fake()->create('medical_history.pdf', 100, 'application/pdf')],
+        'current_complaints' => fake()->word(),
+    ];
+}
+
+function createDoctorWithBilling(string $billingMode = 'pay-per-use', int $balance = 100000): User
+{
+    $user = createUserWithType('doctor', fake()->unique()->safeEmail());
+    $user->doctor->billing_mode = $billingMode;
+    $user->doctor->save();
+    $user->doctor->wallet()->create(['balance' => $balance]);
+
+    return $user;
+}
+
+function fakeAiResponse(): array
+{
+    return [
+        'key_information' => [
+            'ai_insight' => 'Test AI Insight',
+            'ai_summary' => 'Test AI Summary',
+            'high_priority_alerts' => [
+                [
+                    'title' => 'High Priority Alert 1',
+                    'insight' => 'Insight 1',
+                    'evidence' => ['Evidence 1', 'Evidence 2'],
+                ],
+            ],
+            'low_priority_alerts' => [
+                [
+                    'title' => 'Low Priority Alert 1',
+                    'insight' => 'Insight 1',
+                    'evidence' => ['Evidence 1', 'Evidence 2'],
+                ],
+            ],
+            'medium_priority_alerts' => [
+                [
+                    'title' => 'Medium Priority Alert 1',
+                    'insight' => 'Insight 1',
+                    'evidence' => ['Evidence 1', 'Evidence 2'],
+                ],
+            ],
+        ],
+        'decision_support' => [
+            [
+                'condition' => 'Condition 1',
+                'probability' => 0.8,
+                'status' => 'Positive',
+                'clinical_reasoning' => 'Clinical Reasons 1',
+            ],
+            [
+                'condition' => 'Condition 2',
+                'probability' => 0.6,
+                'status' => 'Negative',
+                'clinical_reasoning' => 'Clinical Reasons 2',
+            ],
+        ],
+        'message' => 'Analysis completed successfully',
+        'pdf_path' => 'path/to/ocr/report.pdf',
+    ];
+}
+
+function createVisit(Doctor $doctor, Patient $patient, ?Carbon $nextVisitDate = null)
+{
+    return Visit::create([
+        'next_visit_date' => $nextVisitDate ?? now()->addDays(7),
+        'doctor_id' => $doctor->id,
+        'patient_id' => $patient->id,
+        'status' => 'draft',
+    ]);
 }

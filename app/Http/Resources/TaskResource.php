@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Resources\Visit\NextVisitResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -21,7 +22,7 @@ class TaskResource extends JsonResource
             'notes' => $this->notes ?? null,
             'is_completed' => $this->is_completed,
             'action' => $this->action,
-            'Due_date' => $this->visit->next_visit_date->format('F j'),
+            'due_date' => $this->visit->next_visit_date ? $this->visit->next_visit_date->format('Y-m-d') : null,
             'visit' => new NextVisitResource($this->whenLoaded('visit')),
             'created_at' => $this->created_at->format('Y-m-d'),
             'updated_at' => $this->updated_at->format('Y-m-d'),

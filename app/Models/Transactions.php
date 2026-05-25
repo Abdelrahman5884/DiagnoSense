@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Transactions extends Model
 {
@@ -10,19 +12,19 @@ class Transactions extends Model
         'amount',
         'type',
         'status',
-        'source_id',
-        'source_type',
+        'sourceable_id',
+        'sourceable_type',
         'description',
         'doctor_id',
         'payment_id',
     ];
 
-    public function doctor()
+    public function doctor(): BelongsTo
     {
         return $this->belongsTo(Doctor::class);
     }
 
-    public function source()
+    public function source(): MorphTo
     {
         return $this->morphTo();
     }

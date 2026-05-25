@@ -2,9 +2,9 @@
 
 namespace App\Providers;
 
-use App\Events\UserRegistered;
-use App\Listeners\SendVerificationEmail;
-use App\Listeners\SendWelcomeEmail;
+use App\Events\User\UserRegistered;
+use App\Listeners\Email\SendVerificationEmail;
+use App\Listeners\Email\SendWelcomeEmail;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
 class EventServiceProvider extends ServiceProvider
@@ -15,14 +15,6 @@ class EventServiceProvider extends ServiceProvider
             SendWelcomeEmail::class,
         ],
     ];
-
-    /**
-     * Register services.
-     */
-    public function register(): void
-    {
-        //
-    }
 
     /**
      * Bootstrap services.

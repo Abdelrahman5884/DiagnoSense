@@ -1,0 +1,287 @@
+<?php
+
+use App\Models\AiAnalysisResult;
+use App\Models\KeyPoint;
+use App\Models\Patient;
+use Illuminate\Support\Facades\Storage;
+
+beforeEach(function () {
+
+    Storage::fake('azure');
+
+    $this->doctorUser = createDoctorWithBilling();
+
+    $this->doctor = $this->doctorUser->doctor;
+
+    $this->patient = Patient::factory()->create();
+
+    $this->patient->doctors()->attach($this->doctor->id);
+
+    $this->actingAs($this->doctorUser);
+});
+
+it('returns still_processing true when first analysis is running', function () {
+
+    AiAnalysisResult::factory()->create([
+        'patient_id' => $this->patient->id,
+        'status' => 'processing',
+    ]);
+
+    $response = $this->getJson(
+        route('patients.key-points.index', $this->patient)
+    );
+
+    $response->assertStatus(200)
+        ->assertJsonPath(
+            'data.still_processing',
+            true
+        )
+        ->assertJsonPath(
+            'message',
+            'AI analysis for key points is still running.'
+        );
+});
+
+it('returns still_processing false when key points are ready but status is still processing', function () {
+
+    $analysis = AiAnalysisResult::factory()->create([
+        'patient_id' => $this->patient->id,
+        'status' => 'processing',
+    ]);
+
+    KeyPoint::factory()->create([
+        'ai_analysis_result_id' => $analysis->id,
+        'priority' => 'high',
+    ]);
+
+    $response = $this->getJson(
+        route('patients.key-points.index', $this->patient)
+    );
+
+    $response->assertStatus(200)
+        ->assertJsonPath(
+            'data.still_processing',
+            false
+        )
+        ->assertJsonCount(
+            1,
+            'data.key_points.high'
+        )
+        ->assertJsonPath(
+            'message',
+            'key points retrieved successfully but comparative analysis is still running.'
+        );
+});
+
+it('shows historical data while new analysis is processing', function () {
+
+    $oldAnalysis = AiAnalysisResult::factory()->create([
+        'patient_id' => $this->patient->id,
+        'status' => 'completed',
+        'created_at' => now()->subHour(),
+    ]);
+
+    KeyPoint::factory()->create([
+        'ai_analysis_result_id' => $oldAnalysis->id,
+        'title' => 'Old Info',
+    ]);
+
+    AiAnalysisResult::factory()->create([
+        'patient_id' => $this->patient->id,
+        'status' => 'processing',
+        'created_at' => now(),
+    ]);
+
+    $response = $this->getJson(
+        route('patients.key-points.index', $this->patient)
+    );
+
+    $response->assertStatus(200)
+        ->assertJsonPath(
+            'data.still_processing',
+            true
+        )
+        ->assertJsonPath(
+            'message',
+            'Showing old key points. Some files are still being processed.'
+        )
+        ->assertJsonFragment([
+            'title' => 'Old Info',
+        ]);
+});
+
+it('can add a new manual note successfully', function () {
+
+    AiAnalysisResult::factory()->create([
+        'patient_id' => $this->patient->id,
+        'status' => 'completed',
+    ]);
+
+    $payload = [
+        'insight' => 'Patient should follow a strict diet.',
+        'priority' => 'medium',
+    ];
+
+    $response = $this->postJson(
+        route('patients.key-points.store', $this->patient),
+        $payload
+    );
+
+    $response->assertStatus(201)
+        ->assertJsonPath(
+            'message',
+            'Doctor Manual key point added successfully'
+        )
+        ->assertJsonPath(
+            'data.insight',
+            $payload['insight']
+        )
+        ->assertJsonPath(
+            'data.is_ai_generated',
+            'Doctor Note'
+        );
+
+    $this->assertDatabaseHas('key_points', [
+        'insight' => $payload['insight'],
+        'priority' => 'medium',
+        'is_ai_generated' => false,
+    ]);
+});
+
+it('fails to add a manual note when insight is missing', function () {
+
+    $response = $this->postJson(
+        route('patients.key-points.store', $this->patient),
+        [
+            'priority' => 'high',
+        ]
+    );
+
+    $response->assertStatus(422)
+        ->assertJsonPath(
+            'data.insight.0',
+            'The insight field is required.'
+        );
+});
+
+it('can delete key point successfully', function () {
+
+    $analysis = AiAnalysisResult::factory()->create([
+        'patient_id' => $this->patient->id,
+        'status' => 'completed',
+    ]);
+
+    $keyPoint = KeyPoint::factory()->create([
+        'ai_analysis_result_id' => $analysis->id,
+    ]);
+
+    $response = $this->deleteJson(
+        route('key-points.destroy',  $keyPoint),
+    );
+
+    $response->assertStatus(200)
+        ->assertJsonPath(
+            'message',
+            'Key point deleted successfully'
+        );
+
+    $this->assertSoftDeleted('key_points', [
+        'id' => $keyPoint->id,
+    ]);
+});
+
+it('returns 403 when deleting key point for unauthorized doctor', function () {
+
+    $anotherDoctorUser = createDoctorWithBilling();
+
+    $anotherPatient = Patient::factory()->create();
+
+    $anotherPatient->doctors()->attach(
+        $anotherDoctorUser->doctor->id
+    );
+
+    $analysis = AiAnalysisResult::factory()->create([
+        'patient_id' => $anotherPatient->id,
+        'status' => 'completed',
+    ]);
+
+    $keyPoint = KeyPoint::factory()->create([
+        'ai_analysis_result_id' => $analysis->id,
+    ]);
+
+    $response = $this->deleteJson(
+        route('key-points.destroy', $keyPoint)
+    );
+
+    $response->assertStatus(403)
+        ->assertJsonPath(
+            'message',
+            'This action is unauthorized.'
+        );
+});
+
+it('can update key point successfully', function () {
+
+    $analysis = AiAnalysisResult::factory()->create([
+        'patient_id' => $this->patient->id,
+        'status' => 'completed',
+    ]);
+
+    $keyPoint = KeyPoint::factory()->create([
+        'ai_analysis_result_id' => $analysis->id,
+        'insight' => 'Old insight',
+    ]);
+
+    $payload = [
+        'insight' => 'Updated insight',
+    ];
+
+    $response = $this->patchJson(
+        route('key-points.update',$keyPoint),
+        $payload
+    );
+
+    $response->assertStatus(200)
+        ->assertJsonPath(
+            'message',
+            'Key point updated successfully'
+        );
+
+    $this->assertDatabaseHas('key_points', [
+        'id' => $keyPoint->id,
+        'insight' => 'Updated insight',
+    ]);
+});
+
+it('returns 403 when updating key point for unauthorized doctor', function () {
+
+    $anotherDoctorUser = createDoctorWithBilling();
+
+    $anotherPatient = Patient::factory()->create();
+
+    $anotherPatient->doctors()->attach(
+        $anotherDoctorUser->doctor->id
+    );
+
+    $analysis = AiAnalysisResult::factory()->create([
+        'patient_id' => $anotherPatient->id,
+        'status' => 'completed',
+    ]);
+
+    $keyPoint = KeyPoint::factory()->create([
+        'ai_analysis_result_id' => $analysis->id,
+    ]);
+
+    $response = $this->patchJson(
+        route('key-points.update', $keyPoint),
+        [
+            'insight' => 'Updated insight',
+        ]
+    );
+
+    $response->assertStatus(403)
+        ->assertJsonPath(
+            'message',
+            'This action is unauthorized.'
+        );
+});
