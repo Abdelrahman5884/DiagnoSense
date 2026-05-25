@@ -126,7 +126,7 @@ class AuthenticationService
         return true;
     }
 
-    public function forgotPassword(array $data, string $type): bool
+    public function forgotPassword(array $data): bool
     {
         $user = $this->getUser($data['contact']);
 
