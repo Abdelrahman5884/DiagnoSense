@@ -25,6 +25,7 @@
         "league/flysystem-azure-blob-storage": "^3.31",
         "matthewbdaly/laravel-azure-storage": "^2.0",
         "microsoft/azure-storage-blob": "^1.5",
+        "php-http/discovery": "^1.20",
         "scalar/laravel": "^0.2.0",
         "symfony/brevo-mailer": "^7.4",
         "symfony/http-client": "^7.4",
