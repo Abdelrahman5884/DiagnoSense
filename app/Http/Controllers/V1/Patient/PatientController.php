@@ -133,11 +133,6 @@ class PatientController extends Controller
     {
         try {
             $result = $this->patientService->getPatientComparativeAnalysis($patient);
-            if (empty($result)) {
-                return ApiResponse::success(
-                    message: 'No comparative analysis data available for this patient.',
-                );
-            }
 
             return ApiResponse::success(
                 message: $result['message'],

@@ -277,9 +277,15 @@ class PatientService
         $isProcessing = $latestAnalysis?->status === 'processing';
         $allResults = $patient->labResults()->orderBy('created_at', 'asc')->get();
 
-        if ($allResults->isEmpty() && ! $isProcessing) {
-            return [];
-        }
+        if ($allResults->isEmpty() && !$isProcessing) {
+        return [
+            'message' => 'No comparative analysis data available for this patient.',
+            'data' => [
+                'still_processing' => false,
+                'analysis' => [],
+            ],
+        ];
+    }
 
         $analysisResponse = $this->formatComparativeData($allResults->groupBy('standard_name'));
 
