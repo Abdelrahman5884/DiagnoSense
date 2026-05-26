@@ -32,7 +32,7 @@ class AiAnalysisBillingService
         $doctor->wallet->decrement('balance', Plan::PAY_PER_USE_PRICE);
         $doctor->wallet->refresh();
         if ($doctor->wallet->balance <= 0) {
-            $doctor->user->notify(new CreditsExhausted);
+            $doctor->notify(new CreditsExhausted);
         }
         $doctor->transactions()->create([
             'amount' => Plan::PAY_PER_USE_PRICE,
@@ -49,11 +49,11 @@ class AiAnalysisBillingService
         $subscription = $doctor->activeSubscription;
         $totalLimit = $subscription->plan->summaries_limit;
         $usagePercentage = ($subscription->used_summaries / $totalLimit) * 100;
-        if ($usagePercentage >= 80 && ! $doctor->user->notifications()->where('type', UsageThresholdReached::class)->exists()) {
-            $doctor->user->notify(new UsageThresholdReached(80));
+        if ($usagePercentage >= 80 && ! $doctor->notifications()->where('type', UsageThresholdReached::class)->exists()) {
+            $doctor->notify(new UsageThresholdReached(80));
         }
         if ($subscription->used_summaries >= $totalLimit) {
-            $doctor->user->notify(new UsageExhausted);
+            $doctor->notify(new UsageExhausted);
         }
     }
 }

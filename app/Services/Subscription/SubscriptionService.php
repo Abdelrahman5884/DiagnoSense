@@ -77,10 +77,10 @@ class SubscriptionService
 
     private function dispatchSubscriptionNotifications(Doctor $doctor, Plan $plan): void
     {
-        $doctor->user->notify(new PlanSubscribed($plan->name));
+        $doctor->notify(new PlanSubscribed($plan->name));
 
         if ($doctor->wallet->refresh()->balance <= 0) {
-            $doctor->user->notify(new CreditsExhausted);
+            $doctor->notify(new CreditsExhausted);
         }
     }
 
@@ -188,7 +188,7 @@ class SubscriptionService
             $subscription->update(['status' => 'cancelled']);
             $doctor->update(['billing_mode' => null]);
             DB::afterCommit(function () use ($doctor, $plan) {
-                $doctor->user->notify(new SubscriptionCancelled($plan->name));
+                $doctor->notify(new SubscriptionCancelled($plan->name));
             });
         });
 

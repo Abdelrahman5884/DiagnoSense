@@ -9,7 +9,6 @@ use App\Http\Resources\Notification\WebNotificationResource;
 use App\Services\Notifications\WebNotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Notifications\DatabaseNotification;
 
 class WebNotificationController extends Controller
 {
