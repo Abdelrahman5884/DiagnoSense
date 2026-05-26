@@ -4,6 +4,7 @@ namespace App\Http\Controllers\V1\Visit;
 
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\V1\Controller;
+use App\Http\Requests\AttendVisitRequest;
 use App\Http\Requests\Visit\GetNextVisitDetailsRequest;
 use App\Http\Requests\Visit\StoreNextVisitRequest;
 use App\Http\Resources\Medication\MedicationResource;
@@ -74,7 +75,7 @@ class VisitController extends Controller
         }
     }
 
-    public function attend(Visit $visit): JsonResponse
+    public function attend(AttendVisitRequest $request, Visit $visit): JsonResponse
     {
         try {
             $this->visitService->attend($visit);
