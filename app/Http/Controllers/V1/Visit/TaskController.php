@@ -13,6 +13,7 @@ use App\Models\Task;
 use App\Models\Visit;
 use App\Services\TaskService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Validation\ValidationException;
 
 class TaskController extends Controller
 {
@@ -47,6 +48,9 @@ class TaskController extends Controller
             }
 
             return ApiResponse::success(message: 'Task created successfully', data: new TaskResource($task));
+        } catch (ValidationException $e) {
+            $errors = $e->validator->errors()->first();
+            return ApiResponse::error(message: $errors, status: 422);
         } catch (\Exception $e) {
             \Log::error('Error creating task: '.$e->getMessage(), ['exception' => $e]);
 
