@@ -45,7 +45,7 @@ class VisitService
         patient: $patient,
         type: 'visit',
         title: __('Upcoming Appointment Scheduled'),
-        body: __('Your next visit is scheduled on: :date', ['date' => $visit->next_visit_date->format('Y-m-d h:i A')])
+        body: __('Your next visit is scheduled on: :date', ['date' => $visit->next_visit_date?->format('Y-m-d h:i A')])
         );
 
         return $visit->load('doctor.user');
