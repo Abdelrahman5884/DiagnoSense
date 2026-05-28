@@ -98,6 +98,8 @@ class DashboardService
     {
         return Visit::where('doctor_id', $doctor->id)
             ->whereDate('next_visit_date', today())
+            ->where('status', '!=', 'attended')
+            ->distinct('patient_id')
             ->count();
     }
 
