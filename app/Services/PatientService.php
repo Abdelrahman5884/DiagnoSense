@@ -142,7 +142,7 @@ class PatientService
         return $medicalHistory;
     }
 
-    public function runAiAnalysis(Patient $patient, array $newPaths = [], bool $isReAnalysis = false): AiAnalysisResult
+    public function runAiAnalysis(Patient $patient, array $newPaths = [], bool $isReAnalysis = false,bool $isFromUpdate = false): AiAnalysisResult
     {
         $doctor = auth()->user()->doctor;
 
@@ -163,7 +163,7 @@ class PatientService
         }
 
         $allPaths = $newPaths;
-        if (empty(array_filter($newPaths))) {
+        if (empty(array_filter($newPaths)) && !$isFromUpdate) {
             $allPaths = $patient->reports->groupBy('type')->map(fn ($group) => $group->pluck('file_path')->toArray())->toArray();
         }
 
@@ -402,7 +402,7 @@ class PatientService
             $hasNewFiles = ! empty(array_filter($newPathsForAI));
 
             if ($hasNewFiles || $complaintChanged) {
-                $this->runAiAnalysis($patient, $newPathsForAI);
+                $this->runAiAnalysis($patient, $newPathsForAI, false, true);
             }
 
             return $patient;
