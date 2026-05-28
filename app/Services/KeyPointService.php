@@ -29,7 +29,7 @@ class KeyPointService
         $allKeyPoints = $this->extractAndSortKeyPoints($analysesWithData);
 
         return [
-            'message' => $this->patientService->determineStatusMessage($hasCurrentData, $hasOldData, $isStillProcessing, 'key points'),
+            'message' => $this->patientService->determineStatusMessage($hasCurrentData, $hasOldData, $isStillProcessing, 'key points',$latestAnalysis?->status ?? 'completed'),
             'data' => [
                 'still_processing' => $isStillProcessing && ! $hasCurrentData,
                 'ocr_files' => $ocrFiles,

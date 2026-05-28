@@ -227,7 +227,7 @@ class PatientService
         );
 
         return [
-            'message' => $this->determineStatusMessage($hasCurrentDecisions, $hasOldDecisions, $isStillProcessing, 'decision support'),
+            'message' => $this->determineStatusMessage($hasCurrentDecisions, $hasOldDecisions, $isStillProcessing, 'decision support',$latestAnalysis?->status ?? 'completed'),
             'data' => [
                 'still_processing' => $isStillProcessing && ! $hasCurrentDecisions,
                 'decisions' => DecisionSupportResource::collection($decisionsToReturn),
@@ -350,8 +350,13 @@ class PatientService
         return 'stable';
     }
 
-    public function determineStatusMessage(bool $hasCurrentData, bool $hasOldData, bool $isStillProcessing, string $label): string
+    public function determineStatusMessage(bool $hasCurrentData, bool $hasOldData, bool $isStillProcessing, string $label,string $status): string
     {
+        if ($status === 'failed') {
+            return $hasOldData
+                ? "Note: The AI failed to extract latest {$label}. Showing historical data only."
+                : "No {$label} found. The AI analysis failed for this patient.";
+        }
         if ($isStillProcessing && $hasCurrentData) {
             return "{$label} retrieved successfully but comparative analysis is still running.";
         }

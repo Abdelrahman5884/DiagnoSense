@@ -34,7 +34,7 @@ class ComparativeAnalysis implements ShouldQueue
      */
     public function handle(): void
     {
-        try {
+
             $response = Http::timeout($this->timeout)->post(config('services.ai.url').'comparative', [
                 'patient_id' => $this->patient->id,
             ]);
@@ -65,10 +65,6 @@ class ComparativeAnalysis implements ShouldQueue
                 PatientLabResult::insert($dataToInsert);
                 $this->analysis->update(['status' => 'completed']);
             });
-
-        } catch (Exception $e) {
-            $this->handleFailure($e);
-        }
     }
 
     protected function handleFailure(Exception $e): void
@@ -76,5 +72,10 @@ class ComparativeAnalysis implements ShouldQueue
         $this->analysis->update(['status' => 'failed']);
         \Log::error("Comparative Analysis Failed for Analysis #{$this->analysis->id}: ".$e->getMessage());
         throw $e;
+    }
+    public function failed(\Throwable $exception): void
+    {
+        $this->analysis->update(['status' => 'failed']);
+        \Log::error("Comparative Analysis Failed after all retries for Analysis #{$this->analysis->id}: ".$exception->getMessage());
     }
 }
