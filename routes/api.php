@@ -137,7 +137,7 @@ Route::prefix('v1')->group(function () {
 
 Route::get('/payment-redirect', function (Request $request) {
     if ($request->query('success') === 'true') {
-        return redirect('http://localhost:5173/subscription?status=success');
+        return redirect('https://diagnosense.vercel.app/subscription?status=success');
     }
 });
 Route::post('/paymob/webhook', [PaymobWebhookController::class, 'handle'])->name('paymob.webhook');
