@@ -1,3 +1,1 @@
-web: vendor/bin/heroku-php-apache2 public/
-reverb: php artisan reverb:start --host=0.0.0.0 --port=8080
-worker: php artisan queue:work --database=mysql
+web: php artisan migrate --force && php artisan reverb:start --debug --host=0.0.0.0 --port=8090 & php artisan queue:work --tries=1 -vvv & php artisan serve --host=0.0.0.0 --port=$PORT

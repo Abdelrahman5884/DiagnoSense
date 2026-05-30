@@ -42,5 +42,23 @@ class AppServiceProvider extends ServiceProvider
 
         Route::model('patient', Patient::class);
         Route::model('$key_point', KeyPoint::class);
+
+        if (env('FIREBASE_CREDENTIALS')) {
+            $data = env('FIREBASE_CREDENTIALS');
+
+            if (!str_contains($data, '.json') && !str_contains($data, '/')) {
+                $filePath = storage_path('app/firebase/firebase-auth.json');
+
+                if (!file_exists(dirname($filePath))) {
+                    mkdir(dirname($filePath), 0755, true);
+                }
+
+                file_put_contents($filePath, base64_decode($data));
+
+                putenv("FIREBASE_CREDENTIALS={$filePath}");
+                $_ENV['FIREBASE_CREDENTIALS'] = $filePath;
+                $_SERVER['FIREBASE_CREDENTIALS'] = $filePath;
+            }
+        }
     }
 }

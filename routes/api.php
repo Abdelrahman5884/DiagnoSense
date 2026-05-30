@@ -31,7 +31,7 @@ Route::prefix('v1')->group(function () {
     Route::prefix('auth')->group(function () {
         Route::post('register', RegisterController::class)->name('register');
         Route::controller(SocialAuthController::class)->prefix('google')->as('google.')->group(function () {
-            Route::get('/redirect', 'redirectToGoogle')->name('redirect');
+            Route::get('/redirect', 'redirectToGoogle')->name('redirect'); 
             Route::get('/callback', 'handleGoogleCallback')->name('callback');
         });
 
@@ -137,7 +137,7 @@ Route::prefix('v1')->group(function () {
 
 Route::get('/payment-redirect', function (Request $request) {
     if ($request->query('success') === 'true') {
-        return redirect('http://localhost:5173/subscription?status=success');
+        return redirect('https://diagnosense.vercel.app/subscription?status=success');
     }
 });
 Route::post('/paymob/webhook', [PaymobWebhookController::class, 'handle'])->name('paymob.webhook');

@@ -1,4 +1,9 @@
 <?php
+if (!defined('SIGINT')) {
+    define('SIGINT', 2);
+    define('SIGTERM', 15);
+    define('SIGTSTP', 20);
+}
 
 use App\Exceptions\Auth\InvalidOtpException;
 use App\Exceptions\Auth\InvalidUserTypeException;

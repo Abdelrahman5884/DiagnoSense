@@ -24,7 +24,7 @@ class StorePatientRequest extends FormRequest
                 'bail',
                 Rule::unique('users', 'contact'),
             ],
-            'date_of_birth' => ['required', 'date'],
+            'date_of_birth' => ['required', 'date','before_or_equal:today'],
             'gender' => ['required', 'string', 'in:male,female'],
             'national_id' => ['nullable', 'digits:14', 'unique:patients,national_id'],
             'is_smoker' => ['nullable', 'boolean'],
@@ -55,6 +55,7 @@ class StorePatientRequest extends FormRequest
             'lab.*.mimes' => 'Each lab test must be a PDF document Or jpg image.',
             'radiology.*.mimes' => 'Each radiology report must be a PDF document Or jpg image',
             'medical_history.*.mimes' => 'Each medical history file must be a PDF document Or jpg image.',
+            'date_of_birth.before_or_equal' => 'The date of birth cannot be in the future.',
         ];
     }
 }

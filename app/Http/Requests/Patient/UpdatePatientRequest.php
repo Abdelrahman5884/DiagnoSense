@@ -33,7 +33,7 @@ class UpdatePatientRequest extends FormRequest
                 Rule::unique('users', 'contact')->ignore($patient?->user_id),
             ],
 
-            'date_of_birth' => ['required', 'date'],
+            'date_of_birth' => ['required', 'date','before_or_equal:today'],
             'gender' => ['required', 'string', 'in:male,female'],
 
             'national_id' => ['nullable', 'string', 'max:14', Rule::unique('patients')->ignore($patient?->id)],
@@ -56,5 +56,11 @@ class UpdatePatientRequest extends FormRequest
             'medical_history.*' => ['file', 'mimes:pdf,jpg', 'max:10240'],
         ];
 
+    }
+    public function messages(): array
+    {
+        return [
+            'date_of_birth.before_or_equal' => 'The date of birth cannot be in the future.',
+        ];
     }
 }

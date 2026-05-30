@@ -88,7 +88,7 @@ class DashboardController extends Controller
                 message: 'Queue retrieved successfully',
                 data: [
                     'current_attending' => $result['currentPatient'] ? new CurrentVisitResource($result['currentPatient']) : null,
-                    'full_queue_list' => $result['todayPatients']->isNotEmpty() ? VisitsQueueResource::collection($result['todayPatients']) : null,
+                    'full_queue_list' => !empty($result['todayPatients']) ? VisitsQueueResource::collection($result['todayPatients']) : null,
                     'remaining_count_label' => ($result['totalTodayCount'] > 1 ? ($result['totalTodayCount'] - 1) : 0).' remaining',
                 ]
             );

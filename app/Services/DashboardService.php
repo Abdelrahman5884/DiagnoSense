@@ -98,6 +98,8 @@ class DashboardService
     {
         return Visit::where('doctor_id', $doctor->id)
             ->whereDate('next_visit_date', today())
+            ->where('status', '!=', 'attended')
+            ->distinct('patient_id')
             ->count();
     }
 
@@ -145,18 +147,20 @@ class DashboardService
     public function getTodayVisit(Doctor $doctor): array
     {
         $todayPatients = Visit::where('doctor_id', $doctor->id)
-            ->whereDate('next_visit_date', today())
-            ->where('status', '!=', 'attended')
-            ->with([
-                'patient.user',
-                'patient.latestAiAnalysisResult',
-            ])
-            ->orderBy('next_visit_date', 'asc')
-            ->get();
+        ->whereDate('next_visit_date', today())
+        ->where('status', '!=', 'attended')
+        ->with([
+            'patient.user',
+            'patient.latestAiAnalysisResult',
+        ])
+        ->orderBy('next_visit_date', 'desc')
+        ->get()
+        ->unique('patient_id')
+        ->sortBy('next_visit_date');
         $currentPatient = $todayPatients->first();
 
         return [
-            'todayPatients' => $todayPatients->take(5),
+            'todayPatients' => $todayPatients->take(5)->values()->all(),
             'currentPatient' => $currentPatient,
             'totalTodayCount' => $todayPatients->count(),
         ];

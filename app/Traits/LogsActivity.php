@@ -114,25 +114,41 @@ trait LogsActivity
             $displayName = class_basename($this)." (ID: {$this->id})";
         }
 
-        if ($event === 'created' || $event === 'deleted') {
-            return "Dr. {$doctorName} {$event} {$displayName}";
+        $cleanDisplayName = str_replace(["'", '"'], "", $displayName);
+        if ($event === 'created') {
+            return "Dr. {$doctorName} added {$cleanDisplayName}";
+        }
+        if ($event === 'deleted') {
+            return "Dr. {$doctorName} deleted {$cleanDisplayName}";
         }
 
         if ($event === 'updated') {
             $messages = [];
             foreach ($changes as $field => $values) {
-                if ((class_basename($this) === 'Patient' && $field === 'status') || class_basename($this) === 'KeyPoint') {
-                    $messages[] = "{$field} changed from '{$values['old']}' to '{$values['new']}'";
+                $oldValue = str_replace(["'", '"'], "", $values['old'] ?? '');
+                $newValue = str_replace(["'", '"'], "", $values['new'] ?? '');
+
+                if (in_array($field, ['next_visit_date', 'last_visit_date'])) {
+                    $newValue = Carbon::parse($newValue)->format('D, M j, Y g:i A');
+                    $oldValue = $oldValue ? Carbon::parse($oldValue)->format('D, M j, Y g:i A') : 'None';
+                } elseif ($field === 'date_of_birth') {
+                    $newValue = Carbon::parse($newValue)->format('M j, Y');
+                    $oldValue = $oldValue ? Carbon::parse($oldValue)->format('M j, Y') : 'None';
+                }
+
+                $readableField = str_replace('_', ' ', $field);
+
+                if (class_basename($this) === 'Patient' && $field === 'status') {
+                    $messages[] = "patient status changed from {$oldValue} to {$newValue}";
+                } elseif ($field === 'is_completed') {
+                    $statusText = $newValue ? 'completed' : 'incomplete';
+                    $messages[] = "marked task as {$statusText}";
                 } else {
-                    if ($field === 'next_visit_date') {
-                        $values['new'] = Carbon::parse($values['new'])->format('D, F j, Y');
-                        $field = 'next visit date';
-                    }
-                    $messages[] = "updated {$field} to '{$values['new']}'";
+                    $messages[] = "updated {$readableField} to {$newValue}";
                 }
             }
 
-            return "Dr. {$doctorName}: ".implode(', ', $messages);
+            return "Dr. {$doctorName}: " . implode(', ', $messages);
         }
 
         return class_basename($this)." {$event}";

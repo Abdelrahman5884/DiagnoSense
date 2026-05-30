@@ -79,9 +79,9 @@ it('update analysis result when AI response successfully', function () {
 });
 
 it('update analysis result when AI response fails', function () {
-    Http::fake([config('services.ai.url').'analyze' => Http::response(['error' => 'AI analysis failed'], 500)]);
     $job = new AiAnalysisJob($this->aiAnalysisResult->id, $this->jobData);
-    expect(fn () => $job->handle(new AiAnalysisBillingService))->toThrow(\Exception::class);
+
+    $job->failed(new \Exception('AI analysis failed after all retries'));
     $this->assertDatabaseHas('ai_analysis_results', [
         'id' => $this->aiAnalysisResult->id,
         'status' => 'failed',

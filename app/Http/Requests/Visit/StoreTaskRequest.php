@@ -30,7 +30,7 @@ class StoreTaskRequest extends FormRequest
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'notes' => ['nullable', 'string'],
-            'next_visit_date' => ['nullable', 'date'],
+            'next_visit_date' => ['nullable', 'date','after:now'],
             'action' => ['required', 'string', 'max:255', 'in:save,save_and_create_another'],
         ];
     }

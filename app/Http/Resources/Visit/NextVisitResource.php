@@ -4,6 +4,7 @@ namespace App\Http\Resources\Visit;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Carbon;
 
 class NextVisitResource extends JsonResource
 {
@@ -18,7 +19,7 @@ class NextVisitResource extends JsonResource
 
         return [
             'id' => $this->id,
-            'next_visit_date' => $this->next_visit_date ? $this->next_visit_date->format('Y-m-d') : 'No next visit',
+            'next_visit_date' => $this->next_visit_date ? Carbon::parse($this->next_visit_date)->format('D, M j, Y g:i A') : 'No next visit',
             'status' => $this->status,
             'doctor_name' => $doctor?->user?->name,
             'specialization' => $doctor?->specialization,

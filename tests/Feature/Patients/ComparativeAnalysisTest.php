@@ -20,7 +20,7 @@ it('returns empty data message when no lab results and no active analysis exist'
 
     $response->assertStatus(200)
         ->assertJsonPath('message', 'No comparative analysis data available for this patient.')
-        ->assertJsonPath('data', null);
+        ->assertJsonPath('data', ['still_processing' => false, 'analysis' => []]);
 });
 
 it('calculates trends and percentages correctly for multiple lab results', function () {

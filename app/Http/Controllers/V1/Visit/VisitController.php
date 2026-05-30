@@ -4,7 +4,7 @@ namespace App\Http\Controllers\V1\Visit;
 
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\V1\Controller;
-use App\Http\Requests\AttendVisitRequest;
+use App\Http\Requests\Visit\AttendVisitRequest;
 use App\Http\Requests\Visit\GetNextVisitDetailsRequest;
 use App\Http\Requests\Visit\StoreNextVisitRequest;
 use App\Http\Resources\Medication\MedicationResource;
@@ -29,7 +29,7 @@ class VisitController extends Controller
             $data = [
                 'tasks' => TaskResource::collection($visitDetails->flatMap->tasks),
                 'medications' => MedicationResource::collection($visitDetails->flatMap->medications),
-                'next_visit_date' => $visitDetails->first()?->next_visit_date ? Carbon::parse($visitDetails->first()->next_visit_date)->toDateString() : null,
+                'next_visit_date' => $visitDetails->first()?->next_visit_date ? Carbon::parse($visitDetails->first()->next_visit_date)->format('D, M j, Y g:i A') : null,
             ];
 
             return ApiResponse::success(message: 'Visit details retrieved successfully.', data: $data);

@@ -41,21 +41,16 @@ class AiAnalysisJob implements ShouldQueue
             return;
         }
 
-        try {
-            $apiData = $this->prepareMedicalData();
+        $apiData = $this->prepareMedicalData();
 
-            $response = Http::timeout($this->timeout)->post(config('services.ai.url').'analyze', $apiData);
+        $response = Http::timeout($this->timeout)->post(config('services.ai.url').'analyze', $apiData);
 
-            if ($response->successful()) {
-                $this->processAiAnalysisResponse($billingService, $response->json(), $analysisRecord);
-            } else {
-                $this->handleFailedAnalysis($analysisRecord, $response->body());
-                throw new \Exception('AI analysis failed with status '.$response->status());
-            }
-        } catch (\Exception $e) {
-            $this->handleFailedAnalysis($analysisRecord, $e->getMessage());
-            throw $e;
+        if ($response->successful()) {
+            $this->processAiAnalysisResponse($billingService, $response->json(), $analysisRecord);
+        } else {
+            throw new \Exception('AI analysis failed with status '.$response->status());
         }
+
     }
 
     private function generateUrls(string $type): array
@@ -176,5 +171,16 @@ class AiAnalysisJob implements ShouldQueue
             'response' => ['error' => 'AI analysis failed', 'details' => $message],
             'status' => 'failed',
         ]);
+    }
+    public function failed(\Throwable $exception): void
+    {
+        $analysisRecord = AiAnalysisResult::find($this->analysisId);
+
+        if ($analysisRecord) {
+            $analysisRecord->update([
+                'response' => ['error' => 'AI analysis failed after all retries', 'details' => $exception->getMessage()],
+                'status' => 'failed',
+            ]);
+        }
     }
 }
