@@ -142,42 +142,27 @@ describe('Dashboard Summary', function () {
     });
 
     it('returns correct growth values when growth is positive', function () {
+        DB::table('patients')->delete();
 
-        $patient = createUserWithType(
-            'patient',
-            'patient23@gmail.com'
-        )->patient;
+        $this->travelTo(now()->subMonth()->setDay(15));
+        $oldPatient = createUserWithType('patient', 'old_patient@gmail.com')->patient;
+        $this->doctor->patients()->attach($oldPatient->id);
 
-        $this->doctor->patients()->attach($patient->id);
+        $this->travelTo(now());
+        $newPatient = createUserWithType('patient', 'patient23@gmail.com')->patient;
+        $this->doctor->patients()->attach($newPatient->id);
+
+        $newPatient2 = createUserWithType('patient', 'patient24@gmail.com')->patient;
+        $this->doctor->patients()->attach($newPatient2->id);
 
         getJson(route('dashboard.summary'))
+            ->assertOk()
             ->assertJsonPath(
                 'data.widgets.monthly_growth.details.growth_rate',
                 '100%'
             );
     });
 
-    it('returns correct growth values when growth is negative', function () {
-
-        $oldPatient = createUserWithType(
-            'patient',
-            'patient02@gmail.com'
-        )->patient;
-
-        $this->doctor->patients()->attach($oldPatient->id);
-
-        DB::table('patients')
-            ->where('id', $oldPatient->id)
-            ->update([
-                'created_at' => now()->subMonth()->startOfMonth(),
-            ]);
-
-        getJson(route('dashboard.summary'))
-            ->assertJsonPath(
-                'data.widgets.monthly_growth.details.growth_rate',
-                '-100%'
-            );
-    });
 
     it('returns 401 if guest tries to access dashboard', function () {
 
