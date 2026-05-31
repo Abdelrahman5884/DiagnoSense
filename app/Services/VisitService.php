@@ -14,7 +14,7 @@ class VisitService
     {
         return Visit::query()
             ->whereBelongsTo($patient)
-            ->with(['tasks', 'medications'])
+            ->with(['tasks.visit','medications.visit'])
             ->latest()
             ->get();
     }

@@ -16,6 +16,7 @@ class ChatbotController extends Controller
 
     public function __invoke(AskChatbotRequest $request, Patient $patient): JsonResponse
     {
+        set_time_limit(300);
         try {
             $question = $request->question;
             if (! auth()->user()->doctor->hasFeature('DiagnoBot')) {
