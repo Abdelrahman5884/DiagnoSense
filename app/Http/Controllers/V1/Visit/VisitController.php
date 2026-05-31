@@ -26,10 +26,19 @@ class VisitController extends Controller
     {
         try {
             $visitDetails = $this->visitService->getVisitDetails($patient);
+            $nextVisit = $visitDetails
+                ->filter(fn (Visit $visit) => $visit->next_visit_date
+                    && $visit->next_visit_date->greaterThanOrEqualTo(now())
+                    && $visit->status !== 'attended'
+                )
+                ->sortBy('next_visit_date')
+                ->first();
             $data = [
                 'tasks' => TaskResource::collection($visitDetails->flatMap->tasks),
                 'medications' => MedicationResource::collection($visitDetails->flatMap->medications),
-                'next_visit_date' => $visitDetails->first()?->next_visit_date ? Carbon::parse($visitDetails->first()->next_visit_date)->format('D, M j, Y g:i A') : null,
+                'next_visit_date' =>$nextVisit?->next_visit_date
+                    ? $nextVisit->next_visit_date->format('D, M j, Y g:i A')
+                    : null,
             ];
 
             return ApiResponse::success(message: 'Visit details retrieved successfully.', data: $data);
