@@ -7,5 +7,5 @@ Broadcast::channel('App.Models.Doctor.{doctorId}', function ($user, $doctorId) {
 });
 
 Broadcast::channel('chatbot-answer.{doctorId}', function ($user, $doctorId) {
-    return $user->doctor_id === (int) $doctorId;
+    return (int) $user->doctor->id === (int) $doctorId;
 });
