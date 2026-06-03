@@ -27,6 +27,9 @@ class PatientNotification extends Notification implements ShouldQueue
      */
     public function via(object $notifiable): array
     {
+        if (empty($notifiable->fcm_token)) {
+            return ['database'];
+        }
         return [FcmChannel::class, 'database'];
     }
 
