@@ -10,7 +10,7 @@ class PushNotification
     {
         $user = $patient->relationLoaded('user') ? $patient->user : $patient->user()->first();
 
-        if ($user && !empty($user->fcm_token)) {
+        if ($user) {
             $user->notify(new PatientNotification($type, $title, $body));
         }
     }
