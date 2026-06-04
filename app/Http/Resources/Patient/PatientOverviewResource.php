@@ -16,7 +16,7 @@ class PatientOverviewResource extends JsonResource
     public function toArray(Request $request): array
     {
         $history = $this->medicalHistory;
-        $latestAiAnalysis = $this->latestAiAnalysisResult;
+        $latestAiAnalysis = $this->latestSuccessfulAiAnalysis;
 
         return [
             'patientId' => $this->national_id,

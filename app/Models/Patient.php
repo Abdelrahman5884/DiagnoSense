@@ -149,4 +149,11 @@ class Patient extends Model
             self::STATUS_UNDER_REVIEW,
         ];
     }
+    public function latestSuccessfulAiAnalysis(): HasOne
+    {
+        return $this->hasOne(AiAnalysisResult::class)
+            ->whereNotNull('ai_summary')
+            ->where('ai_summary', '!=', '')
+            ->latest('id');
+    }
 }

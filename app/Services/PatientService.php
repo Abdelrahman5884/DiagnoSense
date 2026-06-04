@@ -64,7 +64,7 @@ class PatientService
         return $patient->load([
             'user',
             'medicalHistory',
-            'latestAiAnalysisResult',
+            'latestSuccessfulAiAnalysis',
         ]);
     }
 
