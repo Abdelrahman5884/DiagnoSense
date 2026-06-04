@@ -6,7 +6,9 @@ use App\Helpers\ApiResponse;
 use App\Http\Controllers\V1\Controller;
 use App\Http\Requests\Visit\AttendVisitRequest;
 use App\Http\Requests\Visit\GetNextVisitDetailsRequest;
+use App\Http\Requests\Visit\GetVisitRequest;
 use App\Http\Requests\Visit\StoreNextVisitRequest;
+use App\Http\Requests\Visit\UpdateVisitRequest;
 use App\Http\Resources\Medication\MedicationResource;
 use App\Http\Resources\TaskResource;
 use App\Http\Resources\Visit\NextVisitResource;
@@ -14,7 +16,6 @@ use App\Models\Patient;
 use App\Models\Visit;
 use App\Services\VisitService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Carbon;
 
 class VisitController extends Controller
 {
@@ -84,6 +85,29 @@ class VisitController extends Controller
         }
     }
 
+    public function edit(GetVisitRequest $request, Visit $visit): JsonResponse
+    {
+        try{
+            return ApiResponse::success(message: 'Next Visit date  retrieved successfully.', data:[
+                'next_visit_date' => $visit->next_visit_date->format('Y-m-d H:i:s'),
+            ]);
+        }catch (\Exception $e) {
+            \Log::error('Edit Visit Error: '.$e->getMessage());
+
+            return ApiResponse::error(message: 'An error occurred while fetching visit details.', status: 500);
+        }
+    }
+
+    public function update(UpdateVisitRequest $request, Visit $visit): JsonResponse
+    {
+        try {
+            $this->visitService->updateNextVisit($visit, $request->validated());
+            return ApiResponse::success(message: 'Visit updated successfully.');
+        }catch (\Exception $e) {
+            \Log::error('Update Visit Error: '.$e->getMessage());
+            return ApiResponse::error(message: 'An error occurred while updating visit.', status: 500);
+        }
+    }
     public function attend(AttendVisitRequest $request, Visit $visit): JsonResponse
     {
         try {

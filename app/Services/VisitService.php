@@ -31,6 +31,12 @@ class VisitService
         return $nextVisit;
     }
 
+    public function updateNextVisit(Visit $visit, array $data): void
+    {
+        $visit->update([
+            'next_visit_date' => $data['next_visit_date'],
+        ]);
+    }
     public function store(array $data, Patient $patient, Doctor $doctor): Visit
     {
         $status = $data['action'] == 'save' ? 'completed' : 'draft';

@@ -31,7 +31,7 @@ Route::prefix('v1')->group(function () {
     Route::prefix('auth')->group(function () {
         Route::post('register', RegisterController::class)->name('register');
         Route::controller(SocialAuthController::class)->prefix('google')->as('google.')->group(function () {
-            Route::get('/redirect', 'redirectToGoogle')->name('redirect'); 
+            Route::get('/redirect', 'redirectToGoogle')->name('redirect');
             Route::get('/callback', 'handleGoogleCallback')->name('callback');
         });
 
@@ -128,7 +128,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/timeline', TimelineController::class)->name('timeline.index');
         Route::patch('/fcm-token', [PatientController::class, 'updateFcmToken'])->name('patients.fcm-token');
         Route::get('/mobile-notifications', MobileNotificationController::class)->name('mobile.notifications');
-        Route::apiResource('patients.visits', VisitController::class)->only(['index', 'store'])->shallow();
+        Route::apiResource('patients.visits', VisitController::class)->only(['index', 'store','edit','update'])->shallow();
         Route::apiResource('visits.medications', MedicationController::class)->only(['store', 'destroy'])->shallow();
         Route::apiResource('visits.tasks', TaskController::class)->only(['store', 'destroy'])->shallow();
         Route::post('/support', SupportController::class)->name('support.create');
