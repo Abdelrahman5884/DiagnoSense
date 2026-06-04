@@ -37,6 +37,7 @@ class VisitController extends Controller
             $data = [
                 'tasks' => TaskResource::collection($visitDetails->flatMap->tasks),
                 'medications' => MedicationResource::collection($visitDetails->flatMap->medications),
+                'next_visit_id' => $nextVisit?->id,
                 'next_visit_date' =>$nextVisit?->next_visit_date
                     ? $nextVisit->next_visit_date->format('D, M j, Y g:i A')
                     : null,
