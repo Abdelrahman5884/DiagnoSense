@@ -16,13 +16,13 @@ class PatientOverviewResource extends JsonResource
     public function toArray(Request $request): array
     {
         $history = $this->medicalHistory;
-        $latestAiAnalysis = $this->latestSuccessfulAiAnalysis;
+        $latestAiAnalysis = $this->latestAiAnalysisValue('ai_summary');
 
         return [
             'patientId' => $this->national_id,
             'patientName' => $this->user->name,
             'doctorName' => Auth::user()->name,
-            'smart_summary' => $latestAiAnalysis?->ai_summary ?? 'No AI analysis generated for this patient yet.',
+            'smart_summary' => $latestAiAnalysis ?? 'No AI analysis generated for this patient yet.',
             'age' => $this->age,
             'smoker' => $history?->is_smoker ? 'Yes' : 'No',
             'chronicDiseases' => $history?->chronic_diseases ?? 'N/A',

@@ -23,7 +23,7 @@ class VisitsQueueResource extends JsonResource
             'gender' => ucfirst($this->patient->gender),
             'appointment_time' => Carbon::parse($this->next_visit_date)->format('h:i A'),
             'ai_insight' => [
-                'summary' => $this->patient->latestAiAnalysisResult?->ai_insight ?? 'No AI insight found for this patient.',
+                'summary' => $this->patient->latestAiAnalysisValue('ai_insight') ?? 'No AI insight found for this patient.',
             ],
             'status_tag' => $this->patient->id == request('current_patient_id') ? 'Now' : 'Waiting',
         ];

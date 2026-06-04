@@ -21,7 +21,7 @@ class PatientResource extends JsonResource
             'name' => $this->name,
             'age' => $this->patient->age ?? 'N/A',
             'status' => $this->patient->status,
-            'ai_insight' => $this->patient->latestAiAnalysisResult->ai_insight ?? 'No analysis available yet',
+            'ai_insight' => $this->patient->latestAiAnalysisValue('ai_insight') ?? 'No analysis available yet',
             'last_visit' => $latestVisit
                 ? $latestVisit->created_at->format('M d, Y')
                 : 'No visits yet',
